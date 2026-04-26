@@ -190,12 +190,34 @@
     font-style: italic;
   }
 
+  /* Meeting Notes Section */
+  .notes-section { margin-top: 12px; border-top: 1px dashed #d1d5db; padding-top: 12px; }
+  .notes-recap { background: #f0f9ff; border-left: 3px solid #0ea5e9; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+  .notes-this-week { background: #fefce8; border-left: 3px solid #eab308; border-radius: 8px; padding: 10px 12px; }
+  .notes-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .notes-recap .notes-title { color: #0369a1; }
+  .notes-this-week .notes-title { color: #a16207; }
+  .notes-empty { font-size: 11px; color: #6b7280; font-style: italic; padding: 4px 0; }
+  .note-item { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 12px; line-height: 1.4; }
+  .note-item input[type="checkbox"] { margin-top: 2px; cursor: pointer; flex-shrink: 0; width: 14px; height: 14px; }
+  .note-item label { flex: 1; cursor: pointer; color: #1f2937; }
+  .note-item.done label { text-decoration: line-through; color: #9ca3af; }
+  .note-input-row { display: flex; gap: 6px; margin-top: 6px; }
+  .note-input { flex: 1; padding: 6px 10px; font-size: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit; }
+  .note-input:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 2px rgba(0,122,255,0.15); }
+  .note-add-btn { padding: 6px 12px; font-size: 12px; font-weight: 600; background: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: inherit; }
+  .note-add-btn:hover { opacity: 0.9; }
+  .note-new-item { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 12px; }
+  .note-new-item .bullet { color: #eab308; font-weight: 700; flex-shrink: 0; }
+  .note-new-item .new-text { flex: 1; }
+  .note-new-item .remove-btn { background: none; border: none; color: #dc2626; cursor: pointer; font-size: 14px; padding: 0 4px; flex-shrink: 0; }
+
   .focus-bar {
     background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
     color: white;
     border-radius: 14px;
     padding: 14px 18px;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
   }
   .focus-bar-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
@@ -275,10 +297,12 @@
     <strong>📋 어떻게 사용해?</strong>
     <ol>
       <li>미팅 시작 전: 본인 이름 + 미팅 날짜 입력</li>
-      <li><strong>매니저별 1:1 미팅마다</strong>: 위 파란 박스에서 매장 선택 → 그 매장 1개만 화면에 보임 (다른 매장 데이터 가려짐)</li>
-      <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동 계산</li>
-      <li>다음 매니저 미팅: 매장 dropdown에서 다음 매장 선택 (이전 데이터 유지됨)</li>
-      <li>11개 매장 다 끝나면 → "All Stores"로 변경 → <strong>"📧 Email Dustin"</strong> 버튼으로 한번에 전송</li>
+      <li><strong>매니저별 1:1 미팅마다</strong>: 위 파란 박스에서 매장 선택 → 그 매장 1개만 화면에 보임</li>
+      <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동</li>
+      <li><strong>📋 Last Week's Notes</strong> (파란 박스): 지난주 액션 아이템들 → 매니저랑 같이 ✓ 체크 (완료된거)</li>
+      <li><strong>📝 This Week's Notes</strong> (노란 박스): 이번주 새 액션 아이템 입력 + Add 버튼</li>
+      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📧 Email Dustin"</strong> 한번에 전송</li>
+      <li>다음주에 다시 열면 → 이번주 노트가 "Last Week's Notes"로 자동 표시 (사이클)</li>
     </ol>
   </div>
 
@@ -448,6 +472,35 @@
 
   const DUSTIN_EMAIL = "dhldustin@gmail.com";
 
+  // Meeting notes state
+  // PREV_NOTES: hardcoded last week's notes (gets updated weekly when Claude rebuilds the page)
+  // newNotes: this week's notes typed live (in-memory)
+  // checkedRecap: which prev notes got marked done this week
+  let PREV_NOTES = {};  // {storeId: [{id, text, week}]}
+  let newNotes = {};     // {storeId: [text, text, ...]}
+  let checkedRecap = {}; // {storeId: {noteId: true/false}}
+
+  // Try to load previous week's notes from notes.json (same-origin fetch)
+  async function loadPrevNotes() {
+    try {
+      const res = await fetch("notes.json", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        PREV_NOTES = data.prevNotes || {};
+        // Initialize checkedRecap for each store
+        Object.keys(PREV_NOTES).forEach(sid => {
+          checkedRecap[sid] = {};
+          PREV_NOTES[sid].forEach(n => { checkedRecap[sid][n.id] = false; });
+        });
+        // Re-render notes for all stores
+        STORES.forEach(s => renderRecapNotes(s.id));
+      }
+    } catch (e) {
+      // notes.json doesn't exist yet — that's OK, first week
+      console.log("No previous notes (first week)");
+    }
+  }
+
   // Set today's date as default
   document.getElementById("meeting-date").value = new Date().toISOString().split("T")[0];
 
@@ -502,7 +555,7 @@
     wrap.dataset.concept = s.concept;
     const newTag = s.isNew ? `<span class="new-tag">🆕 NEW</span>` : "";
     const noPosNote = s.noPosAccess
-      ? `<div style="color:#6b7280; font-size:11px; padding:6px 0;">⚠ Clover POS access pending — sales/Prime input manual</div>`
+      ? `<div style="color: #6b7280; font-size: 11px; padding: 6px 0;">⚠ Clover POS access pending — sales/Prime input manual</div>`
       : "";
     const targetPct = s.sales && s.target ? (s.sales / s.target * 100) : null;
     const targetGap = s.sales && s.target ? (s.sales - s.target) : null;
@@ -584,6 +637,23 @@
         <div class="extras-cell">
           <span class="extras-label">Channel</span>
           <span class="extras-value">${s.channelDine !== null && s.channelDine !== undefined ? `Dine ${s.channelDine}% · Del ${s.channelDelivery}%` : 'Toast: not avail'}</span>
+        </div>
+      </div>
+
+      <div class="notes-section">
+        <div class="notes-recap">
+          <div class="notes-title">📋 Last Week's Notes — Recap (check what got done)</div>
+          <div id="recap-list-${s.id}">
+            <div class="notes-empty">No notes from last week (first week of tracking)</div>
+          </div>
+        </div>
+        <div class="notes-this-week">
+          <div class="notes-title">📝 This Week's Notes (action items from today's meeting)</div>
+          <div id="new-notes-list-${s.id}"></div>
+          <div class="note-input-row">
+            <input type="text" class="note-input" id="note-input-${s.id}" placeholder="e.g., Train staff on banchan refills" data-store-id="${s.id}">
+            <button class="note-add-btn" data-store-id="${s.id}" onclick="addNote('${s.id}')">+ Add</button>
+          </div>
         </div>
       </div>
     `;
@@ -774,6 +844,31 @@
     ).join("\n");
 
     const avgPrime = primeCount ? (primeSum / primeCount).toFixed(1) : "—";
+
+    // Build notes section
+    let notesSection = "";
+    let recapSection = "";
+    let hasNotes = false;
+    STORES.forEach(s => {
+      const newNs = newNotes[s.id] || [];
+      if (newNs.length > 0) {
+        hasNotes = true;
+        notesSection += `\n### ${s.name}\n`;
+        newNs.forEach(t => notesSection += `- ${t}\n`);
+      }
+      const prev = PREV_NOTES[s.id] || [];
+      if (prev.length > 0) {
+        const checks = checkedRecap[s.id] || {};
+        const dones = prev.filter(n => checks[n.id]);
+        const opens = prev.filter(n => !checks[n.id]);
+        if (dones.length || opens.length) {
+          recapSection += `\n### ${s.name}\n`;
+          dones.forEach(n => recapSection += `- ✅ ${n.text} (DONE)\n`);
+          opens.forEach(n => recapSection += `- ⬜ ${n.text} (still open)\n`);
+        }
+      }
+    });
+
     return `# OMC Weekly Ops — Manager Meeting Report
 
 **Meeting led by:** ${lead}
@@ -788,9 +883,12 @@
 
 ${lines || "(no data entered)"}
 
+${hasNotes ? `---\n\n## This Week's Notes (action items)\n${notesSection}` : ""}
+${recapSection ? `---\n\n## Last Week's Notes — Recap\n${recapSection}` : ""}
 ---
 
-Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime Cost로 mock 교체).`;
+Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime Cost로 mock 교체).
+그리고 notes.json 업데이트해서 GitHub에 push해줘 (이번주 새 노트 + 미완료 노트 carry over).`;
   }
 
   function showModal() {
@@ -831,6 +929,77 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     alert("✓ 다운로드 완료. Dustin한테 이메일/슬랙으로 보내줘.");
   };
   document.getElementById("email-btn").onclick = showModal;
+
+  // === Notes management ===
+  function renderRecapNotes(storeId) {
+    const list = document.getElementById(`recap-list-${storeId}`);
+    if (!list) return;
+    const notes = PREV_NOTES[storeId] || [];
+    if (notes.length === 0) {
+      list.innerHTML = '<div class="notes-empty">No notes from last week (first week of tracking)</div>';
+      return;
+    }
+    list.innerHTML = notes.map(n => {
+      const checked = (checkedRecap[storeId] || {})[n.id];
+      return `<div class="note-item ${checked ? 'done' : ''}">
+        <input type="checkbox" id="recap-${storeId}-${n.id}" ${checked ? 'checked' : ''} onchange="toggleRecap('${storeId}', ${n.id})">
+        <label for="recap-${storeId}-${n.id}">${escapeHtml(n.text)}</label>
+      </div>`;
+    }).join("");
+  }
+
+  function renderNewNotes(storeId) {
+    const list = document.getElementById(`new-notes-list-${storeId}`);
+    if (!list) return;
+    const notes = newNotes[storeId] || [];
+    if (notes.length === 0) {
+      list.innerHTML = "";
+      return;
+    }
+    list.innerHTML = notes.map((t, i) => `
+      <div class="note-new-item">
+        <span class="bullet">•</span>
+        <span class="new-text">${escapeHtml(t)}</span>
+        <button class="remove-btn" onclick="removeNote('${storeId}', ${i})" title="Remove">✕</button>
+      </div>
+    `).join("");
+  }
+
+  function addNote(storeId) {
+    const input = document.getElementById(`note-input-${storeId}`);
+    const text = (input.value || "").trim();
+    if (!text) return;
+    if (!newNotes[storeId]) newNotes[storeId] = [];
+    newNotes[storeId].push(text);
+    input.value = "";
+    renderNewNotes(storeId);
+    input.focus();
+  }
+
+  function removeNote(storeId, idx) {
+    if (!newNotes[storeId]) return;
+    newNotes[storeId].splice(idx, 1);
+    renderNewNotes(storeId);
+  }
+
+  function toggleRecap(storeId, noteId) {
+    if (!checkedRecap[storeId]) checkedRecap[storeId] = {};
+    checkedRecap[storeId][noteId] = !checkedRecap[storeId][noteId];
+    renderRecapNotes(storeId);
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // Allow Enter key in note input to add note
+  document.addEventListener("keypress", (e) => {
+    if (e.target.classList?.contains("note-input") && e.key === "Enter") {
+      const storeId = e.target.dataset.storeId;
+      addNote(storeId);
+      e.preventDefault();
+    }
+  });
 
   let currentFocus = "all";
 
@@ -891,6 +1060,7 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   document.querySelectorAll(".prime-input").forEach(i => i.addEventListener("input", recalcAll));
   recalcAll();
   applyFocus("all");
+  loadPrevNotes();  // Load last week's notes from notes.json
 </script>
 </body>
 </html>
