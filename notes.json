@@ -1,5 +1,5 @@
 {
-  "_comment": "Last week's meeting notes — auto-updated by Claude each Monday after manager meeting. First week of tracking has empty notes; future weeks will populate as meetings happen.",
+  "_comment": "Weekly meeting state — auto-updated by Claude each Monday. prevNotes carry over to next week's recap. consecutiveC tracks how many weeks in a row a store has been graded C (≥2 triggers escalation banner).",
   "lastUpdated": "2026-04-25",
   "weekEnding": "2026-04-19",
   "prevNotes": {
@@ -14,5 +14,18 @@
     "hanshin-pocha-oakland": [],
     "spoon-berkeley": [],
     "bowld-albany": []
+  },
+  "consecutiveC": {
+    "ohgane-oakland": 0,
+    "ohgane-concord": 0,
+    "ohgane-alameda": 0,
+    "tangjip-hayward": 0,
+    "tangjip-concord": 0,
+    "tangjip-alameda": 0,
+    "oh-g-burger-berkeley": 0,
+    "obento-hayward": 0,
+    "hanshin-pocha-oakland": 0,
+    "spoon-berkeley": 0,
+    "bowld-albany": 0
   }
 }
