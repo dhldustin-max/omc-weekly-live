@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OMC Weekly Ops — Live</title>
+<title>OMC Weekly Ops â Live</title>
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -210,15 +210,15 @@
     line-height: 1.5;
   }
   .action-plan li:before {
-    content: "→";
+    content: "â";
     position: absolute;
     left: 0;
     color: #3b82f6;
     font-weight: 700;
   }
-  .action-plan li.win:before { content: "✓"; color: #16a34a; }
-  .action-plan li.warn:before { content: "⚠"; color: #ea580c; }
-  .action-plan li.crit:before { content: "🚨"; color: #dc2626; }
+  .action-plan li.win:before { content: "â"; color: #16a34a; }
+  .action-plan li.warn:before { content: "â "; color: #ea580c; }
+  .action-plan li.crit:before { content: "ð¨"; color: #dc2626; }
   .action-plan-empty {
     font-size: 11px;
     color: #6b7280;
@@ -329,25 +329,25 @@
 <div class="container">
 
   <div class="help-banner">
-    <strong>📋 어떻게 사용해?</strong>
+    <strong>ð ì´ë»ê² ì¬ì©í´?</strong>
     <ol>
-      <li>미팅 시작 전: 본인 이름 + 미팅 날짜 입력</li>
-      <li><strong>매니저별 1:1 미팅마다</strong>: 위 파란 박스에서 매장 선택 → 그 매장 1개만 화면에 보임</li>
-      <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동</li>
-      <li><strong>📋 Last Week's Notes</strong> (파란 박스): 지난주 액션 아이템들 → 매니저랑 같이 ✓ 체크 (완료된거)</li>
-      <li><strong>📝 This Week's Notes</strong> (노란 박스): 이번주 새 액션 아이템 입력 + Add 버튼</li>
-      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → .md 다운 + Drive 새 탭 자동 오픈 → 드래그로 업로드</li>
-      <li>다음주에 다시 열면 → 이번주 노트가 "Last Week's Notes"로 자동 표시 (사이클)</li>
+      <li>ë¯¸í ìì ì : ë³¸ì¸ ì´ë¦ + ë¯¸í ë ì§ ìë ¥</li>
+      <li><strong>ë§¤ëì ë³ 1:1 ë¯¸íë§ë¤</strong>: ì íë ë°ì¤ìì ë§¤ì¥ ì í â ê·¸ ë§¤ì¥ 1ê°ë§ íë©´ì ë³´ì</li>
+      <li>ë§¤ëì ê° Labor $ + Food $ ìë ¤ì£¼ë©´ ìë ¥ â Prime % + Grade + Action Plan ì¦ì ìë</li>
+      <li><strong>ð Last Week's Notes</strong> (íë ë°ì¤): ì§ëì£¼ ì¡ì ìì´íë¤ â ë§¤ëì ë ê°ì´ â ì²´í¬ (ìë£ëê±°)</li>
+      <li><strong>ð This Week's Notes</strong> (ë¸ë ë°ì¤): ì´ë²ì£¼ ì ì¡ì ìì´í ìë ¥ + Add ë²í¼</li>
+      <li>11ê° ë§¤ì¥ ë¤ ëëë©´ â "All Stores" â <strong>"ð¤ Upload to Drive"</strong> â .md ë¤ì´ + Drive ì í­ ìë ì¤í â ëëê·¸ë¡ ìë¡ë</li>
+      <li>ë¤ìì£¼ì ë¤ì ì´ë©´ â ì´ë²ì£¼ ë¸í¸ê° "Last Week's Notes"ë¡ ìë íì (ì¬ì´í´)</li>
     </ol>
   </div>
 
   <div class="header">
     <div>
-      <div class="title">OMC Weekly Ops — Live</div>
-      <div class="subtitle">Manager meeting · 11 locations</div>
-      <div class="week-tag">📅 Week of Apr 13 – 19, 2026</div>
+      <div class="title">OMC Weekly Ops â Live</div>
+      <div class="subtitle">Manager meeting Â· 11 locations</div>
+      <div class="week-tag">ð Week of Apr 13 â 19, 2026</div>
     </div>
-    <div id="overall-grade" class="grade-badge grade-NA">—</div>
+    <div id="overall-grade" class="grade-badge grade-NA">â</div>
   </div>
 
   <div class="meeting-info">
@@ -366,13 +366,13 @@
   <div class="focus-bar">
     <div class="focus-bar-row">
       <div>
-        <div class="focus-bar-label">🎯 Current Meeting</div>
+        <div class="focus-bar-label">ð¯ Current Meeting</div>
         <div class="focus-bar-value" id="focus-name">All Stores (Director View)</div>
-        <div class="focus-bar-status" id="focus-status">11 stores visible · Director mode</div>
+        <div class="focus-bar-status" id="focus-status">11 stores visible Â· Director mode</div>
       </div>
       <select id="focus-select">
-        <option value="all">📊 All Stores (Director only)</option>
-        <optgroup label="── 1:1 Manager Meetings ──">
+        <option value="all">ð All Stores (Director only)</option>
+        <optgroup label="ââ 1:1 Manager Meetings ââ">
           <option value="ohgane-oakland">Ohgane Oakland</option>
           <option value="ohgane-concord">Ohgane Concord</option>
           <option value="ohgane-alameda">Ohgane Alameda</option>
@@ -394,17 +394,17 @@
     <div class="summary-grid">
       <div class="summary-stat">
         <div class="summary-stat-label">Net Sales</div>
-        <div class="summary-stat-value" id="total-sales">—</div>
+        <div class="summary-stat-value" id="total-sales">â</div>
         <div class="summary-stat-sub">10 of 11 stores</div>
       </div>
       <div class="summary-stat">
         <div class="summary-stat-label">vs Target</div>
-        <div class="summary-stat-value" id="vs-target">—</div>
-        <div class="summary-stat-sub" id="vs-target-sub">—</div>
+        <div class="summary-stat-value" id="vs-target">â</div>
+        <div class="summary-stat-sub" id="vs-target-sub">â</div>
       </div>
       <div class="summary-stat">
         <div class="summary-stat-label">Avg Prime</div>
-        <div class="summary-stat-value" id="avg-prime">—</div>
+        <div class="summary-stat-value" id="avg-prime">â</div>
         <div class="summary-stat-sub" id="avg-prime-sub">Awaiting input</div>
       </div>
       <div class="summary-stat">
@@ -418,29 +418,29 @@
   <div id="stores"></div>
 
   <div class="nav-prev-next hidden" id="nav-bar">
-    <button id="prev-btn">← Previous Store</button>
-    <button id="next-btn">Next Store →</button>
+    <button id="prev-btn">â Previous Store</button>
+    <button id="next-btn">Next Store â</button>
   </div>
 </div>
 
 <div class="actions">
   <div class="actions-inner">
-    <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
-    <button class="btn btn-secondary" id="copy-btn">📋 Copy</button>
-    <button class="btn btn-secondary" id="download-btn">⬇ Download .md</button>
-    <button class="btn btn-success" id="upload-btn">📤 Upload to Drive</button>
+    <button class="btn btn-secondary" onclick="window.print()">ð¨ Print</button>
+    <button class="btn btn-secondary" id="copy-btn">ð Copy</button>
+    <button class="btn btn-secondary" id="download-btn">â¬ Download .md</button>
+    <button class="btn btn-success" id="upload-btn">ð¤ Upload to Drive</button>
   </div>
 </div>
 
 <div class="modal-backdrop" id="modal">
   <div class="modal">
-    <h2>📤 Meeting Data</h2>
-    <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;">아래 텍스트를 Dustin한테 이메일/슬랙/카톡으로 보내. 또는 Email 버튼 누르면 메일이 자동으로 작성돼.</p>
+    <h2>ð¤ Meeting Data</h2>
+    <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;">ìë íì¤í¸ë¥¼ Dustiníí ì´ë©ì¼/ì¬ë/ì¹´í¡ì¼ë¡ ë³´ë´. ëë Email ë²í¼ ëë¥´ë©´ ë©ì¼ì´ ìëì¼ë¡ ìì±ë¼.</p>
     <textarea id="modal-text" readonly></textarea>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()" style="flex: 0 0 auto;">Close</button>
-      <button class="btn btn-primary" onclick="copyFromModal()">📋 Copy</button>
-      <button class="btn btn-success" onclick="uploadToDrive()">📤 Upload to Drive</button>
+      <button class="btn btn-primary" onclick="copyFromModal()">ð Copy</button>
+      <button class="btn btn-success" onclick="uploadToDrive()">ð¤ Upload to Drive</button>
     </div>
   </div>
 </div>
@@ -542,7 +542,7 @@
   document.getElementById("meeting-date").value = new Date().toISOString().split("T")[0];
 
   function fmtMoney(n) {
-    if (n === null || n === undefined) return "—";
+    if (n === null || n === undefined) return "â";
     return "$" + Math.round(n).toLocaleString();
   }
 
@@ -599,9 +599,9 @@
   }
 
   function primeStatus(p) {
-    if (p <= 60) return { label: "✓ ON TARGET", cls: "filled-good", color: "#16a34a" };
-    if (p <= 65) return { label: "⚠ OVER 60%", cls: "filled-warn", color: "#ea580c" };
-    return { label: "🚨 OVER 65%", cls: "filled-bad", color: "#dc2626" };
+    if (p <= 60) return { label: "â ON TARGET", cls: "filled-good", color: "#16a34a" };
+    if (p <= 65) return { label: "â  OVER 60%", cls: "filled-warn", color: "#ea580c" };
+    return { label: "ð¨ OVER 65%", cls: "filled-bad", color: "#dc2626" };
   }
 
   function renderStore(s) {
@@ -610,9 +610,9 @@
     wrap.id = `store-${s.id}`;
     wrap.dataset.storeId = s.id;
     wrap.dataset.concept = s.concept;
-    const newTag = s.isNew ? `<span class="new-tag">🆕 NEW</span>` : "";
+    const newTag = s.isNew ? `<span class="new-tag">ð NEW</span>` : "";
     const noPosNote = s.noPosAccess
-      ? `<div style="color:#6b7280; font-size:11px; padding:6px 0;">⚠ Clover POS access pending — sales/Prime input manual</div>`
+      ? `<div style="color:#6b7280; font-size:11px; padding:6px 0;">â  Clover POS access pending â sales/Prime input manual</div>`
       : "";
     const targetPct = s.sales && s.target ? (s.sales / s.target * 100) : null;
     const targetGap = s.sales && s.target ? (s.sales - s.target) : null;
@@ -622,10 +622,10 @@
         <div class="store-name-block">
           <div>
             <div class="store-name">${s.name}</div>
-            <div class="store-loc">${s.location} · <span class="pos-tag">${s.pos}</span> ${newTag}</div>
+            <div class="store-loc">${s.location} Â· <span class="pos-tag">${s.pos}</span> ${newTag}</div>
           </div>
         </div>
-        <div class="grade-badge grade-NA" id="grade-${s.id}">—</div>
+        <div class="grade-badge grade-NA" id="grade-${s.id}">â</div>
       </div>
       <div id="needs-attention-${s.id}"></div>
       ${noPosNote}
@@ -637,24 +637,24 @@
         </div>
         <div class="stat-cell">
           <div class="stat-label">vs Target</div>
-          <div class="stat-value ${targetGap >= 0 ? 'stat-positive' : 'stat-negative'}">${targetPct !== null ? targetPct.toFixed(0) + '%' : '—'}</div>
-          <div class="stat-sub">${targetGap !== null ? (targetGap >= 0 ? '+' : '') + fmtMoney(targetGap) : '—'}</div>
+          <div class="stat-value ${targetGap >= 0 ? 'stat-positive' : 'stat-negative'}">${targetPct !== null ? targetPct.toFixed(0) + '%' : 'â'}</div>
+          <div class="stat-sub">${targetGap !== null ? (targetGap >= 0 ? '+' : '') + fmtMoney(targetGap) : 'â'}</div>
         </div>
         <div class="stat-cell">
           <div class="stat-label">Orders</div>
-          <div class="stat-value">${s.orders ? s.orders.toLocaleString() : '—'}</div>
-          <div class="stat-sub">${s.guests ? s.guests.toLocaleString() + ' guests' : '—'}</div>
+          <div class="stat-value">${s.orders ? s.orders.toLocaleString() : 'â'}</div>
+          <div class="stat-sub">${s.guests ? s.guests.toLocaleString() + ' guests' : 'â'}</div>
         </div>
         <div class="stat-cell">
           <div class="stat-label">Avg Check</div>
-          <div class="stat-value">${s.sales && s.orders ? '$' + (s.sales/s.orders).toFixed(0) : '—'}</div>
+          <div class="stat-value">${s.sales && s.orders ? '$' + (s.sales/s.orders).toFixed(0) : 'â'}</div>
           <div class="stat-sub">per order</div>
         </div>
       </div>
 
       <div class="prime-section" id="prime-section-${s.id}">
         <div class="prime-header">
-          <div class="prime-label">⚠ Prime Cost — Manager Input</div>
+          <div class="prime-label">â  Prime Cost â Manager Input</div>
           <div class="prime-status" id="prime-status-${s.id}" style="color:#9ca3af;">Awaiting input</div>
         </div>
         <div class="prime-grid">
@@ -669,15 +669,15 @@
                    ${s.noPosAccess ? 'disabled' : ''}/>
           </div>
           <div class="prime-result">
-            <div class="prime-result-value" id="prime-result-${s.id}" style="color:#9ca3af;">—%</div>
+            <div class="prime-result-value" id="prime-result-${s.id}" style="color:#9ca3af;">â%</div>
             <div class="prime-result-label">Prime</div>
           </div>
         </div>
-        <div class="prime-breakdown" id="prime-breakdown-${s.id}">Labor — % · Food — %</div>
+        <div class="prime-breakdown" id="prime-breakdown-${s.id}">Labor â % Â· Food â %</div>
       </div>
 
       <div class="action-plan" id="action-${s.id}">
-        <div class="action-plan-title">📝 Action Plan</div>
+        <div class="action-plan-title">ð Action Plan</div>
         <ul id="action-list-${s.id}">
           <li class="action-plan-empty">Auto-generates as you fill in data...</li>
         </ul>
@@ -685,16 +685,16 @@
 
       <div class="extras-row">
         <div class="extras-cell">
-          <span class="extras-label">⭐ Google</span>
+          <span class="extras-label">â­ Google</span>
           <span class="extras-value">${s.googleRating}</span>
         </div>
         <div class="extras-cell">
-          <span class="extras-label">⭐ Yelp</span>
+          <span class="extras-label">â­ Yelp</span>
           <span class="extras-value">${s.yelpRating}</span>
         </div>
         <div class="extras-cell">
           <span class="extras-label">Channel</span>
-          <span class="extras-value">${s.channelDine !== null && s.channelDine !== undefined ? `Dine ${s.channelDine}% · Del ${s.channelDelivery}%` : 'Toast: not avail'}</span>
+          <span class="extras-value">${s.channelDine !== null && s.channelDine !== undefined ? `Dine ${s.channelDine}% Â· Del ${s.channelDelivery}%` : 'Toast: not avail'}</span>
         </div>
       </div>
 
@@ -704,9 +704,9 @@
         const myCheck = s.sales / s.orders;
         const diff = myCheck - avgs.avgCheck;
         const cls = diff >= 0 ? "above" : "below";
-        const sign = diff >= 0 ? "+" : "−";
+        const sign = diff >= 0 ? "+" : "â";
         return `<div class="concept-compare">
-          ${s.concept} concept avg: <strong>$${avgs.avgCheck.toFixed(0)}</strong> check ·
+          ${s.concept} concept avg: <strong>$${avgs.avgCheck.toFixed(0)}</strong> check Â·
           You: <strong>$${myCheck.toFixed(0)}</strong>
           <span class="${cls}">(${sign}$${Math.abs(diff).toFixed(0)})</span>
         </div>`;
@@ -714,13 +714,13 @@
 
       <div class="notes-section">
         <div class="notes-recap">
-          <div class="notes-title">📋 Last Week's Notes — Recap (check what got done)</div>
+          <div class="notes-title">ð Last Week's Notes â Recap (check what got done)</div>
           <div id="recap-list-${s.id}">
             <div class="notes-empty">No notes from last week (first week of tracking)</div>
           </div>
         </div>
         <div class="notes-this-week">
-          <div class="notes-title">📝 This Week's Notes (action items from today's meeting)</div>
+          <div class="notes-title">ð This Week's Notes (action items from today's meeting)</div>
           <div id="new-notes-list-${s.id}"></div>
           <div class="note-input-row">
             <input type="text" class="note-input" id="note-input-${s.id}" placeholder="e.g., Train staff on banchan refills" data-store-id="${s.id}">
@@ -735,7 +735,7 @@
   function generateActions(s, primeData) {
     const actions = [];
     if (s.noPosAccess) {
-      actions.push({ text: "Get Clover POS access — currently flying blind on sales/Prime", type: "crit" });
+      actions.push({ text: "Get Clover POS access â currently flying blind on sales/Prime", type: "crit" });
       return actions;
     }
     // Sales gap analysis
@@ -753,7 +753,7 @@
           actions.push({ text: `Need +${orderGap} more orders this week (lunch promo or delivery push)`, type: "warn" });
         }
         if (actions.filter(a => a.type === "warn").length === 0) {
-          actions.push({ text: `Missing target by $${gap.toLocaleString()} — audit staffing & specials`, type: "warn" });
+          actions.push({ text: `Missing target by $${gap.toLocaleString()} â audit staffing & specials`, type: "warn" });
         }
       } else if (s.sales > s.target) {
         actions.push({ text: `Beat sales target by $${(s.sales - s.target).toLocaleString()}`, type: "win" });
@@ -764,11 +764,11 @@
       const p = primeData.primeTotal;
       if (p > 65) {
         const worst = primeData.laborPct > 32 ? "Labor" : "Food";
-        actions.push({ text: `Prime ${p.toFixed(1)}% over 65% — focus on ${worst} cost reduction`, type: "crit" });
+        actions.push({ text: `Prime ${p.toFixed(1)}% over 65% â focus on ${worst} cost reduction`, type: "crit" });
       } else if (p > 60) {
-        actions.push({ text: `Prime ${p.toFixed(1)}% slightly over 60% target — review weekly schedule`, type: "warn" });
+        actions.push({ text: `Prime ${p.toFixed(1)}% slightly over 60% target â review weekly schedule`, type: "warn" });
       } else if (p < 55) {
-        actions.push({ text: `Prime ${p.toFixed(1)}% excellent — under 55% (top quartile)`, type: "win" });
+        actions.push({ text: `Prime ${p.toFixed(1)}% excellent â under 55% (top quartile)`, type: "win" });
       }
     } else if (s.sales) {
       actions.push({ text: "Enter Labor + Food cost above to get Prime Cost guidance", type: "" });
@@ -778,16 +778,16 @@
     const yd = s.yelpDelta || 0;
     if (gd < -0.05 || yd < -0.05) {
       const worst = gd < yd ? "Google" : "Yelp";
-      actions.push({ text: `${worst} rating dropping — respond to recent negatives within 48h`, type: "warn" });
+      actions.push({ text: `${worst} rating dropping â respond to recent negatives within 48h`, type: "warn" });
     } else if (gd > 0.05 || yd > 0.05) {
-      actions.push({ text: "Rating trending up — ask happy guests to leave reviews", type: "win" });
+      actions.push({ text: "Rating trending up â ask happy guests to leave reviews", type: "win" });
     }
     // Channel mix insight (only if we have data)
     if (s.channelDelivery !== null && s.channelDelivery !== undefined) {
       if (s.channelDelivery > 25) {
-        actions.push({ text: `Delivery ${s.channelDelivery}% — high commission burn, monitor margin`, type: "warn" });
+        actions.push({ text: `Delivery ${s.channelDelivery}% â high commission burn, monitor margin`, type: "warn" });
       } else if (s.channelDelivery < 5 && s.sales < s.target) {
-        actions.push({ text: `Delivery only ${s.channelDelivery}% — growth opportunity (DoorDash/UberEats)`, type: "" });
+        actions.push({ text: `Delivery only ${s.channelDelivery}% â growth opportunity (DoorDash/UberEats)`, type: "" });
       }
     }
     return actions.slice(0, 4);  // max 4 actions per store
@@ -798,7 +798,7 @@
     if (!list) return;
     const actions = generateActions(s, primeData);
     if (actions.length === 0) {
-      list.innerHTML = '<li class="action-plan-empty">All metrics on track — keep it up!</li>';
+      list.innerHTML = '<li class="action-plan-empty">All metrics on track â keep it up!</li>';
       return;
     }
     list.innerHTML = actions.map(a =>
@@ -827,7 +827,7 @@
         sect.classList.add(ps.cls);
         result.textContent = pd.primeTotal.toFixed(1) + "%";
         result.style.color = ps.color;
-        bd.textContent = `Labor ${pd.laborPct.toFixed(1)}% · Food ${pd.foodPct.toFixed(1)}% · Total ${pd.primeTotal.toFixed(1)}%`;
+        bd.textContent = `Labor ${pd.laborPct.toFixed(1)}% Â· Food ${pd.foodPct.toFixed(1)}% Â· Total ${pd.primeTotal.toFixed(1)}%`;
         st.textContent = ps.label;
         st.style.color = ps.color;
         primeSum += pd.primeTotal; primeCount += 1; filled += 1;
@@ -835,9 +835,9 @@
         else if (pd.primeTotal <= 65) card.classList.add("over-prime");
         else card.classList.add("danger");
       } else {
-        result.textContent = "—%";
+        result.textContent = "â%";
         result.style.color = "#9ca3af";
-        bd.textContent = "Labor — % · Food — %";
+        bd.textContent = "Labor â % Â· Food â %";
         st.textContent = s.noPosAccess ? "POS access pending" : "Awaiting input";
         st.style.color = "#9ca3af";
       }
@@ -852,30 +852,30 @@
         const consecutiveC = (window.__consecutiveC || {})[s.id] || 0;
         if (g === "C") {
           if (consecutiveC >= 2) {
-            naDiv.innerHTML = `<div class="needs-attention escalated">🚨 ${consecutiveC + 1}주 연속 C — GM 개입 필요 (Escalated)</div>`;
+            naDiv.innerHTML = `<div class="needs-attention escalated">ð¨ ${consecutiveC + 1}ì£¼ ì°ì C â GM ê°ì íì (Escalated)</div>`;
           } else {
-            naDiv.innerHTML = `<div class="needs-attention">⚠️ Needs Attention — 이번주 우선순위 매장</div>`;
+            naDiv.innerHTML = `<div class="needs-attention">â ï¸ Needs Attention â ì´ë²ì£¼ ì°ì ìì ë§¤ì¥</div>`;
           }
         } else {
           naDiv.innerHTML = "";
         }
       }
 
-      // Action plan — re-render every time data changes
+      // Action plan â re-render every time data changes
       renderActionPlan(s, pd);
     }
     document.getElementById("total-sales").textContent = fmtMoney(totalSales);
     const tp = totalSales && totalTarget ? (totalSales / totalTarget * 100) : null;
-    document.getElementById("vs-target").textContent = tp ? tp.toFixed(0) + "%" : "—";
+    document.getElementById("vs-target").textContent = tp ? tp.toFixed(0) + "%" : "â";
     document.getElementById("vs-target").className = "summary-stat-value " + (tp >= 100 ? "stat-positive" : "stat-negative");
-    document.getElementById("vs-target-sub").textContent = totalTarget ? `Tgt ${fmtMoney(totalTarget)}` : "—";
+    document.getElementById("vs-target-sub").textContent = totalTarget ? `Tgt ${fmtMoney(totalTarget)}` : "â";
     if (primeCount > 0) {
       const avg = primeSum / primeCount;
       document.getElementById("avg-prime").textContent = avg.toFixed(1) + "%";
       document.getElementById("avg-prime").className = "summary-stat-value " + (avg <= 60 ? "stat-positive" : "stat-negative");
       document.getElementById("avg-prime-sub").textContent = `Across ${primeCount} stores`;
     } else {
-      document.getElementById("avg-prime").textContent = "—";
+      document.getElementById("avg-prime").textContent = "â";
       document.getElementById("avg-prime-sub").textContent = "Awaiting input";
     }
     document.getElementById("filled-count").textContent = `${filled}/11`;
@@ -898,7 +898,7 @@
       if (!cs.length) continue;
       const sec = document.createElement("div");
       sec.className = "concept-section";
-      sec.innerHTML = `<div class="concept-header">${cn} · ${cs[0].cuisine} · ${cs.length} location${cs.length > 1 ? 's' : ''}</div>`;
+      sec.innerHTML = `<div class="concept-header">${cn} Â· ${cs[0].cuisine} Â· ${cs.length} location${cs.length > 1 ? 's' : ''}</div>`;
       cs.forEach(s => sec.appendChild(renderStore(s)));
       c.appendChild(sec);
     }
@@ -915,9 +915,9 @@
       const food = parseFloat(document.getElementById(`food-${s.id}`)?.value) || 0;
       if (labor || food) {
         const sales = s.sales || 0;
-        const lp = sales ? (labor / sales * 100).toFixed(1) : "—";
-        const fp = sales ? (food / sales * 100).toFixed(1) : "—";
-        const pt = sales ? (labor / sales * 100 + food / sales * 100).toFixed(1) : "—";
+        const lp = sales ? (labor / sales * 100).toFixed(1) : "â";
+        const fp = sales ? (food / sales * 100).toFixed(1) : "â";
+        const pt = sales ? (labor / sales * 100 + food / sales * 100).toFixed(1) : "â";
         data.push({
           name: s.name, labor, food, laborPct: lp, foodPct: fp, primeTotal: pt
         });
@@ -927,10 +927,10 @@
     });
 
     const lines = data.map(d =>
-      `- **${d.name}**: Labor $${d.labor.toLocaleString()} (${d.laborPct}%), Food $${d.food.toLocaleString()} (${d.foodPct}%) → **Prime ${d.primeTotal}%**`
+      `- **${d.name}**: Labor $${d.labor.toLocaleString()} (${d.laborPct}%), Food $${d.food.toLocaleString()} (${d.foodPct}%) â **Prime ${d.primeTotal}%**`
     ).join("\n");
 
-    const avgPrime = primeCount ? (primeSum / primeCount).toFixed(1) : "—";
+    const avgPrime = primeCount ? (primeSum / primeCount).toFixed(1) : "â";
 
     // Build notes section
     let notesSection = "";
@@ -950,17 +950,17 @@
         const opens = prev.filter(n => !checks[n.id]);
         if (dones.length || opens.length) {
           recapSection += `\n### ${s.name}\n`;
-          dones.forEach(n => recapSection += `- ✅ ${n.text} (DONE)\n`);
-          opens.forEach(n => recapSection += `- ⬜ ${n.text} (still open)\n`);
+          dones.forEach(n => recapSection += `- â ${n.text} (DONE)\n`);
+          opens.forEach(n => recapSection += `- â¬ ${n.text} (still open)\n`);
         }
       }
     });
 
-    return `# OMC Weekly Ops — Manager Meeting Report
+    return `# OMC Weekly Ops â Manager Meeting Report
 
 **Meeting led by:** ${lead}
 **Meeting date:** ${date}
-**Week:** Apr 13–19, 2026
+**Week:** Apr 13â19, 2026
 **Stores filled:** ${filled} of 11
 **Portfolio Avg Prime Cost:** ${avgPrime}%
 
@@ -971,11 +971,11 @@
 ${lines || "(no data entered)"}
 
 ${hasNotes ? `---\n\n## This Week's Notes (action items)\n${notesSection}` : ""}
-${recapSection ? `---\n\n## Last Week's Notes — Recap\n${recapSection}` : ""}
+${recapSection ? `---\n\n## Last Week's Notes â Recap\n${recapSection}` : ""}
 ---
 
-Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime Cost로 mock 교체).
-그리고 notes.json 업데이트해서 GitHub에 push해줘 (이번주 새 노트 + 미완료 노트 carry over).`;
+Dustin: ì´ê±¸ë¡ v4 PDF 11ê° ë§¤ì¥ + 7ê° ì»¨ì ë¤ì ë½ìì¤ (real Prime Costë¡ mock êµì²´).
+ê·¸ë¦¬ê³  notes.json ìë°ì´í¸í´ì GitHubì pushí´ì¤ (ì´ë²ì£¼ ì ë¸í¸ + ë¯¸ìë£ ë¸í¸ carry over).`;
   }
 
   function showModal() {
@@ -989,9 +989,9 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     const txt = document.getElementById("modal-text");
     txt.select();
     document.execCommand("copy");
-    alert("✓ 복사 완료! Dustin한테 슬랙/카톡에 붙여넣어줘.");
+    alert("â ë³µì¬ ìë£! Dustiníí ì¬ë/ì¹´í¡ì ë¶ì¬ë£ì´ì¤.");
   }
-  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
+  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/u/2/folders/1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
   const DRIVE_FOLDER_ID = "1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
 
   function uploadToDrive() {
@@ -1011,7 +1011,7 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     // Step 2: open Drive folder in new tab so user can drag the file in
     setTimeout(() => {
       window.open(DRIVE_FOLDER_URL, "_blank");
-      alert(`✓ ${filename} 다운로드됨!\n\nDrive 폴더가 새 탭에 열렸어:\n1. Downloads 폴더에서 ${filename} 찾기\n2. Drive 탭으로 드래그-드롭\n\n또는 클립보드에 복사한 텍스트를 Drive Doc에 직접 붙여넣어도 됨.`);
+      alert(`â ${filename} ë¤ì´ë¡ëë¨!\n\nDrive í´ëê° ì í­ì ì´ë ¸ì´:\n1. Downloads í´ëìì ${filename} ì°¾ê¸°\n2. Drive í­ì¼ë¡ ëëê·¸-ëë¡­\n\nëë í´ë¦½ë³´ëì ë³µì¬í íì¤í¸ë¥¼ Drive Docì ì§ì  ë¶ì¬ë£ì´ë ë¨.`);
     }, 300);
   }
 
@@ -1029,7 +1029,7 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     a.download = `OMC-weekly-ops-${date}.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    alert("✓ 다운로드 완료. Dustin한테 이메일/슬랙으로 보내줘.");
+    alert("â ë¤ì´ë¡ë ìë£. Dustiníí ì´ë©ì¼/ì¬ëì¼ë¡ ë³´ë´ì¤.");
   };
   document.getElementById("upload-btn").onclick = uploadToDrive;
 
@@ -1061,9 +1061,9 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     }
     list.innerHTML = notes.map((t, i) => `
       <div class="note-new-item">
-        <span class="bullet">•</span>
+        <span class="bullet">â¢</span>
         <span class="new-text">${escapeHtml(t)}</span>
-        <button class="remove-btn" onclick="removeNote('${storeId}', ${i})" title="Remove">✕</button>
+        <button class="remove-btn" onclick="removeNote('${storeId}', ${i})" title="Remove">â</button>
       </div>
     `).join("");
   }
@@ -1124,20 +1124,20 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     });
     if (isAll) {
       document.getElementById("focus-name").textContent = "All Stores (Director View)";
-      document.getElementById("focus-status").textContent = "11 stores visible · Director mode";
+      document.getElementById("focus-status").textContent = "11 stores visible Â· Director mode";
       document.getElementById("nav-bar").classList.add("hidden");
     } else {
       const s = STORES.find(x => x.id === focusId);
       document.getElementById("focus-name").textContent = s.name;
-      document.getElementById("focus-status").textContent = `1:1 meeting mode · Manager only sees this store · ${s.pos}`;
+      document.getElementById("focus-status").textContent = `1:1 meeting mode Â· Manager only sees this store Â· ${s.pos}`;
       document.getElementById("nav-bar").classList.remove("hidden");
       const idx = STORES.findIndex(x => x.id === focusId);
       const prevBtn = document.getElementById("prev-btn");
       const nextBtn = document.getElementById("next-btn");
       prevBtn.disabled = idx === 0;
       nextBtn.disabled = idx === STORES.length - 1;
-      prevBtn.textContent = idx > 0 ? `← ${STORES[idx - 1].name}` : "← Previous";
-      nextBtn.textContent = idx < STORES.length - 1 ? `${STORES[idx + 1].name} →` : "Next →";
+      prevBtn.textContent = idx > 0 ? `â ${STORES[idx - 1].name}` : "â Previous";
+      nextBtn.textContent = idx < STORES.length - 1 ? `${STORES[idx + 1].name} â` : "Next â";
     }
   }
 
