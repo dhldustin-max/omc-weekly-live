@@ -107,10 +107,45 @@
   .grade-badge { width: 34px; height: 34px; border-radius: 50%; color: white; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .grade-A { background: #34c759; }
   .grade-B { background: #5ac8fa; }
-  .grade-C { background: #ffcc00; color: #1a1a1a; }
-  .grade-D { background: #ff9500; }
-  .grade-F { background: #ff3b30; }
+  .grade-C { background: #ff3b30; }
   .grade-NA { background: #8e8e93; }
+
+  /* Needs Attention badge */
+  .needs-attention {
+    background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+    border-left: 3px solid #dc2626;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #991b1b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .needs-attention.escalated {
+    background: linear-gradient(90deg, #7f1d1d 0%, #991b1b 100%);
+    color: white;
+    border-left-color: #fef2f2;
+    animation: pulse-warn 2s ease-in-out infinite;
+  }
+  @keyframes pulse-warn { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
+
+  /* Concept comparison row */
+  .concept-compare {
+    font-size: 11px;
+    color: #6b7280;
+    padding: 6px 10px;
+    background: #f9fafb;
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+  .concept-compare strong { color: #111827; }
+  .concept-compare .above { color: #16a34a; font-weight: 600; }
+  .concept-compare .below { color: #dc2626; font-weight: 600; }
 
   .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
   .stat-cell { padding: 8px 10px; background: #f9fafb; border-radius: 8px; }
@@ -217,7 +252,7 @@
     color: white;
     border-radius: 14px;
     padding: 14px 18px;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
   }
   .focus-bar-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
@@ -301,7 +336,7 @@
       <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동</li>
       <li><strong>📋 Last Week's Notes</strong> (파란 박스): 지난주 액션 아이템들 → 매니저랑 같이 ✓ 체크 (완료된거)</li>
       <li><strong>📝 This Week's Notes</strong> (노란 박스): 이번주 새 액션 아이템 입력 + Add 버튼</li>
-      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📧 Email Dustin"</strong> 한번에 전송</li>
+      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → .md 다운 + Drive 새 탭 자동 오픈 → 드래그로 업로드</li>
       <li>다음주에 다시 열면 → 이번주 노트가 "Last Week's Notes"로 자동 표시 (사이클)</li>
     </ol>
   </div>
@@ -392,8 +427,8 @@
   <div class="actions-inner">
     <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
     <button class="btn btn-secondary" id="copy-btn">📋 Copy</button>
-    <button class="btn btn-secondary" id="download-btn">⬇ Download .txt</button>
-    <button class="btn btn-success" id="email-btn">📧 Email Dustin</button>
+    <button class="btn btn-secondary" id="download-btn">⬇ Download .md</button>
+    <button class="btn btn-success" id="upload-btn">📤 Upload to Drive</button>
   </div>
 </div>
 
@@ -405,7 +440,7 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal()" style="flex: 0 0 auto;">Close</button>
       <button class="btn btn-primary" onclick="copyFromModal()">📋 Copy</button>
-      <button class="btn btn-success" onclick="emailFromModal()">📧 Email Dustin</button>
+      <button class="btn btn-success" onclick="uploadToDrive()">📤 Upload to Drive</button>
     </div>
   </div>
 </div>
@@ -487,6 +522,7 @@
       if (res.ok) {
         const data = await res.json();
         PREV_NOTES = data.prevNotes || {};
+        window.__consecutiveC = data.consecutiveC || {};
         // Initialize checkedRecap for each store
         Object.keys(PREV_NOTES).forEach(sid => {
           checkedRecap[sid] = {};
@@ -494,9 +530,10 @@
         });
         // Re-render notes for all stores
         STORES.forEach(s => renderRecapNotes(s.id));
+        // Re-run recalc to update needs-attention badges with consecutive C info
+        recalcAll();
       }
     } catch (e) {
-      // notes.json doesn't exist yet — that's OK, first week
       console.log("No previous notes (first week)");
     }
   }
@@ -517,12 +554,32 @@
       if (primeData.primeTotal > 65) weighted -= 0.10;
       else if (primeData.primeTotal > 60) weighted -= 0.05;
     }
-    if (weighted >= 1.05) return "A";
-    if (weighted >= 0.95) return "B";
-    if (weighted >= 0.85) return "C";
-    if (weighted >= 0.75) return "D";
-    return "F";
+    // A/B/C only
+    if (weighted >= 1.00) return "A";
+    if (weighted >= 0.85) return "B";
+    return "C";
   }
+
+  // Compute concept averages for comparison
+  function computeConceptAvgs() {
+    const result = {};
+    const concepts = [...new Set(STORES.map(s => s.concept))];
+    concepts.forEach(c => {
+      const stores = STORES.filter(s => s.concept === c && s.sales);
+      if (!stores.length) return;
+      const totalSales = stores.reduce((a, s) => a + s.sales, 0);
+      const totalOrders = stores.reduce((a, s) => a + (s.orders || 0), 0);
+      const totalGuests = stores.reduce((a, s) => a + (s.guests || 0), 0);
+      result[c] = {
+        avgCheck: totalOrders ? totalSales / totalOrders : 0,
+        avgPerGuest: totalGuests ? totalSales / totalGuests : 0,
+        avgSales: stores.length ? totalSales / stores.length : 0,
+        storeCount: stores.length
+      };
+    });
+    return result;
+  }
+  const CONCEPT_AVGS = computeConceptAvgs();
 
   function getPrimeData(s) {
     const lEl = document.getElementById(`labor-${s.id}`);
@@ -555,7 +612,7 @@
     wrap.dataset.concept = s.concept;
     const newTag = s.isNew ? `<span class="new-tag">🆕 NEW</span>` : "";
     const noPosNote = s.noPosAccess
-      ? `<div style="color: #6b7280; font-size: 11px; padding: 6px 0;">⚠ Clover POS access pending — sales/Prime input manual</div>`
+      ? `<div style="color:#6b7280; font-size:11px; padding:6px 0;">⚠ Clover POS access pending — sales/Prime input manual</div>`
       : "";
     const targetPct = s.sales && s.target ? (s.sales / s.target * 100) : null;
     const targetGap = s.sales && s.target ? (s.sales - s.target) : null;
@@ -570,6 +627,7 @@
         </div>
         <div class="grade-badge grade-NA" id="grade-${s.id}">—</div>
       </div>
+      <div id="needs-attention-${s.id}"></div>
       ${noPosNote}
       <div class="stats-grid">
         <div class="stat-cell">
@@ -639,6 +697,20 @@
           <span class="extras-value">${s.channelDine !== null && s.channelDine !== undefined ? `Dine ${s.channelDine}% · Del ${s.channelDelivery}%` : 'Toast: not avail'}</span>
         </div>
       </div>
+
+      ${(() => {
+        const avgs = CONCEPT_AVGS[s.concept];
+        if (!avgs || avgs.storeCount < 2 || !s.sales || !s.orders) return "";
+        const myCheck = s.sales / s.orders;
+        const diff = myCheck - avgs.avgCheck;
+        const cls = diff >= 0 ? "above" : "below";
+        const sign = diff >= 0 ? "+" : "−";
+        return `<div class="concept-compare">
+          ${s.concept} concept avg: <strong>$${avgs.avgCheck.toFixed(0)}</strong> check ·
+          You: <strong>$${myCheck.toFixed(0)}</strong>
+          <span class="${cls}">(${sign}$${Math.abs(diff).toFixed(0)})</span>
+        </div>`;
+      })()}
 
       <div class="notes-section">
         <div class="notes-recap">
@@ -774,6 +846,21 @@
       gb.className = "grade-badge grade-" + (g === "N/A" ? "NA" : g);
       grades.push(g);
 
+      // Needs Attention badge for grade C
+      const naDiv = document.getElementById(`needs-attention-${s.id}`);
+      if (naDiv) {
+        const consecutiveC = (window.__consecutiveC || {})[s.id] || 0;
+        if (g === "C") {
+          if (consecutiveC >= 2) {
+            naDiv.innerHTML = `<div class="needs-attention escalated">🚨 ${consecutiveC + 1}주 연속 C — GM 개입 필요 (Escalated)</div>`;
+          } else {
+            naDiv.innerHTML = `<div class="needs-attention">⚠️ Needs Attention — 이번주 우선순위 매장</div>`;
+          }
+        } else {
+          naDiv.innerHTML = "";
+        }
+      }
+
       // Action plan — re-render every time data changes
       renderActionPlan(s, pd);
     }
@@ -904,12 +991,28 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     document.execCommand("copy");
     alert("✓ 복사 완료! Dustin한테 슬랙/카톡에 붙여넣어줘.");
   }
-  function emailFromModal() {
-    const msg = document.getElementById("modal-text").value;
-    const date = document.getElementById("meeting-date").value || "this week";
-    const subject = encodeURIComponent(`OMC Weekly Ops — Manager Meeting (${date})`);
-    const body = encodeURIComponent(msg);
-    window.location.href = `mailto:${DUSTIN_EMAIL}?subject=${subject}&body=${body}`;
+  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
+  const DRIVE_FOLDER_ID = "1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
+
+  function uploadToDrive() {
+    const msg = buildMessage();
+    const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
+    const filename = `OMC-meeting-${date}.md`;
+
+    // Step 1: download the .md file to user's computer
+    const blob = new Blob([msg], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Step 2: open Drive folder in new tab so user can drag the file in
+    setTimeout(() => {
+      window.open(DRIVE_FOLDER_URL, "_blank");
+      alert(`✓ ${filename} 다운로드됨!\n\nDrive 폴더가 새 탭에 열렸어:\n1. Downloads 폴더에서 ${filename} 찾기\n2. Drive 탭으로 드래그-드롭\n\n또는 클립보드에 복사한 텍스트를 Drive Doc에 직접 붙여넣어도 됨.`);
+    }, 300);
   }
 
   document.getElementById("copy-btn").onclick = () => {
@@ -928,7 +1031,7 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     URL.revokeObjectURL(url);
     alert("✓ 다운로드 완료. Dustin한테 이메일/슬랙으로 보내줘.");
   };
-  document.getElementById("email-btn").onclick = showModal;
+  document.getElementById("upload-btn").onclick = uploadToDrive;
 
   // === Notes management ===
   function renderRecapNotes(storeId) {
