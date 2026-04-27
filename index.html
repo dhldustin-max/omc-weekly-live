@@ -450,57 +450,57 @@
   const STORES = [
     { id: "ohgane-oakland", name: "Ohgane Oakland", concept: "Ohgane", cuisine: "Korean BBQ",
       location: "Oakland, CA", pos: "Verona", isNew: false,
-      sales: 67616, target: 69369, orders: 491, guests: 1477,
+      sales: 67616, prevSales: 66065, target: 69369, orders: 491, guests: 1477,
       googleRating: 4.4, yelpRating: 3.9,
       channelDine: 92, channelTakeout: 4, channelDelivery: 5 },
     { id: "ohgane-concord", name: "Ohgane Concord", concept: "Ohgane", cuisine: "Korean BBQ",
       location: "Concord, CA", pos: "Toast", isNew: false,
-      sales: 74778, target: 75519, orders: 642, guests: 1830,
+      sales: 74778, prevSales: 71923, target: 75519, orders: 642, guests: 1830,
       googleRating: 4.2, yelpRating: 4.1,
       channelDine: null },
     { id: "ohgane-alameda", name: "Ohgane Alameda", concept: "Ohgane", cuisine: "Korean BBQ",
       location: "Alameda, CA", pos: "Verona", isNew: false,
-      sales: 65043, target: 64833, orders: 583, guests: 1292,
+      sales: 65043, prevSales: 61746, target: 64833, orders: 583, guests: 1292,
       googleRating: 4.2, yelpRating: 3.8,
       channelDine: 94, channelTakeout: 6, channelDelivery: 0 },
     { id: "tangjip-hayward", name: "Tangjip Hayward", concept: "Tangjip", cuisine: "Korean Hot Pot",
       location: "Hayward, CA", pos: "Verona", isNew: false,
-      sales: 44554, target: 47635, orders: 546, guests: 634,
+      sales: 44554, prevSales: 43304, target: 47635, orders: 546, guests: 634,
       googleRating: 4.3, yelpRating: 4.2,
       channelDine: 84, channelTakeout: 2, channelDelivery: 11 },
     { id: "tangjip-concord", name: "Tangjip Concord", concept: "Tangjip", cuisine: "Korean Hot Pot",
       location: "Concord, CA", pos: "Verona", isNew: false,
-      sales: 34123, target: 35573, orders: 458, guests: 961,
+      sales: 34123, prevSales: 32339, target: 35573, orders: 458, guests: 961,
       googleRating: 4.3, yelpRating: 4.3,
       channelDine: 84, channelTakeout: 7, channelDelivery: 6 },
     { id: "tangjip-alameda", name: "Tangjip Alameda", concept: "Tangjip", cuisine: "Korean Hot Pot",
       location: "Alameda, CA", pos: "Verona", isNew: false,
-      sales: 22100, target: 25021, orders: 358, guests: 432,
+      sales: 22100, prevSales: 22747, target: 25021, orders: 358, guests: 432,
       googleRating: 3.9, yelpRating: 4.0,
       channelDine: 87, channelTakeout: 5, channelDelivery: 5 },
     { id: "oh-g-burger-berkeley", name: "Oh G Burger Berkeley", concept: "Oh G Burger", cuisine: "K-Fusion Burger",
       location: "Berkeley, CA", pos: "Toast", isNew: true,
-      sales: 6434, target: 11537, orders: 272, guests: 272,
+      sales: 6434, prevSales: 7691, target: 11537, orders: 272, guests: 272,
       googleRating: 4.4, yelpRating: 4.1,
       channelDine: null },
     { id: "obento-hayward", name: "Obento Hayward", concept: "Obento", cuisine: "Japanese Bento",
       location: "Hayward, CA", pos: "Toast", isNew: true,
-      sales: 6839, target: 9859, orders: 201, guests: 201,
+      sales: 6839, prevSales: 6162, target: 9859, orders: 201, guests: 201,
       googleRating: 4.7, yelpRating: 4.4,
       channelDine: null },
     { id: "hanshin-pocha-oakland", name: "Hanshin Pocha Oakland", concept: "Hanshin Pocha", cuisine: "K-Pocha / Bar",
       location: "Oakland, CA", pos: "Clover", isNew: true,
-      sales: null, target: 20000, orders: null, guests: null,
+      sales: null, prevSales: null, target: 20000, orders: null, guests: null,
       googleRating: 4.3, yelpRating: 4.1,
       noPosAccess: true },
     { id: "spoon-berkeley", name: "Spoon Korean Bistro", concept: "Spoon", cuisine: "Korean Bistro",
       location: "Berkeley, CA", pos: "Verona", isNew: false,
-      sales: 15028, target: 17881, orders: 247, guests: 319,
+      sales: 15028, prevSales: 15549, target: 17881, orders: 247, guests: 319,
       googleRating: 4.4, yelpRating: 4.0,
       channelDine: 51, channelTakeout: 11, channelDelivery: 27 },
     { id: "bowld-albany", name: "Bowl'd Albany", concept: "Bowl'd", cuisine: "Korean Rice Bowl",
       location: "Albany, CA", pos: "Verona", isNew: false,
-      sales: 27194, target: 30026, orders: 480, guests: 511,
+      sales: 27194, prevSales: 25021, target: 30026, orders: 480, guests: 511,
       googleRating: 4.5, yelpRating: 4.1,
       channelDine: 64, channelTakeout: 22, channelDelivery: 0 },
   ];
@@ -633,7 +633,541 @@
         <div class="stat-cell">
           <div class="stat-label">Net Sales</div>
           <div class="stat-value">${fmtMoney(s.sales)}</div>
-          <div class="stat-sub">Tgt ${fmtMoney(s.target)}</div>
+          <div class="stat-sub">${s.prevSales ? 'vs 
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">vs Target</div>
+          <div class="stat-value ${targetGap >= 0 ? 'stat-positive' : 'stat-negative'}">${targetPct !== null ? targetPct.toFixed(0) + '%' : '—'}</div>
+          <div class="stat-sub">${targetGap !== null ? (targetGap >= 0 ? '+' : '') + fmtMoney(targetGap) : '—'}</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Orders</div>
+          <div class="stat-value">${s.orders ? s.orders.toLocaleString() : '—'}</div>
+          <div class="stat-sub">${s.guests ? s.guests.toLocaleString() + ' guests' : '—'}</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Avg Check</div>
+          <div class="stat-value">${s.sales && s.orders ? '$' + (s.sales/s.orders).toFixed(0) : '—'}</div>
+          <div class="stat-sub">per order</div>
+        </div>
+      </div>
+
+      <div class="prime-section" id="prime-section-${s.id}">
+        <div class="prime-header">
+          <div class="prime-label">⚠ Prime Cost — Manager Input</div>
+          <div class="prime-status" id="prime-status-${s.id}" style="color:#9ca3af;">Awaiting input</div>
+        </div>
+        <div class="prime-grid">
+          <div>
+            <label class="prime-input-label">Labor $ (week)</label>
+            <input type="number" class="prime-input" id="labor-${s.id}" placeholder="0" min="0" step="100" inputmode="numeric"
+                   ${s.noPosAccess ? 'disabled' : ''}/>
+          </div>
+          <div>
+            <label class="prime-input-label">Food Cost $ (COGS)</label>
+            <input type="number" class="prime-input" id="food-${s.id}" placeholder="0" min="0" step="100" inputmode="numeric"
+                   ${s.noPosAccess ? 'disabled' : ''}/>
+          </div>
+          <div class="prime-result">
+            <div class="prime-result-value" id="prime-result-${s.id}" style="color:#9ca3af;">—%</div>
+            <div class="prime-result-label">Prime</div>
+          </div>
+        </div>
+        <div class="prime-breakdown" id="prime-breakdown-${s.id}">Labor — % · Food — %</div>
+      </div>
+
+      <div class="action-plan" id="action-${s.id}">
+        <div class="action-plan-title">📝 Action Plan</div>
+        <ul id="action-list-${s.id}">
+          <li class="action-plan-empty">Auto-generates as you fill in data...</li>
+        </ul>
+      </div>
+
+      <div class="extras-row">
+        <div class="extras-cell">
+          <span class="extras-label">⭐ Google</span>
+          <span class="extras-value">${s.googleRating}</span>
+        </div>
+        <div class="extras-cell">
+          <span class="extras-label">⭐ Yelp</span>
+          <span class="extras-value">${s.yelpRating}</span>
+        </div>
+        <div class="extras-cell">
+          <span class="extras-label">Channel</span>
+          <span class="extras-value">${s.channelDine !== null && s.channelDine !== undefined ? `Dine ${s.channelDine}% · Del ${s.channelDelivery}%` : 'Toast: not avail'}</span>
+        </div>
+      </div>
+
+      ${(() => {
+        const avgs = CONCEPT_AVGS[s.concept];
+        if (!avgs || avgs.storeCount < 2 || !s.sales || !s.orders) return "";
+        const myCheck = s.sales / s.orders;
+        const diff = myCheck - avgs.avgCheck;
+        const cls = diff >= 0 ? "above" : "below";
+        const sign = diff >= 0 ? "+" : "−";
+        return `<div class="concept-compare">
+          ${s.concept} concept avg: <strong>$${avgs.avgCheck.toFixed(0)}</strong> check ·
+          You: <strong>$${myCheck.toFixed(0)}</strong>
+          <span class="${cls}">(${sign}$${Math.abs(diff).toFixed(0)})</span>
+        </div>`;
+      })()}
+
+      <div class="notes-section">
+        <div class="notes-recap">
+          <div class="notes-title">📋 Last Week's Notes — Recap (check what got done)</div>
+          <div id="recap-list-${s.id}">
+            <div class="notes-empty">No notes from last week (first week of tracking)</div>
+          </div>
+        </div>
+        <div class="notes-this-week">
+          <div class="notes-title">📝 This Week's Notes (action items from today's meeting)</div>
+          <div id="new-notes-list-${s.id}"></div>
+          <div class="note-input-row">
+            <input type="text" class="note-input" id="note-input-${s.id}" placeholder="e.g., Train staff on banchan refills" data-store-id="${s.id}">
+            <button class="note-add-btn" data-store-id="${s.id}" onclick="addNote('${s.id}')">+ Add</button>
+          </div>
+        </div>
+      </div>
+    `;
+    return wrap;
+  }
+
+  function generateActions(s, primeData) {
+    const actions = [];
+    if (s.noPosAccess) {
+      actions.push({ text: "Get Clover POS access — currently flying blind on sales/Prime", type: "crit" });
+      return actions;
+    }
+    // Sales gap analysis
+    if (s.sales && s.target) {
+      const gap = s.target - s.sales;
+      if (gap > 500) {
+        const ticketAvg = s.sales / s.orders;
+        const targetTicket = s.target / s.orders;  // approximation
+        if (s.orders > 0 && ticketAvg < targetTicket * 0.95) {
+          const ticketGap = targetTicket - ticketAvg;
+          actions.push({ text: `Raise check avg by $${ticketGap.toFixed(0)} (upsell drinks/apps)`, type: "warn" });
+        }
+        if (s.orders) {
+          const orderGap = Math.ceil(gap / ticketAvg);
+          actions.push({ text: `Need +${orderGap} more orders this week (lunch promo or delivery push)`, type: "warn" });
+        }
+        if (actions.filter(a => a.type === "warn").length === 0) {
+          actions.push({ text: `Missing target by $${gap.toLocaleString()} — audit staffing & specials`, type: "warn" });
+        }
+      } else if (s.sales > s.target) {
+        actions.push({ text: `Beat sales target by $${(s.sales - s.target).toLocaleString()}`, type: "win" });
+      }
+    }
+    // Prime cost analysis
+    if (primeData && primeData.filled) {
+      const p = primeData.primeTotal;
+      if (p > 65) {
+        const worst = primeData.laborPct > 32 ? "Labor" : "Food";
+        actions.push({ text: `Prime ${p.toFixed(1)}% over 65% — focus on ${worst} cost reduction`, type: "crit" });
+      } else if (p > 60) {
+        actions.push({ text: `Prime ${p.toFixed(1)}% slightly over 60% target — review weekly schedule`, type: "warn" });
+      } else if (p < 55) {
+        actions.push({ text: `Prime ${p.toFixed(1)}% excellent — under 55% (top quartile)`, type: "win" });
+      }
+    } else if (s.sales) {
+      actions.push({ text: "Enter Labor + Food cost above to get Prime Cost guidance", type: "" });
+    }
+    // Review trend
+    const gd = s.googleDelta || 0;
+    const yd = s.yelpDelta || 0;
+    if (gd < -0.05 || yd < -0.05) {
+      const worst = gd < yd ? "Google" : "Yelp";
+      actions.push({ text: `${worst} rating dropping — respond to recent negatives within 48h`, type: "warn" });
+    } else if (gd > 0.05 || yd > 0.05) {
+      actions.push({ text: "Rating trending up — ask happy guests to leave reviews", type: "win" });
+    }
+    // Channel mix insight (only if we have data)
+    if (s.channelDelivery !== null && s.channelDelivery !== undefined) {
+      if (s.channelDelivery > 25) {
+        actions.push({ text: `Delivery ${s.channelDelivery}% — high commission burn, monitor margin`, type: "warn" });
+      } else if (s.channelDelivery < 5 && s.sales < s.target) {
+        actions.push({ text: `Delivery only ${s.channelDelivery}% — growth opportunity (DoorDash/UberEats)`, type: "" });
+      }
+    }
+    return actions.slice(0, 4);  // max 4 actions per store
+  }
+
+  function renderActionPlan(s, primeData) {
+    const list = document.getElementById(`action-list-${s.id}`);
+    if (!list) return;
+    const actions = generateActions(s, primeData);
+    if (actions.length === 0) {
+      list.innerHTML = '<li class="action-plan-empty">All metrics on track — keep it up!</li>';
+      return;
+    }
+    list.innerHTML = actions.map(a =>
+      `<li${a.type ? ' class="' + a.type + '"' : ''}>${a.text}</li>`
+    ).join("");
+  }
+
+  function recalcAll() {
+    let totalSales = 0, totalTarget = 0;
+    let primeSum = 0, primeCount = 0;
+    let filled = 0;
+    const grades = [];
+    for (const s of STORES) {
+      if (s.sales) { totalSales += s.sales; totalTarget += s.target || 0; }
+      const pd = getPrimeData(s);
+      const card = document.getElementById(`store-${s.id}`);
+      const sect = document.getElementById(`prime-section-${s.id}`);
+      const result = document.getElementById(`prime-result-${s.id}`);
+      const bd = document.getElementById(`prime-breakdown-${s.id}`);
+      const st = document.getElementById(`prime-status-${s.id}`);
+      const gb = document.getElementById(`grade-${s.id}`);
+      card.classList.remove("filled", "over-prime", "danger");
+      sect.classList.remove("filled-good", "filled-warn", "filled-bad");
+      if (pd && pd.filled) {
+        const ps = primeStatus(pd.primeTotal);
+        sect.classList.add(ps.cls);
+        result.textContent = pd.primeTotal.toFixed(1) + "%";
+        result.style.color = ps.color;
+        bd.textContent = `Labor ${pd.laborPct.toFixed(1)}% · Food ${pd.foodPct.toFixed(1)}% · Total ${pd.primeTotal.toFixed(1)}%`;
+        st.textContent = ps.label;
+        st.style.color = ps.color;
+        primeSum += pd.primeTotal; primeCount += 1; filled += 1;
+        if (pd.primeTotal <= 60) card.classList.add("filled");
+        else if (pd.primeTotal <= 65) card.classList.add("over-prime");
+        else card.classList.add("danger");
+      } else {
+        result.textContent = "—%";
+        result.style.color = "#9ca3af";
+        bd.textContent = "Labor — % · Food — %";
+        st.textContent = s.noPosAccess ? "POS access pending" : "Awaiting input";
+        st.style.color = "#9ca3af";
+      }
+      const g = calcGrade(s, pd);
+      gb.textContent = g;
+      gb.className = "grade-badge grade-" + (g === "N/A" ? "NA" : g);
+      grades.push(g);
+
+      // Needs Attention badge for grade C
+      const naDiv = document.getElementById(`needs-attention-${s.id}`);
+      if (naDiv) {
+        const consecutiveC = (window.__consecutiveC || {})[s.id] || 0;
+        if (g === "C") {
+          if (consecutiveC >= 2) {
+            naDiv.innerHTML = `<div class="needs-attention escalated">🚨 ${consecutiveC + 1}주 연속 C — GM 개입 필요 (Escalated)</div>`;
+          } else {
+            naDiv.innerHTML = `<div class="needs-attention">⚠️ Needs Attention — 이번주 우선순위 매장</div>`;
+          }
+        } else {
+          naDiv.innerHTML = "";
+        }
+      }
+
+      // Action plan — re-render every time data changes
+      renderActionPlan(s, pd);
+    }
+    document.getElementById("total-sales").textContent = fmtMoney(totalSales);
+    const tp = totalSales && totalTarget ? (totalSales / totalTarget * 100) : null;
+    document.getElementById("vs-target").textContent = tp ? tp.toFixed(0) + "%" : "—";
+    document.getElementById("vs-target").className = "summary-stat-value " + (tp >= 100 ? "stat-positive" : "stat-negative");
+    document.getElementById("vs-target-sub").textContent = totalTarget ? `Tgt ${fmtMoney(totalTarget)}` : "—";
+    if (primeCount > 0) {
+      const avg = primeSum / primeCount;
+      document.getElementById("avg-prime").textContent = avg.toFixed(1) + "%";
+      document.getElementById("avg-prime").className = "summary-stat-value " + (avg <= 60 ? "stat-positive" : "stat-negative");
+      document.getElementById("avg-prime-sub").textContent = `Across ${primeCount} stores`;
+    } else {
+      document.getElementById("avg-prime").textContent = "—";
+      document.getElementById("avg-prime-sub").textContent = "Awaiting input";
+    }
+    document.getElementById("filled-count").textContent = `${filled}/11`;
+    const order = { "A": 5, "B": 4, "C": 3, "D": 2, "F": 1, "N/A": 0 };
+    const valid = grades.filter(g => g !== "N/A");
+    if (valid.length) {
+      const avg = valid.reduce((a, g) => a + order[g], 0) / valid.length;
+      const overall = avg >= 4.5 ? "A" : avg >= 3.5 ? "B" : avg >= 2.5 ? "C" : avg >= 1.5 ? "D" : "F";
+      const ob = document.getElementById("overall-grade");
+      ob.textContent = overall;
+      ob.className = "grade-badge grade-" + overall;
+    }
+  }
+
+  function buildStores() {
+    const concepts = ["Ohgane", "Tangjip", "Oh G Burger", "Obento", "Hanshin Pocha", "Spoon", "Bowl'd"];
+    const c = document.getElementById("stores");
+    for (const cn of concepts) {
+      const cs = STORES.filter(s => s.concept === cn);
+      if (!cs.length) continue;
+      const sec = document.createElement("div");
+      sec.className = "concept-section";
+      sec.innerHTML = `<div class="concept-header">${cn} · ${cs[0].cuisine} · ${cs.length} location${cs.length > 1 ? 's' : ''}</div>`;
+      cs.forEach(s => sec.appendChild(renderStore(s)));
+      c.appendChild(sec);
+    }
+  }
+
+  function buildMessage() {
+    const lead = document.getElementById("meeting-lead").value.trim() || "(name not entered)";
+    const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
+    const data = [];
+    let filled = 0;
+    let primeSum = 0, primeCount = 0;
+    STORES.forEach(s => {
+      const labor = parseFloat(document.getElementById(`labor-${s.id}`)?.value) || 0;
+      const food = parseFloat(document.getElementById(`food-${s.id}`)?.value) || 0;
+      if (labor || food) {
+        const sales = s.sales || 0;
+        const lp = sales ? (labor / sales * 100).toFixed(1) : "—";
+        const fp = sales ? (food / sales * 100).toFixed(1) : "—";
+        const pt = sales ? (labor / sales * 100 + food / sales * 100).toFixed(1) : "—";
+        data.push({
+          name: s.name, labor, food, laborPct: lp, foodPct: fp, primeTotal: pt
+        });
+        filled += 1;
+        if (sales) { primeSum += parseFloat(pt); primeCount += 1; }
+      }
+    });
+
+    const lines = data.map(d =>
+      `- **${d.name}**: Labor $${d.labor.toLocaleString()} (${d.laborPct}%), Food $${d.food.toLocaleString()} (${d.foodPct}%) → **Prime ${d.primeTotal}%**`
+    ).join("\n");
+
+    const avgPrime = primeCount ? (primeSum / primeCount).toFixed(1) : "—";
+
+    // Build notes section
+    let notesSection = "";
+    let recapSection = "";
+    let hasNotes = false;
+    STORES.forEach(s => {
+      const newNs = newNotes[s.id] || [];
+      if (newNs.length > 0) {
+        hasNotes = true;
+        notesSection += `\n### ${s.name}\n`;
+        newNs.forEach(t => notesSection += `- ${t}\n`);
+      }
+      const prev = PREV_NOTES[s.id] || [];
+      if (prev.length > 0) {
+        const checks = checkedRecap[s.id] || {};
+        const dones = prev.filter(n => checks[n.id]);
+        const opens = prev.filter(n => !checks[n.id]);
+        if (dones.length || opens.length) {
+          recapSection += `\n### ${s.name}\n`;
+          dones.forEach(n => recapSection += `- ✅ ${n.text} (DONE)\n`);
+          opens.forEach(n => recapSection += `- ⬜ ${n.text} (still open)\n`);
+        }
+      }
+    });
+
+    return `# OMC Weekly Ops — Manager Meeting Report
+
+**Meeting led by:** ${lead}
+**Meeting date:** ${date}
+**Week:** Apr 20–26, 2026
+**Stores filled:** ${filled} of 11
+**Portfolio Avg Prime Cost:** ${avgPrime}%
+
+---
+
+## Prime Cost data per store
+
+${lines || "(no data entered)"}
+
+${hasNotes ? `---\n\n## This Week's Notes (action items)\n${notesSection}` : ""}
+${recapSection ? `---\n\n## Last Week's Notes — Recap\n${recapSection}` : ""}
+---
+
+Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime Cost로 mock 교체).
+그리고 notes.json 업데이트해서 GitHub에 push해줘 (이번주 새 노트 + 미완료 노트 carry over).`;
+  }
+
+  function showModal() {
+    const msg = buildMessage();
+    document.getElementById("modal-text").value = msg;
+    document.getElementById("modal").classList.add("show");
+    return msg;
+  }
+  function closeModal() { document.getElementById("modal").classList.remove("show"); }
+  function copyFromModal() {
+    const txt = document.getElementById("modal-text");
+    txt.select();
+    document.execCommand("copy");
+    alert("✓ 복사 완료! Dustin한테 슬랙/카톡에 붙여넣어줘.");
+  }
+  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/u/2/folders/1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
+  const DRIVE_FOLDER_ID = "1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
+
+  function uploadToDrive() {
+    const msg = buildMessage();
+    const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
+    const filename = `OMC-meeting-${date}.md`;
+
+    // Step 1: download the .md file to user's computer
+    const blob = new Blob([msg], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Step 2: open Drive folder in new tab so user can drag the file in
+    setTimeout(() => {
+      window.open(DRIVE_FOLDER_URL, "_blank");
+      alert(`✓ ${filename} 다운로드됨!\n\nDrive 폴더가 새 탭에 열렸어:\n1. Downloads 폴더에서 ${filename} 찾기\n2. Drive 탭으로 드래그-드롭\n\n또는 클립보드에 복사한 텍스트를 Drive Doc에 직접 붙여넣어도 됨.`);
+    }, 300);
+  }
+
+  document.getElementById("copy-btn").onclick = () => {
+    showModal();
+    setTimeout(copyFromModal, 50);
+  };
+  document.getElementById("download-btn").onclick = () => {
+    const msg = buildMessage();
+    const blob = new Blob([msg], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
+    a.href = url;
+    a.download = `OMC-weekly-ops-${date}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    alert("✓ 다운로드 완료. Dustin한테 이메일/슬랙으로 보내줘.");
+  };
+  document.getElementById("upload-btn").onclick = uploadToDrive;
+
+  // === Notes management ===
+  function renderRecapNotes(storeId) {
+    const list = document.getElementById(`recap-list-${storeId}`);
+    if (!list) return;
+    const notes = PREV_NOTES[storeId] || [];
+    if (notes.length === 0) {
+      list.innerHTML = '<div class="notes-empty">No notes from last week (first week of tracking)</div>';
+      return;
+    }
+    list.innerHTML = notes.map(n => {
+      const checked = (checkedRecap[storeId] || {})[n.id];
+      return `<div class="note-item ${checked ? 'done' : ''}">
+        <input type="checkbox" id="recap-${storeId}-${n.id}" ${checked ? 'checked' : ''} onchange="toggleRecap('${storeId}', ${n.id})">
+        <label for="recap-${storeId}-${n.id}">${escapeHtml(n.text)}</label>
+      </div>`;
+    }).join("");
+  }
+
+  function renderNewNotes(storeId) {
+    const list = document.getElementById(`new-notes-list-${storeId}`);
+    if (!list) return;
+    const notes = newNotes[storeId] || [];
+    if (notes.length === 0) {
+      list.innerHTML = "";
+      return;
+    }
+    list.innerHTML = notes.map((t, i) => `
+      <div class="note-new-item">
+        <span class="bullet">•</span>
+        <span class="new-text">${escapeHtml(t)}</span>
+        <button class="remove-btn" onclick="removeNote('${storeId}', ${i})" title="Remove">✕</button>
+      </div>
+    `).join("");
+  }
+
+  function addNote(storeId) {
+    const input = document.getElementById(`note-input-${storeId}`);
+    const text = (input.value || "").trim();
+    if (!text) return;
+    if (!newNotes[storeId]) newNotes[storeId] = [];
+    newNotes[storeId].push(text);
+    input.value = "";
+    renderNewNotes(storeId);
+    input.focus();
+  }
+
+  function removeNote(storeId, idx) {
+    if (!newNotes[storeId]) return;
+    newNotes[storeId].splice(idx, 1);
+    renderNewNotes(storeId);
+  }
+
+  function toggleRecap(storeId, noteId) {
+    if (!checkedRecap[storeId]) checkedRecap[storeId] = {};
+    checkedRecap[storeId][noteId] = !checkedRecap[storeId][noteId];
+    renderRecapNotes(storeId);
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // Allow Enter key in note input to add note
+  document.addEventListener("keypress", (e) => {
+    if (e.target.classList?.contains("note-input") && e.key === "Enter") {
+      const storeId = e.target.dataset.storeId;
+      addNote(storeId);
+      e.preventDefault();
+    }
+  });
+
+  let currentFocus = "all";
+
+  function applyFocus(focusId) {
+    currentFocus = focusId;
+    const isAll = focusId === "all";
+    document.getElementById("summary-card").classList.toggle("hidden", !isAll);
+    document.querySelectorAll(".concept-section").forEach(sec => {
+      const cards = sec.querySelectorAll(".store-card");
+      const visibleCards = [];
+      cards.forEach(card => {
+        const show = isAll || card.dataset.storeId === focusId;
+        card.classList.toggle("hidden", !show);
+        if (show) visibleCards.push(card);
+      });
+      sec.classList.toggle("hidden", visibleCards.length === 0);
+      const header = sec.querySelector(".concept-header");
+      if (header) header.classList.toggle("hidden", !isAll);
+    });
+    if (isAll) {
+      document.getElementById("focus-name").textContent = "All Stores (Director View)";
+      document.getElementById("focus-status").textContent = "11 stores visible · Director mode";
+      document.getElementById("nav-bar").classList.add("hidden");
+    } else {
+      const s = STORES.find(x => x.id === focusId);
+      document.getElementById("focus-name").textContent = s.name;
+      document.getElementById("focus-status").textContent = `1:1 meeting mode · Manager only sees this store · ${s.pos}`;
+      document.getElementById("nav-bar").classList.remove("hidden");
+      const idx = STORES.findIndex(x => x.id === focusId);
+      const prevBtn = document.getElementById("prev-btn");
+      const nextBtn = document.getElementById("next-btn");
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === STORES.length - 1;
+      prevBtn.textContent = idx > 0 ? `← ${STORES[idx - 1].name}` : "← Previous";
+      nextBtn.textContent = idx < STORES.length - 1 ? `${STORES[idx + 1].name} →` : "Next →";
+    }
+  }
+
+  document.getElementById("focus-select").addEventListener("change", e => applyFocus(e.target.value));
+  document.getElementById("prev-btn").addEventListener("click", () => {
+    const idx = STORES.findIndex(x => x.id === currentFocus);
+    if (idx > 0) {
+      document.getElementById("focus-select").value = STORES[idx - 1].id;
+      applyFocus(STORES[idx - 1].id);
+      window.scrollTo(0, 0);
+    }
+  });
+  document.getElementById("next-btn").addEventListener("click", () => {
+    const idx = STORES.findIndex(x => x.id === currentFocus);
+    if (idx < STORES.length - 1) {
+      document.getElementById("focus-select").value = STORES[idx + 1].id;
+      applyFocus(STORES[idx + 1].id);
+      window.scrollTo(0, 0);
+    }
+  });
+
+  buildStores();
+  document.querySelectorAll(".prime-input").forEach(i => i.addEventListener("input", recalcAll));
+  recalcAll();
+  applyFocus("all");
+  loadPrevNotes();  // Load last week's notes from notes.json
+</script>
+</body>
+</html>
+ + Math.round(s.prevSales).toLocaleString() + ' (' + (((s.sales-s.prevSales)/s.prevSales*100).toFixed(1) >= 0 ? '+' : '') + ((s.sales-s.prevSales)/s.prevSales*100).toFixed(1) + '%)' : 'Tgt ' + fmtMoney(s.target)}</div>
         </div>
         <div class="stat-cell">
           <div class="stat-label">vs Target</div>
