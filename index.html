@@ -156,101 +156,208 @@
     color: #991b1b;
   }
 
-  /* 3-tier bar (Floor / Target / Stretch) */
+  /* === Gamified 3-tier bar (Floor / Target / Stretch) === */
   .tier-bar-wrap {
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1.5px solid #e5e7eb;
     background: #f9fafb;
-    border-radius: 10px;
-    padding: 12px 14px 14px;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  /* Band-specific celebrations */
+  .tier-bar-wrap.band-above-stretch {
+    background: linear-gradient(135deg, #fef9c3 0%, #fde68a 60%, #fcd34d 100%);
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245,158,11,0.18), 0 4px 14px rgba(245,158,11,0.18);
+  }
+  .tier-bar-wrap.band-above-target {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-color: #34d399;
+  }
+  .tier-bar-wrap.band-above-floor {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #f59e0b;
+  }
+  .tier-bar-wrap.band-below-floor {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #ef4444;
+  }
+
+  /* Big status banner at top */
+  .tier-status-big {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 12px;
   }
-  .tier-bar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 10px;
+  .tier-status-emoji { font-size: 26px; line-height: 1; flex-shrink: 0; }
+  .tier-status-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .tier-status-label {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6b7280;
-    font-weight: 700;
-    margin-bottom: 8px;
+    line-height: 1.1;
   }
-  .tier-bar-rent { color: #6b7280; font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 11px; }
-  .tier-bar-rent.rent-tight { color: #c2410c; }
-  .tier-bar-rent.rent-stress { color: #b91c1c; }
+  .tier-status-detail { font-size: 11px; color: #4b5563; margin-top: 2px; }
+  .band-above-stretch .tier-status-label { color: #92400e; }
+  .band-above-target .tier-status-label { color: #065f46; }
+  .band-above-floor .tier-status-label { color: #92400e; }
+  .band-below-floor .tier-status-label { color: #991b1b; }
+  .band-above-stretch .tier-status-emoji { animation: trophy-bounce 1.4s ease-in-out infinite; }
+  @keyframes trophy-bounce {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-3px) rotate(3deg); }
+  }
+  .band-below-floor .tier-status-emoji { animation: pulse-warn 1.6s ease-in-out infinite; }
+
+  .tier-rent-pill {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.7);
+    color: #4b5563;
+    flex-shrink: 0;
+  }
+  .tier-rent-pill.rent-tight { background: rgba(249,115,22,0.18); color: #9a3412; }
+  .tier-rent-pill.rent-stress { background: rgba(220,38,38,0.18); color: #991b1b; }
+  .tier-rent-pill.rent-healthy { background: rgba(16,185,129,0.18); color: #065f46; }
+
+  /* Trophy row: 3 medals — gray when locked, vivid when earned */
+  .tier-trophies {
+    display: flex;
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 6px 4px;
+    margin-bottom: 10px;
+    gap: 4px;
+  }
+  .trophy-slot {
+    flex: 1;
+    text-align: center;
+    padding: 4px 2px;
+    border-radius: 7px;
+    transition: background 0.2s;
+  }
+  .trophy-slot.earned { background: rgba(255,255,255,0.95); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .trophy-emoji { font-size: 22px; line-height: 1; display: block; filter: grayscale(0.95); opacity: 0.4; }
+  .trophy-slot.earned .trophy-emoji { filter: none; opacity: 1; animation: trophy-pop 0.5s ease-out; }
+  @keyframes trophy-pop {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .trophy-label {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 2px;
+    color: #9ca3af;
+  }
+  .trophy-slot.earned .trophy-label { color: #111827; }
+  .trophy-amount { display: block; font-size: 10px; color: #6b7280; margin-top: 1px; }
+  .trophy-slot.earned .trophy-amount { color: #4b5563; font-weight: 600; }
+
+  /* Bar track */
   .tier-bar-track {
     position: relative;
-    height: 10px;
-    background: #e5e7eb;
+    height: 12px;
+    background: rgba(229,231,235,0.7);
     border-radius: 999px;
-    margin: 18px 4px 6px;
+    margin: 22px 6px 6px;
   }
   .tier-bar-fill {
     position: absolute;
     top: 0; left: 0;
     height: 100%;
     border-radius: 999px;
-    transition: width 0.2s;
+    transition: width 0.4s ease-out;
   }
-  .tier-bar-fill.below-floor { background: #ef4444; }
-  .tier-bar-fill.below-target { background: #f59e0b; }
-  .tier-bar-fill.above-target { background: #22c55e; }
-  .tier-bar-target-mark {
+  .tier-bar-fill.below-floor { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
+  .tier-bar-fill.above-floor { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+  .tier-bar-fill.above-target { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
+  .tier-bar-fill.above-stretch { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #fde047 100%); }
+
+  .tier-bar-mark {
     position: absolute;
-    top: -4px;
+    top: -3px;
     width: 2px;
     height: 18px;
-    background: #111827;
+    background: rgba(17,24,39,0.5);
     transform: translateX(-1px);
     border-radius: 1px;
   }
+  .tier-bar-mark.mark-floor { background: #b91c1c; }
+  .tier-bar-mark.mark-target { background: #047857; }
+  .tier-bar-mark.mark-stretch { background: #b45309; }
+
   .tier-bar-dot {
     position: absolute;
-    top: -3px;
-    width: 16px;
-    height: 16px;
+    top: -5px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: white;
-    border: 3px solid #111827;
-    transform: translateX(-8px);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    border: 4px solid #111827;
+    transform: translateX(-11px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    z-index: 2;
+    transition: left 0.4s ease-out;
   }
   .tier-bar-dot.below-floor { border-color: #b91c1c; }
-  .tier-bar-dot.below-target { border-color: #b45309; }
-  .tier-bar-dot.above-target { border-color: #15803d; }
+  .tier-bar-dot.above-floor { border-color: #b45309; }
+  .tier-bar-dot.above-target { border-color: #047857; }
+  .tier-bar-dot.above-stretch {
+    border-color: #b45309;
+    box-shadow: 0 0 0 4px rgba(251,191,36,0.4), 0 2px 8px rgba(245,158,11,0.4);
+  }
+
   .tier-bar-labels {
     position: relative;
-    height: 30px;
-    font-size: 10px;
+    height: 28px;
+    font-size: 9px;
     color: #6b7280;
-    margin-top: 2px;
+    margin-top: 4px;
   }
   .tier-bar-labels span {
     position: absolute;
     text-align: center;
     transform: translateX(-50%);
-    line-height: 1.25;
+    line-height: 1.2;
     white-space: nowrap;
-  }
-  .tier-bar-labels strong { display: block; color: #111827; font-size: 11px; }
-  .tier-bar-labels .label-target strong { color: #111827; }
-  .tier-bar-status {
-    margin-top: 8px;
-    font-size: 11px;
-    color: #4b5563;
-  }
-  .tier-bar-status .pill {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 10px;
-    letter-spacing: 0.3px;
+    font-weight: 600;
     text-transform: uppercase;
-    margin-right: 6px;
+    letter-spacing: 0.3px;
   }
-  .tier-bar-status .pill.below-floor { background: #fee2e2; color: #991b1b; }
-  .tier-bar-status .pill.below-target { background: #fef3c7; color: #92400e; }
-  .tier-bar-status .pill.above-target { background: #d1fae5; color: #065f46; }
+  .tier-bar-labels strong { display: block; color: #111827; font-size: 10px; font-weight: 700; }
+
+  /* Sales callout below bar */
+  .tier-sales-callout {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  .tier-sales-callout .sales-amount { font-size: 14px; font-weight: 800; }
+  .tier-sales-callout .sales-pct { color: #6b7280; font-weight: 600; margin-left: 6px; }
+
+  /* No-sales fallback (Hanshin) */
+  .tier-bar-nodata {
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+  }
+  .tier-bar-nodata strong { color: #111827; display: block; margin-bottom: 4px; font-size: 13px; }
 
   /* Concept comparison row */
   .concept-compare {
@@ -565,74 +672,75 @@
 </div>
 
 <script>
-  // === DATA (snapshot from Apr 20-26 scrape; targets updated per rent-ratio analysis 2026-04-28) ===
-  // Floor = rent / 0.10 / 4.33 (10% rent — minimum profitability)
-  // Target = max(rent / 0.08 / 4.33, prior target) (8% rent healthy; never lower achievable bar)
-  // Stretch = rent / 0.06 / 4.33 (6% rent — A-grade aspiration; for cash-cow stores stretch < target)
+  // === DATA (snapshot from Apr 20-26 scrape; tiers re-anchored 2026-04-28) ===
+  // Floor   = rent / 0.10 / 4.33 (10% rent — minimum profitability, must clear)
+  // Target  = rent / 0.09 / 4.33 ( 9% rent — healthy operations target)
+  // Stretch = rent / 0.08 / 4.33 ( 8% rent — high-performance stretch goal)
+  // (Pure rent-based; no historical max() override — 4 game-style bands.)
   const STORES = [
     { id: "ohgane-oakland", name: "Ohgane Oakland", concept: "Ohgane", cuisine: "Korean BBQ",
       location: "Oakland, CA", pos: "Verona", isNew: false,
-      sales: 67616, target: 95266, floor: 76212, stretch: 127021, rent: 33000,
+      sales: 67616, target: 84681, floor: 76212, stretch: 95266, rent: 33000,
       orders: 491, guests: 1477,
       googleRating: 4.4, yelpRating: 3.9,
       channelDine: 92, channelTakeout: 4, channelDelivery: 5 },
     { id: "ohgane-concord", name: "Ohgane Concord", concept: "Ohgane", cuisine: "Korean BBQ",
       location: "Concord, CA", pos: "Toast", isNew: false,
-      sales: 74778, target: 75519, floor: 53118, stretch: 88531, rent: 23000,
+      sales: 74778, target: 59020, floor: 53118, stretch: 66397, rent: 23000,
       orders: 642, guests: 1830,
       googleRating: 4.2, yelpRating: 4.1,
       channelDine: null },
     { id: "ohgane-alameda", name: "Ohgane Alameda", concept: "Ohgane", cuisine: "Korean BBQ",
       location: "Alameda, CA", pos: "Verona", isNew: false,
-      sales: 65043, target: 103927, floor: 83140, stretch: 138569, rent: 36000,
+      sales: 65043, target: 92379, floor: 83141, stretch: 103926, rent: 36000,
       orders: 583, guests: 1292,
       googleRating: 4.2, yelpRating: 3.8,
       channelDine: 94, channelTakeout: 6, channelDelivery: 0 },
     { id: "tangjip-hayward", name: "Tangjip Hayward", concept: "Tangjip", cuisine: "Korean Hot Pot",
       location: "Hayward, CA", pos: "Verona", isNew: false,
-      sales: 44554, target: 47635, floor: 20785, stretch: 34642, rent: 9000,
+      sales: 44554, target: 23095, floor: 20785, stretch: 25982, rent: 9000,
       orders: 546, guests: 634,
       googleRating: 4.3, yelpRating: 4.2,
       channelDine: 84, channelTakeout: 2, channelDelivery: 11 },
     { id: "tangjip-concord", name: "Tangjip Concord", concept: "Tangjip", cuisine: "Korean Hot Pot",
       location: "Concord, CA", pos: "Verona", isNew: false,
-      sales: 34123, target: 35573, floor: 25404, stretch: 42341, rent: 11000,
+      sales: 34123, target: 28227, floor: 25404, stretch: 31755, rent: 11000,
       orders: 458, guests: 961,
       googleRating: 4.3, yelpRating: 4.3,
       channelDine: 84, channelTakeout: 7, channelDelivery: 6 },
     { id: "tangjip-alameda", name: "Tangjip Alameda", concept: "Tangjip", cuisine: "Korean Hot Pot",
       location: "Alameda, CA", pos: "Verona", isNew: false,
-      sales: 22100, target: 46189, floor: 36952, stretch: 61587, rent: 16000,
+      sales: 22100, target: 41057, floor: 36952, stretch: 46189, rent: 16000,
       orders: 358, guests: 432,
       googleRating: 3.9, yelpRating: 4.0,
       channelDine: 87, channelTakeout: 5, channelDelivery: 5 },
     { id: "oh-g-burger-berkeley", name: "Oh G Burger Berkeley", concept: "Oh G Burger", cuisine: "K-Fusion Burger",
       location: "Berkeley, CA", pos: "Toast", isNew: true,
-      sales: 6434, target: 23383, floor: 18706, stretch: 31177, rent: 8100,
+      sales: 6434, target: 20785, floor: 18707, stretch: 23383, rent: 8100,
       orders: 272, guests: 272,
       googleRating: 4.4, yelpRating: 4.1,
       channelDine: null },
     { id: "obento-hayward", name: "Obento Hayward", concept: "Obento", cuisine: "Japanese Bento",
       location: "Hayward, CA", pos: "Toast", isNew: true,
-      sales: 6839, target: 9859, floor: 4619, stretch: 7698, rent: 2000,
+      sales: 6839, target: 5132, floor: 4619, stretch: 5774, rent: 2000,
       orders: 201, guests: 201,
       googleRating: 4.7, yelpRating: 4.4,
       channelDine: null },
     { id: "hanshin-pocha-oakland", name: "Hanshin Pocha Oakland", concept: "Hanshin Pocha", cuisine: "K-Pocha / Bar",
       location: "Oakland, CA", pos: "Clover", isNew: true,
-      sales: null, target: 31755, floor: 25404, stretch: 42341, rent: 11000,
+      sales: null, target: 28227, floor: 25404, stretch: 31755, rent: 11000,
       orders: null, guests: null,
       googleRating: 4.3, yelpRating: 4.1,
       noPosAccess: true },
     { id: "spoon-berkeley", name: "Spoon Korean Bistro", concept: "Spoon", cuisine: "Korean Bistro",
       location: "Berkeley, CA", pos: "Verona", isNew: false,
-      sales: 15028, target: 20208, floor: 16166, stretch: 26944, rent: 7000,
+      sales: 15028, target: 17963, floor: 16166, stretch: 20208, rent: 7000,
       orders: 247, guests: 319,
       googleRating: 4.4, yelpRating: 4.0,
       channelDine: 51, channelTakeout: 11, channelDelivery: 27 },
     { id: "bowld-albany", name: "Bowl'd Albany", concept: "Bowl'd", cuisine: "Korean Rice Bowl",
       location: "Albany, CA", pos: "Verona", isNew: false,
-      sales: 27194, target: 30026, floor: 16166, stretch: 26944, rent: 7000,
+      sales: 27194, target: 17963, floor: 16166, stretch: 20208, rent: 7000,
       orders: 480, guests: 511,
       googleRating: 4.5, yelpRating: 4.1,
       channelDine: 64, channelTakeout: 22, channelDelivery: 0 },
@@ -692,23 +800,60 @@
     if (r >= 10) return { text: `⚠️ Rent tight · ${r.toFixed(1)}% of sales`, severity: "tight" };
     return null;
   }
-  // Compute tier-bar geometry. Handles cash-cow case where stretch < target
-  // (current target already exceeds rent-based stretch — render stretch hidden,
-  // and extend axis past target for visual headroom).
+  // Tier-bar geometry — 4 game-style bands:
+  //   above-stretch (🏆 gold) | above-target (🎯 green) | above-floor (💪 amber) | below-floor (🚨 red)
+  // Axis is dynamic: expands left when sales below floor, expands right when sales beyond stretch,
+  // so the player dot is always visible on the bar.
   function tierGeometry(s) {
-    if (s.sales === null || s.sales === undefined || !s.floor || !s.target) return null;
-    const left = s.floor;
-    const stretchKnown = s.stretch && s.stretch > s.target;
-    const right = stretchKnown ? s.stretch : Math.round(s.target * 1.15);
+    if (s.sales === null || s.sales === undefined || !s.floor || !s.target || !s.stretch) return null;
+    let left = s.floor * 0.85;             // headroom below floor (15% slack)
+    let right = s.stretch * 1.15;          // headroom above stretch
+    if (s.sales < left) left = s.sales * 0.92;
+    if (s.sales > right) right = s.sales * 1.06;
     const span = right - left;
     if (span <= 0) return null;
-    const targetPct = ((s.target - left) / span) * 100;
-    const salesPctRaw = ((s.sales - left) / span) * 100;
-    const salesPct = Math.max(0, Math.min(100, salesPctRaw));
-    let band = "above-target";        // green: at/above target
-    if (s.sales < s.floor) band = "below-floor";   // red: under floor
-    else if (s.sales < s.target) band = "below-target"; // amber: floor..target
-    return { left, right, targetPct, salesPct, salesPctRaw, band, stretchKnown };
+    const pct = (v) => ((v - left) / span) * 100;
+    let band = "above-stretch";
+    if (s.sales < s.floor) band = "below-floor";
+    else if (s.sales < s.target) band = "above-floor";   // floor cleared, chasing target
+    else if (s.sales < s.stretch) band = "above-target"; // target cleared, chasing stretch
+    return {
+      floorPct: pct(s.floor),
+      targetPct: pct(s.target),
+      stretchPct: pct(s.stretch),
+      salesPct: Math.max(0, Math.min(100, pct(s.sales))),
+      band,
+      cleared: {
+        floor: s.sales >= s.floor,
+        target: s.sales >= s.target,
+        stretch: s.sales >= s.stretch,
+      },
+      gap: {
+        toFloor: Math.max(0, s.floor - s.sales),
+        toTarget: Math.max(0, s.target - s.sales),
+        toStretch: Math.max(0, s.stretch - s.sales),
+        beyondStretch: Math.max(0, s.sales - s.stretch),
+      },
+    };
+  }
+  function tierStatusInfo(geo) {
+    if (!geo) return null;
+    if (geo.band === "above-stretch") return {
+      emoji: "🏆", label: "BEYOND STRETCH",
+      detail: `+${fmtMoney(geo.gap.beyondStretch)} past Stretch — top tier!`,
+    };
+    if (geo.band === "above-target") return {
+      emoji: "🎯", label: "STRETCH ZONE",
+      detail: `${fmtMoney(geo.gap.toStretch)} to Stretch 🥇`,
+    };
+    if (geo.band === "above-floor") return {
+      emoji: "💪", label: "TARGET ZONE",
+      detail: `${fmtMoney(geo.gap.toTarget)} to Target 🥈`,
+    };
+    return {
+      emoji: "🚨", label: "BELOW FLOOR",
+      detail: `Need +${fmtMoney(geo.gap.toFloor)} to clear Floor 🥉`,
+    };
   }
 
   function calcGrade(s, primeData) {
@@ -782,59 +927,80 @@
     const targetPct = s.sales && s.target ? (s.sales / s.target * 100) : null;
     const targetGap = s.sales && s.target ? (s.sales - s.target) : null;
 
-    // Rent stress badge (static — depends on rent + sales which don't change live)
+    // Rent-stress chip (small inline — main signal lives in the gamified tier bar below)
     const rentBadge = rentStressLabel(s);
     const rentStressHtml = rentBadge
       ? `<div class="rent-stress severity-${rentBadge.severity}">${rentBadge.text}</div>`
       : "";
 
-    // 3-tier bar (Floor / Target / Stretch)
+    // Gamified 3-tier bar
     const geo = tierGeometry(s);
     const rRatio = rentRatio(s);
-    const rentTone = rRatio === null ? "" : (rRatio >= 12 ? "rent-stress" : rRatio >= 10 ? "rent-tight" : "");
-    const rentInfo = rRatio !== null
-      ? `<span class="tier-bar-rent ${rentTone}">Rent ${rRatio.toFixed(1)}% · Goal ≤8%</span>`
-      : (s.rent ? `<span class="tier-bar-rent">Rent $${s.rent.toLocaleString()}/mo</span>` : "");
+    let rentPillTone = "rent-healthy";
+    if (rRatio !== null) {
+      if (rRatio >= 12) rentPillTone = "rent-stress";
+      else if (rRatio >= 10) rentPillTone = "rent-tight";
+    }
+    const rentPillHtml = rRatio !== null
+      ? `<span class="tier-rent-pill ${rentPillTone}">Rent ${rRatio.toFixed(1)}%</span>`
+      : (s.rent ? `<span class="tier-rent-pill">Rent $${s.rent.toLocaleString()}/mo</span>` : "");
+
     let tierBarHtml = "";
     if (geo) {
-      const statusLabel = geo.band === "above-target" ? "ON TARGET"
-                       : geo.band === "below-target" ? "BELOW TARGET"
-                       : "BELOW FLOOR";
-      const targetGapTxt = targetGap !== null
-        ? `<span style="margin-left:6px;">${fmtMoney(s.sales)} · ${targetPct.toFixed(0)}% of target ${targetGap >= 0 ? '(+' : '('}${fmtMoney(targetGap)})</span>`
-        : "";
+      const status = tierStatusInfo(geo);
+      const trophyHtml = (cleared, emoji, label, amount) => `
+        <div class="trophy-slot ${cleared ? "earned" : "locked"}">
+          <span class="trophy-emoji">${emoji}</span>
+          <span class="trophy-label">${label}</span>
+          <span class="trophy-amount">${amount}</span>
+        </div>`;
       tierBarHtml = `
-        <div class="tier-bar-wrap">
-          <div class="tier-bar-header">
-            <span>Performance vs Tiers</span>
-            ${rentInfo}
+        <div class="tier-bar-wrap band-${geo.band}">
+          <div class="tier-status-big">
+            <span class="tier-status-emoji">${status.emoji}</span>
+            <span class="tier-status-text">
+              <span class="tier-status-label">${status.label}</span>
+              <span class="tier-status-detail">${status.detail}</span>
+            </span>
+            ${rentPillHtml}
+          </div>
+          <div class="tier-trophies">
+            ${trophyHtml(geo.cleared.floor,   "🥉", "Floor",   fmtMoney(s.floor))}
+            ${trophyHtml(geo.cleared.target,  "🥈", "Target",  fmtMoney(s.target))}
+            ${trophyHtml(geo.cleared.stretch, "🥇", "Stretch", fmtMoney(s.stretch))}
           </div>
           <div class="tier-bar-track">
             <div class="tier-bar-fill ${geo.band}" style="width:${geo.salesPct}%"></div>
-            <div class="tier-bar-target-mark" style="left:${geo.targetPct}%"></div>
+            <div class="tier-bar-mark mark-floor" style="left:${geo.floorPct}%"></div>
+            <div class="tier-bar-mark mark-target" style="left:${geo.targetPct}%"></div>
+            <div class="tier-bar-mark mark-stretch" style="left:${geo.stretchPct}%"></div>
             <div class="tier-bar-dot ${geo.band}" style="left:${geo.salesPct}%"></div>
           </div>
           <div class="tier-bar-labels">
-            <span style="left:0%"><strong>${fmtMoney(s.floor)}</strong>Floor</span>
-            <span style="left:${geo.targetPct}%" class="label-target"><strong>${fmtMoney(s.target)}</strong>Target</span>
-            ${geo.stretchKnown
-              ? `<span style="left:100%"><strong>${fmtMoney(s.stretch)}</strong>Stretch</span>`
-              : `<span style="left:100%; color:#9ca3af;"><strong style="color:#9ca3af;">—</strong>Stretch n/a</span>`}
+            <span style="left:${geo.floorPct}%"><strong>${fmtMoney(s.floor)}</strong>Floor</span>
+            <span style="left:${geo.targetPct}%"><strong>${fmtMoney(s.target)}</strong>Target</span>
+            <span style="left:${geo.stretchPct}%"><strong>${fmtMoney(s.stretch)}</strong>Stretch</span>
           </div>
-          <div class="tier-bar-status">
-            <span class="pill ${geo.band}">${statusLabel}</span>${targetGapTxt}
+          <div class="tier-sales-callout">
+            <span class="sales-amount">${fmtMoney(s.sales)}</span>
+            <span class="sales-pct">· ${(s.sales / s.target * 100).toFixed(0)}% of Target</span>
           </div>
         </div>`;
     } else if (s.floor && s.target) {
-      // No sales data yet (e.g., Hanshin Pocha) — show targets only
+      // No sales data yet (e.g., Hanshin Pocha) — show tier targets only
       tierBarHtml = `
         <div class="tier-bar-wrap">
-          <div class="tier-bar-header">
-            <span>Performance vs Tiers</span>
-            ${rentInfo}
+          <div class="tier-status-big">
+            <span class="tier-status-emoji">📊</span>
+            <span class="tier-status-text">
+              <span class="tier-status-label" style="color:#6b7280;">Awaiting Sales Data</span>
+              <span class="tier-status-detail">POS access pending — pull weekly sales manually</span>
+            </span>
+            ${rentPillHtml}
           </div>
-          <div class="tier-bar-status" style="color:#6b7280; font-size:12px;">
-            No sales data — Floor ${fmtMoney(s.floor)} · Target ${fmtMoney(s.target)}${s.stretch ? ` · Stretch ${fmtMoney(s.stretch)}` : ""}
+          <div class="tier-bar-nodata">
+            <strong>Tier targets (rent-anchored)</strong>
+            🥉 Floor ${fmtMoney(s.floor)} · 🥈 Target ${fmtMoney(s.target)} · 🥇 Stretch ${fmtMoney(s.stretch)}
           </div>
         </div>`;
     }
