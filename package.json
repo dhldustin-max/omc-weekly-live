@@ -1,0 +1,14 @@
+{
+  "name": "omc-weekly-live-scraper",
+  "version": "0.1.0",
+  "description": "Side tooling for OMC weekly ops — Clover/etc scrapers that populate index.html STORES data. Not part of the deployed web app.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape:hanshin": "node scripts/scrape-hanshin.js",
+    "login:clover": "node scripts/scrape-hanshin.js --login"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}
