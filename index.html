@@ -697,8 +697,8 @@
       <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동</li>
       <li><strong>📋 Last Week's Notes</strong> (파란 박스): 지난주 액션 아이템들 → 매니저랑 같이 ✓ 체크 (완료된거)</li>
       <li><strong>📝 This Week's Notes</strong> (노란 박스): 이번주 새 액션 아이템 입력 + Add 버튼</li>
-      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → ① Drive 새 탭 자동 오픈 ② state JSON 자동 다운 ③ 인쇄창 → <strong>"PDF로 저장"</strong> → Drive에 PDF + state JSON 두 파일 다 드래그-드롭 (화면 그대로 PDF + 다음주 recap용 노트 데이터)</li>
-      <li>다음주에 같은 브라우저로 열면 → 이번주 노트/Labor/Food가 "지난주" 자리에 자동으로 채워짐 (브라우저 localStorage 자동 저장)</li>
+      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → ① Drive 탭 자동 오픈 ② <strong>state.json은 자동으로 Drive memory 폴더에 저장</strong> (Apps Script 자동) ③ 인쇄창 → <strong>"PDF로 저장"</strong> → PDF만 Drive로 드래그하면 끝</li>
+      <li>다음주에 같은 브라우저로 열면 → 이번주 노트/Labor/Food가 "지난주" 자리에 자동으로 채워짐 (브라우저 localStorage + Drive memory 폴더 둘 다 백업됨)</li>
       <li>다음주에 다시 열면 → 이번주 노트가 "Last Week's Notes"로 자동 표시 (사이클)</li>
     </ol>
   </div>
@@ -1626,51 +1626,82 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   }
   const DRIVE_FOLDER_URL = "https://drive.google.com/drive/u/2/folders/1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
   const DRIVE_FOLDER_ID = "1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
+  // Google Apps Script web app endpoint that writes state.json to /memory/.
+  // POST { filename, content } as text/plain (avoids CORS preflight).
+  // Source: see "OMC State Saver" Apps Script project in Dustin's Drive.
+  const APPS_SCRIPT_STATE_URL = "https://script.google.com/macros/s/AKfycbwDPZzok07FHqLEft_ysmwqKe_ZgE1DyjbqAO6ygAuSEWStlZrs5s2_mxpDPzwI-q7fWA/exec";
 
-  function uploadToDrive() {
+  async function uploadToDrive() {
     const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
     const pdfName = `OMC-meeting-${date}`;
     const stateName = `OMC-meeting-${date}-state.json`;
 
-    // [1] Open Drive in a new tab FIRST — this must happen synchronously
-    //     inside the user click, otherwise popup blockers stop it (that was
-    //     the bug where Drive didn't open last time).
+    // [1] Open Drive in a new tab FIRST — must happen synchronously inside
+    //     the user click, otherwise popup blockers silently kill it.
     const driveTab = window.open(DRIVE_FOLDER_URL, "_blank");
 
-    // [2] Build a snapshot of this week's notes + prime data. Save it to
-    //     localStorage so the same browser remembers next week, AND auto-
-    //     download it as a JSON the user drops into Drive (durable copy).
+    // [2] Build snapshot, save to localStorage (same-browser recall next week).
     const snap = buildSnapshot();
+    const snapJson = JSON.stringify(snap, null, 2);
     saveSnapshot(snap);
-    const blob = new Blob([JSON.stringify(snap, null, 2)], { type: "application/json" });
-    const stateUrl = URL.createObjectURL(blob);
+
+    // [3] Auto-download the JSON locally as a fallback (so we still have a
+    //     copy if the Apps Script upload fails).
+    const blob = new Blob([snapJson], { type: "application/json" });
+    const localUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = stateUrl;
+    a.href = localUrl;
     a.download = stateName;
     a.click();
-    setTimeout(() => URL.revokeObjectURL(stateUrl), 1500);
+    setTimeout(() => URL.revokeObjectURL(localUrl), 1500);
 
-    // [3] Trigger the browser print dialog. Title is set so the suggested
-    //     PDF filename matches the meeting. window.print() is synchronous —
-    //     it returns when the dialog is dismissed (saved or cancelled).
+    // [4] Fire the auto-upload to the Apps Script endpoint.
+    //     text/plain content-type avoids the CORS preflight that POST+JSON
+    //     would trigger; Apps Script reads the body as a string anyway.
+    //     Don't await yet — let it run in parallel with window.print().
+    const uploadPromise = (async () => {
+      try {
+        const res = await fetch(APPS_SCRIPT_STATE_URL, {
+          method: "POST",
+          body: JSON.stringify({ filename: stateName, content: snapJson }),
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          redirect: "follow"
+        });
+        if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+        try { return await res.json(); }
+        catch { return { ok: true, note: "uploaded (response unreadable)" }; }
+      } catch (e) {
+        return { ok: false, error: (e && e.message) || String(e) };
+      }
+    })();
+
+    // [5] Trigger browser print dialog → user picks "Save as PDF".
     const originalTitle = document.title;
     document.title = pdfName;
     window.print();
     document.title = originalTitle;
 
-    // [4] Confirmation alert (after print dialog closes)
+    // [6] Wait for the upload result (likely already settled by now since
+    //     window.print() blocked for several seconds), then surface status.
+    let upload;
+    try { upload = await uploadPromise; }
+    catch (e) { upload = { ok: false, error: e.message }; }
+
     setTimeout(() => {
       const popupBlocked = !driveTab || driveTab.closed;
+      const stateLine = upload.ok
+        ? `  ✓ state.json은 Drive memory 폴더에 자동 저장됨 (수동 드래그 X)`
+        : `  ⚠️ state.json 자동 업로드 실패 (${upload.error}) — Downloads에 받아둔 파일을 직접 Drive로 드래그해줘`;
       alert(
-        `📤 두 파일 저장됨:\n` +
-        `  1. PDF — 인쇄창에서 "PDF로 저장" 누르기 (이름 추천: ${pdfName}.pdf)\n` +
-        `  2. ${stateName} (다음주 recap용 — 자동 다운로드됨)\n\n` +
+        `📤 저장 완료:\n` +
+        `  1. PDF — 인쇄창에서 "PDF로 저장" 누른 거 Drive 탭으로 드래그\n` +
+        `${stateLine}\n\n` +
         (popupBlocked
-          ? `⚠️ Drive 탭이 팝업 차단됐어 — 주소창 끝 자물쇠 아이콘에서 "팝업 허용" 누르고 다시 시도하거나, 직접 ${DRIVE_FOLDER_URL} 열어줘.\n\n`
-          : `Drive 탭이 새로 열렸어 — Downloads에서 두 파일 다 드래그해서 업로드.\n\n`) +
-        `(브라우저에도 자동 저장됐으니까 다음주 같은 노트북으로 열면 "지난주" 노트랑 Labor/Food가 자동으로 채워짐.)`
+          ? `⚠️ Drive 탭이 팝업 차단됐어 — 주소창 끝 자물쇠 → "팝업 허용" 또는 직접 ${DRIVE_FOLDER_URL} 열어줘.`
+          : `Drive 탭이 새로 열렸어 — PDF만 드래그하면 끝.`) +
+        `\n\n(브라우저에도 자동 저장됐으니까 같은 노트북으로 다음주 열면 지난주 노트/Labor/Food 자동으로 보임.)`
       );
-    }, 250);
+    }, 200);
   }
 
   document.getElementById("copy-btn").onclick = () => {
