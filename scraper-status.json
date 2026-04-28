@@ -1,0 +1,17 @@
+{
+  "_comment": "Auto-updated by scripts/weekly-update.js each Monday. The live web app reads this file and shows a banner when stale or failed. Don't hand-edit unless recovering.",
+  "lastRunAt": "2026-04-28T16:00:00-07:00",
+  "lastRunStatus": "ok",
+  "lastRunScope": "hanshin",
+  "lastRunWeekStartISO": "2026-04-20",
+  "lastRunWeekEndISO": "2026-04-26",
+  "lastError": null,
+  "consecutiveFailures": 0,
+  "lastSuccess": {
+    "ranAt": "2026-04-28T16:00:00-07:00",
+    "weekStartISO": "2026-04-20",
+    "weekEndISO": "2026-04-26",
+    "netSales": 24557,
+    "orders": 287
+  }
+}

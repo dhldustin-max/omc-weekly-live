@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  OMC weekly Hanshin auto-scrape — launchd job.
+
+  Runs every Monday at 7:30 AM. If the Mac was asleep at the scheduled
+  time, launchd runs the job as soon as it wakes up (catch-up). The
+  weekly-update.js script self-debounces: if it already succeeded for the
+  current week's data, subsequent runs are no-ops.
+
+  Install:    bash scripts/install-launchd.sh
+  Uninstall:  bash scripts/install-launchd.sh --uninstall
+  Manual run: launchctl start com.omc.weekly-update
+
+  Logs:  ~/Library/Logs/omc-weekly-update.log
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.omc.weekly-update</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/node</string>
+        <string>__REPO_ROOT__/scripts/weekly-update.js</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>__REPO_ROOT__</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+        <key>HOME</key>
+        <string>__HOME__</string>
+    </dict>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>1</integer>
+        <key>Hour</key>
+        <integer>7</integer>
+        <key>Minute</key>
+        <integer>30</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>__HOME__/Library/Logs/omc-weekly-update.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/Library/Logs/omc-weekly-update.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

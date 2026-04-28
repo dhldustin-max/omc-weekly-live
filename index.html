@@ -133,6 +133,26 @@
   }
   @keyframes pulse-warn { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 
+  /* Auto-scraper status banner (shows above help banner when stale/failed) */
+  .scraper-banner {
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .scraper-banner.hidden { display: none !important; }
+  .scraper-banner.ok    { background: #ecfdf5; color: #065f46; border-left: 4px solid #10b981; }
+  .scraper-banner.stale { background: #fffbeb; color: #92400e; border-left: 4px solid #f59e0b; }
+  .scraper-banner.error { background: #fef2f2; color: #991b1b; border-left: 4px solid #dc2626; }
+  .scraper-banner .scraper-banner-emoji { font-size: 18px; flex-shrink: 0; line-height: 1; }
+  .scraper-banner .scraper-banner-body { flex: 1; }
+  .scraper-banner .scraper-banner-detail { font-weight: 500; font-size: 11px; margin-top: 2px; opacity: 0.8; }
+
   /* Rent stress badge (sits next to needs-attention) */
   .rent-stress {
     border-radius: 6px;
@@ -688,6 +708,10 @@
 </head>
 <body>
 <div class="container">
+
+  <!-- Auto-scraper health banner. Populated by checkScraperStatus() at load.
+       Stays hidden when everything is fresh + green. -->
+  <div id="scraper-banner" class="scraper-banner hidden"></div>
 
   <div class="help-banner">
     <strong>📋 어떻게 사용해?</strong>
@@ -1900,6 +1924,72 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   recalcAll();
   applyFocus("all");
   loadPrevNotes();  // Load last week's notes from notes.json
+  checkScraperStatus();  // Show banner if Hanshin auto-scraper is stale or failed
+
+  // Reads scraper-status.json (committed by scripts/weekly-update.js each
+  // Monday) and shows a banner if the auto-scrape failed, missed a week,
+  // or hasn't run in too long. Stays hidden when everything is fresh.
+  async function checkScraperStatus() {
+    const banner = document.getElementById("scraper-banner");
+    if (!banner) return;
+    let st;
+    try {
+      const res = await fetch("scraper-status.json", { cache: "no-store" });
+      if (!res.ok) return;
+      st = await res.json();
+    } catch (e) { return; }
+
+    const lastRun = st.lastRunAt ? new Date(st.lastRunAt) : null;
+    const hoursSinceRun = lastRun ? (Date.now() - lastRun.getTime()) / 36e5 : Infinity;
+    const expectedWeekStart = (() => {
+      // Last full Mon-Sun = Monday before today (or today if Monday)
+      const now = new Date();
+      const day = now.getDay(); // 0=Sun..6=Sat
+      const daysSinceMon = (day + 6) % 7;
+      const thisMon = new Date(now);
+      thisMon.setHours(0, 0, 0, 0);
+      thisMon.setDate(thisMon.getDate() - daysSinceMon);
+      const lastMon = new Date(thisMon);
+      lastMon.setDate(thisMon.getDate() - 7);
+      return lastMon.toISOString().slice(0, 10);
+    })();
+
+    const successWeek = st.lastSuccess?.weekStartISO;
+    const isStale = successWeek !== expectedWeekStart;
+
+    let cls = "ok", emoji = "✓", msg = "", detail = "";
+    if (st.lastRunStatus === "error") {
+      cls = "error"; emoji = "🚨";
+      msg = `한신포차 자동 업데이트 실패 — 수동 확인 필요`;
+      detail = `최근 에러: ${st.lastError || "unknown"} · 마지막 시도: ${lastRun ? lastRun.toLocaleString() : "—"} · ` +
+               `복구: 터미널에서 \`omc → node scripts/scrape-hanshin.js\` 돌려서 재로그인`;
+    } else if (isStale && st.consecutiveFailures > 0) {
+      cls = "error"; emoji = "🚨";
+      msg = `한신포차 데이터가 ${st.consecutiveFailures}주 연속 안 들어옴`;
+      detail = `마지막 성공: ${successWeek || "없음"} · 기대된 주: ${expectedWeekStart}`;
+    } else if (isStale) {
+      cls = "stale"; emoji = "⚠️";
+      msg = `한신포차 이번주 데이터 아직 안 들어옴`;
+      detail = `자동 스크래퍼가 곧 돌 거임. 마지막 성공: ${successWeek || "없음"} · 기대된 주: ${expectedWeekStart}`;
+    } else if (hoursSinceRun > 24 * 7 + 12) {
+      cls = "stale"; emoji = "⚠️";
+      msg = `자동 스크래퍼가 7일+ 안 돌았음 — Mac이 잠자기였거나 launchd 문제`;
+      detail = `마지막 실행: ${lastRun ? lastRun.toLocaleString() : "없음"}`;
+    } else {
+      // All good — show subtle confirmation badge for the first 24h after run
+      if (hoursSinceRun > 24) return; // hide after a day
+      cls = "ok"; emoji = "✓";
+      msg = `한신포차 자동 업데이트 OK — ${st.lastSuccess.netSales.toLocaleString()}달러 / ${st.lastSuccess.orders} orders (week ${successWeek})`;
+      detail = `마지막 실행: ${lastRun.toLocaleString()}`;
+    }
+
+    banner.className = `scraper-banner ${cls}`;
+    banner.innerHTML =
+      `<span class="scraper-banner-emoji">${emoji}</span>` +
+      `<span class="scraper-banner-body">${msg}` +
+      (detail ? `<div class="scraper-banner-detail">${detail}</div>` : ``) +
+      `</span>`;
+  }
 </script>
 </body>
 </html>
