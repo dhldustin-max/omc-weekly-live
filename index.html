@@ -565,53 +565,95 @@
     .concept-header { display: none !important; }
     .concept-section { margin: 0 !important; padding: 0 !important; }
 
-    /* === ONE STORE PER PAGE — fills the page, no awkward whitespace === */
+    /* === ONE STORE PER PAGE — guaranteed fit on US Letter === */
+    /* Letter usable area = 11" - 0.8" margins = 10.2". We aim for ~9.6"
+       max content height with safety buffer so every card fits. */
     .store-card {
       page-break-before: always;          /* each store starts a new page */
       page-break-inside: avoid;
       break-inside: avoid;
-      min-height: 10in;                   /* ~ printable area of letter page */
+      min-height: 9.6in;                  /* uniform page fill */
+      max-height: 10.1in;                 /* hard cap — never overflow */
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       margin: 0 !important;
-      padding: 18px !important;
+      padding: 14px !important;
       border: none !important;
       border-radius: 0 !important;
       box-shadow: none !important;
+      overflow: hidden;                   /* belt + suspenders on the cap */
     }
-    /* Notes section pushed to bottom of page; whitespace (if any) absorbed
-       between action-plan and notes — looks intentional, not orphaned. */
+    /* Notes section pushed to bottom — leftover whitespace sits between
+       action-plan and notes (looks intentional, not orphaned). */
     .store-card .notes-section { margin-top: auto !important; }
 
-    /* Slightly bump the visual hierarchy now that we have a full page each */
-    .store-name { font-size: 18px; }
-    .store-loc { font-size: 11px; }
-    .grade-badge { width: 38px; height: 38px; font-size: 16px; }
+    /* Trim signals already covered by the gamified tier bar (rent stress,
+       below-floor) to save vertical space — the tier bar shows them. */
+    .store-card .rent-stress,
+    .store-card .concept-compare { display: none !important; }
 
-    /* Section spacing — comfortable, not cramped */
-    .stats-grid { gap: 8px; margin-bottom: 12px; }
-    .stat-cell { padding: 8px 10px; }
-    .stat-value { font-size: 16px; }
-    .stat-label { font-size: 9px; }
+    /* Visual hierarchy — readable but compact */
+    .store-name { font-size: 16px; }
+    .store-loc { font-size: 10px; }
+    .grade-badge { width: 32px; height: 32px; font-size: 14px; }
+    .needs-attention { font-size: 10px; padding: 4px 8px; margin: 4px 0; }
 
-    .tier-bar-wrap { padding: 14px; margin-bottom: 12px; }
-    .tier-status-emoji { font-size: 26px; }
-    .tier-status-label { font-size: 14px; }
-    .trophy-emoji { font-size: 22px; }
-    .tier-bar-track { height: 12px; margin: 22px 6px 6px; }
-    .tier-bar-dot { width: 22px; height: 22px; top: -5px; transform: translateX(-11px); border-width: 4px; }
+    /* Stats grid */
+    .stats-grid { gap: 6px; margin-bottom: 8px; }
+    .stat-cell { padding: 6px 8px; }
+    .stat-value { font-size: 14px; }
+    .stat-label { font-size: 8px; }
+    .stat-sub { font-size: 9px; }
 
-    .prime-section { padding: 12px; margin-bottom: 10px; }
-    .action-plan { padding: 10px 12px; margin-bottom: 10px; }
-    .action-plan li { font-size: 11px; }
-    .extras-row { padding-top: 8px; margin-bottom: 4px; }
-    .concept-compare { margin-top: 6px; margin-bottom: 4px; font-size: 10px; }
+    /* Tier bar — keep highlight prominent but trim gaps */
+    .tier-bar-wrap { padding: 10px 12px; margin-bottom: 8px; }
+    .tier-status-big { gap: 8px; margin-bottom: 8px; }
+    .tier-status-emoji { font-size: 22px; }
+    .tier-status-label { font-size: 12px; }
+    .tier-status-detail { font-size: 10px; margin-top: 1px; }
+    .tier-rent-pill { font-size: 9px; padding: 2px 7px; }
+    .tier-trophies { padding: 4px 3px; margin-bottom: 7px; gap: 3px; }
+    .trophy-slot { padding: 3px 2px; }
+    .trophy-emoji { font-size: 18px; }
+    .trophy-label { font-size: 8px; margin-top: 1px; }
+    .trophy-amount { font-size: 9px; }
+    .tier-bar-track { height: 9px; margin: 18px 5px 4px; }
+    .tier-bar-dot { width: 16px; height: 16px; top: -4px; transform: translateX(-8px); border-width: 3px; }
+    .tier-bar-mark { height: 14px; top: -3px; }
+    .tier-bar-labels { height: 22px; font-size: 8px; margin-top: 3px; }
+    .tier-bar-labels strong { font-size: 9px; }
+    .tier-sales-callout { font-size: 11px; margin-top: 4px; }
+    .tier-sales-callout .sales-amount { font-size: 13px; }
 
-    .notes-section { padding-top: 10px; }
-    .notes-recap, .notes-this-week { padding: 8px 12px; margin-bottom: 6px; }
+    /* Prime + Action plan compact */
+    .prime-section { padding: 8px 10px; margin-bottom: 7px; }
+    .prime-header { margin-bottom: 6px; }
+    .prime-label { font-size: 10px; }
+    .prime-status { font-size: 9px; padding: 1px 6px; }
+    .prime-input { padding: 5px 7px; font-size: 12px; }
+    .prime-input-label { font-size: 9px; margin-bottom: 2px; }
+    .prime-result-value { font-size: 18px; }
+    .prime-result-label { font-size: 8px; }
+    .prime-breakdown { font-size: 9px; margin-top: 4px; }
+
+    .action-plan { padding: 7px 10px; margin-bottom: 7px; }
+    .action-plan-title { font-size: 10px; margin-bottom: 4px; }
+    .action-plan li { font-size: 10px; padding: 2px 0 2px 14px; line-height: 1.35; }
+
+    /* Extras row */
+    .extras-row { padding-top: 6px; gap: 6px; }
+    .extras-label { font-size: 8px; }
+    .extras-value { font-size: 10px; }
+
+    /* Notes — bottom-anchored */
+    .notes-section { padding-top: 8px; margin-top: auto; }
+    .notes-recap, .notes-this-week { padding: 6px 9px; margin-bottom: 4px; }
     .notes-this-week:last-child { margin-bottom: 0; }
-    .note-item { font-size: 11px; }
+    .notes-title { font-size: 9px; margin-bottom: 3px; }
+    .note-item { font-size: 10px; padding: 2px 0; gap: 6px; }
+    .note-item input[type="checkbox"] { width: 11px; height: 11px; }
+    .notes-empty { font-size: 9px; padding: 2px 0; }
 
     /* Tier bar visual richness must survive into PDF */
     .tier-bar-wrap, .tier-status-emoji, .tier-bar-fill, .tier-bar-dot,
