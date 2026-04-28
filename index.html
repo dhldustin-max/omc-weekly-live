@@ -943,33 +943,17 @@
     return snap;
   }
 
-  async function loadPrevState() {
-    let baseData = null;
-    try {
-      const res = await fetch("notes.json", { cache: "no-store" });
-      if (res.ok) baseData = await res.json();
-    } catch (e) { /* offline/file:// — that's fine */ }
-
-    // Use whichever has the more recent weekEnding
-    const snap = loadSnapshot();
-    let useData = baseData;
-    if (snap && (!baseData || (snap.weekEnding || "") > (baseData.weekEnding || ""))) {
-      useData = snap;
-    }
-    if (!useData) {
-      console.log("No previous state (first week)");
-      return;
-    }
-
+  // Apply a snapshot to the live state — re-renders notes + grades + prime.
+  // Idempotent so we can call it twice (first from local fast path, then
+  // again if the Drive fetch returns something newer).
+  function hydratePrevState(useData, source) {
+    if (!useData) return;
     PREV_NOTES = useData.prevNotes || {};
     window.__consecutiveC = useData.consecutiveC || {};
     Object.keys(PREV_NOTES).forEach(sid => {
       checkedRecap[sid] = {};
       PREV_NOTES[sid].forEach(n => { checkedRecap[sid][n.id] = false; });
     });
-
-    // Hydrate prev labor/food/prime onto STORES so the Prime section can
-    // show "지난주: …" alongside the live inputs.
     if (useData.prevPrime) {
       STORES.forEach(s => {
         const p = useData.prevPrime[s.id];
@@ -978,12 +962,76 @@
           s.prevFood = p.food;
           s.prevPrimePct = p.primePct;
           s.prevPrimeSales = p.sales;
+        } else {
+          s.prevLabor = null; s.prevFood = null;
+          s.prevPrimePct = null; s.prevPrimeSales = null;
         }
       });
     }
-
     STORES.forEach(s => renderRecapNotes(s.id));
     recalcAll();
+    console.log(`Hydrated prev state from ${source} (week ${useData.weekEnding || '?'})`);
+    showStateSourceBadge(source, useData.weekEnding);
+  }
+
+  function showStateSourceBadge(source, weekEnding) {
+    let el = document.getElementById("state-source-badge");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "state-source-badge";
+      el.style.cssText = "font-size:10px; color:#6b7280; padding:4px 0; text-align:center;";
+      const summary = document.getElementById("summary-card");
+      if (summary && summary.parentNode) summary.parentNode.insertBefore(el, summary);
+    }
+    const label = source === 'drive' ? '☁️ Drive memory' : source === 'localStorage' ? '💾 이 브라우저' : '📁 repo notes.json';
+    el.textContent = `지난주 데이터: ${label} · week ${weekEnding || '—'}`;
+  }
+
+  async function loadPrevState() {
+    // Stage 1 (FAST): try repo notes.json + browser localStorage so the
+    // page hydrates immediately with whatever we have on hand.
+    let baseData = null;
+    try {
+      const res = await fetch("notes.json", { cache: "no-store" });
+      if (res.ok) baseData = await res.json();
+    } catch (e) { /* offline / file:// — fine */ }
+
+    const localSnap = loadSnapshot();
+    let useData = baseData, useSource = baseData ? 'repo' : null;
+    if (localSnap && (!useData || (localSnap.weekEnding || "") > (useData.weekEnding || ""))) {
+      useData = localSnap; useSource = 'localStorage';
+    }
+    if (useData) hydratePrevState(useData, useSource);
+
+    // Stage 2 (SLOW): fetch the latest snapshot from the Drive memory
+    // folder via the Apps Script endpoint. This is the cross-device path —
+    // anyone, on any computer, gets the most recent week's state.
+    try {
+      const res = await fetch(APPS_SCRIPT_STATE_URL, { method: "GET", redirect: "follow" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const j = await res.json();
+      if (j && j.ok && j.content && j.content.weekEnding) {
+        const driveData = j.content;
+        const currentWeek = (useData && useData.weekEnding) || "";
+        if ((driveData.weekEnding || "") > currentWeek) {
+          // Drive has newer data — replace and persist locally for next time.
+          hydratePrevState(driveData, 'drive');
+          saveSnapshot(driveData);
+        } else if (!useData) {
+          hydratePrevState(driveData, 'drive');
+          saveSnapshot(driveData);
+        } else {
+          // Local was as fresh or fresher — keep it.
+          console.log("Drive snapshot present but not newer than local — keeping local.");
+        }
+      }
+    } catch (e) {
+      console.log("Drive snapshot fetch skipped/failed:", e && e.message);
+    }
+
+    if (!useData) {
+      console.log("No previous state (first week or all sources empty)");
+    }
   }
   // Backward-compat alias (in case anything else calls the old name)
   async function loadPrevNotes() {
