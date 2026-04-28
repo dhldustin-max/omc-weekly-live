@@ -540,9 +540,42 @@
   .modal-actions { display: flex; gap: 10px; margin-top: 14px; }
 
   @media print {
-    body { background: white; padding: 0; }
-    .actions, .help-banner, .modal-backdrop, .focus-bar, .nav-prev-next { display: none !important; }
-    .store-card { page-break-inside: avoid; }
+    @page { size: letter; margin: 0.4in; }
+    /* Force background colors & gradients to print (Chrome/Safari/Firefox) */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    body { background: white; padding: 0; font-size: 11px; }
+    .container { max-width: 100%; padding: 0; }
+    /* Hide interactive chrome that doesn't belong in a report */
+    .actions, .help-banner, .modal-backdrop, .focus-bar, .nav-prev-next,
+    .note-input-row, .note-add-btn { display: none !important; }
+    /* Inputs render flat (no focus rings, no shadows) */
+    input, textarea { box-shadow: none !important; border: 1px solid #d1d5db !important; }
+    /* Each store card stays on one page when possible */
+    .store-card {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      box-shadow: none !important;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 10px;
+    }
+    /* Tier bar must keep its color story in PDF */
+    .tier-bar-wrap, .tier-status-emoji, .tier-bar-fill, .tier-bar-dot,
+    .trophy-emoji, .tier-rent-pill, .grade-badge, .needs-attention,
+    .rent-stress, .prime-section, .action-plan, .notes-recap, .notes-this-week,
+    .new-tag, .pos-tag, .concept-compare {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    /* Disable animations in print (frozen frame) */
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    /* Header block sits at top of first page */
+    .summary-grid { page-break-after: avoid; }
+    /* Concept section header should stick with at least its first card */
+    .concept-header { page-break-after: avoid; }
   }
   @media (max-width: 600px) {
     .summary-grid, .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -562,7 +595,7 @@
       <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동</li>
       <li><strong>📋 Last Week's Notes</strong> (파란 박스): 지난주 액션 아이템들 → 매니저랑 같이 ✓ 체크 (완료된거)</li>
       <li><strong>📝 This Week's Notes</strong> (노란 박스): 이번주 새 액션 아이템 입력 + Add 버튼</li>
-      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → .md 다운 + Drive 새 탭 자동 오픈 → 드래그로 업로드</li>
+      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → 인쇄창에서 <strong>"PDF로 저장"</strong> 선택 → Drive 새 탭 자동 오픈 → PDF 드래그로 업로드 (화면 그대로 PDF로 들어감)</li>
       <li>다음주에 다시 열면 → 이번주 노트가 "Last Week's Notes"로 자동 표시 (사이클)</li>
     </ol>
   </div>
@@ -1386,23 +1419,31 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   const DRIVE_FOLDER_ID = "1HSQgATPvvsoL4izEOUac7tI3QU7E3TQ0";
 
   function uploadToDrive() {
-    const msg = buildMessage();
     const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
-    const filename = `OMC-meeting-${date}.md`;
+    const pdfName = `OMC-meeting-${date}`;
 
-    // Step 1: download the .md file to user's computer
-    const blob = new Blob([msg], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    // Trick: temporarily set document.title so the browser's "Save as PDF"
+    // dialog suggests this filename by default.
+    const originalTitle = document.title;
+    document.title = pdfName;
 
-    // Step 2: open Drive folder in new tab so user can drag the file in
+    // Open browser print dialog — user picks "Save as PDF" as destination.
+    // window.print() is synchronous: returns when the dialog is dismissed.
+    window.print();
+
+    // Restore the page title after print dialog closes.
+    document.title = originalTitle;
+
+    // Open Drive folder in a new tab so the user can drag the saved PDF in.
     setTimeout(() => {
       window.open(DRIVE_FOLDER_URL, "_blank");
-      alert(`✓ ${filename} 다운로드됨!\n\nDrive 폴더가 새 탭에 열렸어:\n1. Downloads 폴더에서 ${filename} 찾기\n2. Drive 탭으로 드래그-드롭\n\n또는 클립보드에 복사한 텍스트를 Drive Doc에 직접 붙여넣어도 됨.`);
+      alert(
+        `📄 화면 그대로 PDF로 저장됐는지 확인:\n` +
+        `  • 인쇄 대화상자에서 "PDF로 저장" 선택했어?\n` +
+        `  • 추천 파일명: ${pdfName}.pdf\n\n` +
+        `Drive 폴더 새 탭이 열렸어 — Downloads에서 PDF 찾아서 Drive로 드래그해줘.\n\n` +
+        `(노트 텍스트만 따로 받고 싶으면 "⬇ Download .md" 버튼 사용)`
+      );
     }, 300);
   }
 
