@@ -36,10 +36,14 @@ import {
   loadEnvFile,
   fmtVeronaDate,
 } from './lib/verona.js';
+import {
+  scrapeAllToast,
+} from './lib/toast.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const HANSHIN_SESSION = path.join(REPO_ROOT, 'clover-session.json');
+const TOAST_SESSION = path.join(REPO_ROOT, 'toast-session.json');
 const ENV_FILE = path.join(REPO_ROOT, '.env');
 const INDEX_HTML = path.join(REPO_ROOT, 'index.html');
 const STATUS_FILE = path.join(REPO_ROOT, 'scraper-status.json');
@@ -55,6 +59,7 @@ const dryRun = args.includes('--dry-run');
 const skipPush = args.includes('--no-push');
 const skipHanshin = args.includes('--skip-hanshin');
 const skipVerona = args.includes('--skip-verona');
+const skipToast = args.includes('--skip-toast');
 const overrideStart = getArg('--start-ts');
 const overrideEnd = getArg('--end-ts');
 
@@ -232,6 +237,39 @@ async function main() {
       errors.push({ source: 'verona', error: err.message });
     }
   } else { log('⏭  Skipping Verona'); }
+
+  // ---- Toast (3 stores) ----
+  if (!skipToast) {
+    try {
+      log('▶ Scraping Toast (3 stores)…');
+      const results = await scrapeAllToast({
+        sessionPath: TOAST_SESSION,
+        startISO: week.weekStartISO,
+        endISO: (() => {
+          const [y,m,d] = week.weekStartISO.split('-').map(Number);
+          const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+6);
+          return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+        })(),
+        headless: true,
+      });
+      let okCount = 0;
+      for (const r of results) {
+        if (r.error) {
+          log(`  ❌ ${r.id}: ${r.error}`);
+          errors.push({ source: 'toast', storeId: r.id, error: r.error });
+          continue;
+        }
+        const patch = await patchStoreInIndex(r.id, { sales: Math.round(r.netSales) });
+        log(`  ${patch.changed ? '🟢' : '⚪'} ${r.id.padEnd(22)} $${Math.round(r.netSales)}`);
+        successes.push({ source: 'toast', storeId: r.id, sales: Math.round(r.netSales) });
+        okCount++;
+      }
+      if (okCount > 0) scrapesRan.push('toast');
+    } catch (err) {
+      log(`  ❌ Toast failed: ${err.message}`);
+      errors.push({ source: 'toast', error: err.message });
+    }
+  } else { log('⏭  Skipping Toast'); }
 
   // ---- Status + commit -----------------------------------------------------
   const overallStatus = errors.length === 0 ? 'ok' : (successes.length === 0 ? 'error' : 'partial');
