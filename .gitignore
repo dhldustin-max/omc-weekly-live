@@ -2,8 +2,10 @@
 node_modules/
 package-lock.json
 
-# Clover scraper auth + secrets
+# Scraper auth + secrets (one session file per POS)
 clover-session.json
+verona-session.json
+toast-session.json
 .env
 .env.local
 
