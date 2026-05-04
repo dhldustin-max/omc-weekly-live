@@ -1,12 +1,66 @@
 {
-  "_comment": "Auto-updated by scripts/weekly-update.js each Monday. The live web app reads this file and shows a banner when stale or failed. Don't hand-edit unless recovering.",
-  "lastRunAt": "2026-04-28T16:00:00-07:00",
-  "lastRunStatus": "ok",
-  "lastRunScope": "hanshin",
-  "lastRunWeekStartISO": "2026-04-20",
-  "lastRunWeekEndISO": "2026-04-26",
-  "lastError": null,
-  "consecutiveFailures": 0,
+  "lastRunAt": "2026-05-04T15:09:11.771Z",
+  "lastRunStatus": "error",
+  "lastRunScopes": [],
+  "lastRunWeekStartISO": "2026-04-27",
+  "lastRunWeekEndISO": "2026-05-03",
+  "lastErrors": [
+    {
+      "source": "hanshin",
+      "error": "No saved session at /Users/dong/Documents/omc-weekly-live/clover-session.json — run scrape-hanshin.js interactively to log in first."
+    },
+    {
+      "source": "verona",
+      "storeId": "ohgane-oakland",
+      "error": "Store button not found on merchant list: \"OHGANE KOREAN BBQ\""
+    },
+    {
+      "source": "verona",
+      "storeId": "ohgane-alameda",
+      "error": "Store button not found on merchant list: \"OHGANE ALAMEDA\""
+    },
+    {
+      "source": "verona",
+      "storeId": "tangjip-hayward",
+      "error": "Store button not found on merchant list: \"TANGJIP HAYWARD\""
+    },
+    {
+      "source": "verona",
+      "storeId": "tangjip-concord",
+      "error": "Store button not found on merchant list: \"TANGJIP CONCORD\""
+    },
+    {
+      "source": "verona",
+      "storeId": "tangjip-alameda",
+      "error": "Store button not found on merchant list: \"TANGJIP ALAMEDA\""
+    },
+    {
+      "source": "verona",
+      "storeId": "spoon-berkeley",
+      "error": "Store button not found on merchant list: \"SPOON KOREAN BISTRO\""
+    },
+    {
+      "source": "verona",
+      "storeId": "bowld-albany",
+      "error": "Store button not found on merchant list: \"BOWLD ALBANY\""
+    },
+    {
+      "source": "toast",
+      "storeId": "ohgane-concord",
+      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
+    },
+    {
+      "source": "toast",
+      "storeId": "oh-g-burger-berkeley",
+      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
+    },
+    {
+      "source": "toast",
+      "storeId": "obento-hayward",
+      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
+    }
+  ],
+  "consecutiveFailures": 1,
   "lastSuccess": {
     "ranAt": "2026-04-28T16:00:00-07:00",
     "weekStartISO": "2026-04-20",
