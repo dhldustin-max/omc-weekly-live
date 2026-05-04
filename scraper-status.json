@@ -1,55 +1,35 @@
 {
-  "lastRunAt": "2026-05-04T15:46:13.316Z",
+  "lastRunAt": "2026-05-04T16:11:32.512Z",
   "lastRunStatus": "ok",
   "lastRunScopes": [
-    "verona"
+    "toast"
   ],
   "lastRunWeekStartISO": "2026-04-27",
   "lastRunWeekEndISO": "2026-05-03",
   "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-05-04T15:46:13.316Z",
+    "ranAt": "2026-05-04T16:11:32.512Z",
     "weekStartISO": "2026-04-27",
     "weekEndISO": "2026-05-03",
     "scopes": [
-      "verona"
+      "toast"
     ],
     "stores": [
       {
-        "source": "verona",
-        "storeId": "ohgane-oakland",
-        "sales": 62705
+        "source": "toast",
+        "storeId": "ohgane-concord",
+        "sales": 69932
       },
       {
-        "source": "verona",
-        "storeId": "ohgane-alameda",
-        "sales": 65168
+        "source": "toast",
+        "storeId": "oh-g-burger-berkeley",
+        "sales": 7436
       },
       {
-        "source": "verona",
-        "storeId": "tangjip-hayward",
-        "sales": 46125
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-concord",
-        "sales": 36350
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-alameda",
-        "sales": 24443
-      },
-      {
-        "source": "verona",
-        "storeId": "spoon-berkeley",
-        "sales": 14566
-      },
-      {
-        "source": "verona",
-        "storeId": "bowld-albany",
-        "sales": 24266
+        "source": "toast",
+        "storeId": "obento-hayward",
+        "sales": 7414
       }
     ]
   }
