@@ -1632,6 +1632,7 @@
   function buildStores() {
     const concepts = ["Ohgane", "Tangjip", "Oh G Burger", "Obento", "Hanshin Pocha", "Spoon", "Bowl'd"];
     const c = document.getElementById("stores");
+    c.innerHTML = "";  // wipe existing cards so re-renders (e.g. week-picker swap) replace, not duplicate
     for (const cn of concepts) {
       const cs = STORES.filter(s => s.concept === cn);
       if (!cs.length) continue;
