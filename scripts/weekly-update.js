@@ -83,6 +83,50 @@ async function writeStatus(status) {
   await fs.writeFile(STATUS_FILE, JSON.stringify(status, null, 2) + '\n');
 }
 
+// Update the visible "Week of MMM DD – DD, YYYY" tag at the top of the
+// page + the data-snapshot comment + the buildMessage Week line.
+// Without this, the page can show fresh STORES values but stale labels.
+async function patchWeekLabels({ weekStartISO, weekEndISO }) {
+  const [ys, ms, ds] = weekStartISO.split('-').map(Number);
+  const [ye, me, de] = weekEndISO.split('-').map(Number);
+  const startDate = new Date(ys, ms - 1, ds);
+  const endDate = new Date(ye, me - 1, de);
+  const monthShort = m => ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m];
+  const startMon = monthShort(startDate.getMonth());
+  const endMon = monthShort(endDate.getMonth());
+  // Visible week-tag (e.g. "Apr 27 – May 3, 2026")
+  const weekTagText = startMon === endMon
+    ? `${startMon} ${startDate.getDate()} – ${endDate.getDate()}, ${endDate.getFullYear()}`
+    : `${startMon} ${startDate.getDate()} – ${endMon} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+  // Comment label (Apr 27–May 3)
+  const commentRange = startMon === endMon
+    ? `${startMon} ${startDate.getDate()}-${endDate.getDate()}`
+    : `${startMon} ${startDate.getDate()}–${endMon} ${endDate.getDate()}`;
+  const today = new Date().toISOString().slice(0, 10);
+
+  let html = await fs.readFile(INDEX_HTML, 'utf-8');
+  const before = html;
+
+  html = html.replace(
+    /<div class="week-tag">📅 Week of [^<]+<\/div>/,
+    `<div class="week-tag">📅 Week of ${weekTagText}</div>`
+  );
+  html = html.replace(
+    /\/\/ === DATA \(snapshot from [^)]+\) ===/,
+    `// === DATA (snapshot from ${commentRange} scrape, generated ${today}) ===`
+  );
+  html = html.replace(
+    /\*\*Week:\*\* [^\n]+/,
+    `**Week:** ${commentRange}, ${endDate.getFullYear()}`
+  );
+
+  if (html !== before) {
+    await fs.writeFile(INDEX_HTML, html);
+    return { changed: true };
+  }
+  return { changed: false };
+}
+
 // Generic STORES-array patcher. Pass the store id and the fields to update.
 // Each fieldsToUpdate value is converted to its source-form (number → "N",
 // null → "null"). No-op if nothing changes.
@@ -270,6 +314,22 @@ async function main() {
       errors.push({ source: 'toast', error: err.message });
     }
   } else { log('⏭  Skipping Toast'); }
+
+  // ---- Update visible week labels (only if at least one source succeeded) ----
+  if (successes.length > 0) {
+    const labelUpdate = await patchWeekLabels({
+      weekStartISO: week.weekStartISO,
+      weekEndISO:
+        // Always Mon + 6 = Sun for label purposes
+        (() => {
+          const [y, m, d] = week.weekStartISO.split('-').map(Number);
+          const dt = new Date(y, m - 1, d);
+          dt.setDate(dt.getDate() + 6);
+          return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+        })(),
+    });
+    if (labelUpdate.changed) log('🟢 Week labels updated');
+  }
 
   // ---- Status + commit -----------------------------------------------------
   const overallStatus = errors.length === 0 ? 'ok' : (successes.length === 0 ? 'error' : 'partial');
