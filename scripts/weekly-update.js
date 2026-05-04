@@ -47,6 +47,7 @@ const TOAST_SESSION = path.join(REPO_ROOT, 'toast-session.json');
 const ENV_FILE = path.join(REPO_ROOT, '.env');
 const INDEX_HTML = path.join(REPO_ROOT, 'index.html');
 const STATUS_FILE = path.join(REPO_ROOT, 'scraper-status.json');
+const SNAPSHOTS_FILE = path.join(REPO_ROOT, 'weekly-snapshots.json');
 const TMP_DIR = path.join(REPO_ROOT, 'tmp');
 
 // ---- arg parsing ----------------------------------------------------------
@@ -81,6 +82,60 @@ async function readStatus() {
 }
 async function writeStatus(status) {
   await fs.writeFile(STATUS_FILE, JSON.stringify(status, null, 2) + '\n');
+}
+
+// After scraping + patching index.html, append (or replace) this week's
+// entry in weekly-snapshots.json. The live web app reads this file and
+// builds the week-picker dropdown so Dustin can scroll back through
+// historical weeks. We extract sales/orders/guests directly from the
+// (now-current) index.html STORES array — same source the live page
+// uses, so no risk of drift.
+async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel }) {
+  // Parse current STORES out of index.html
+  const html = await fs.readFile(INDEX_HTML, 'utf-8');
+  const storesBlock = html.match(/const STORES = \[([\s\S]*?)\];/)?.[1];
+  if (!storesBlock) throw new Error('STORES array not found while building snapshot');
+  const stores = {};
+  const entryRe = /\{\s*id:\s*"([^"]+)"[\s\S]*?\}/g;
+  let m;
+  while ((m = entryRe.exec(storesBlock)) !== null) {
+    const eid = m[1];
+    const text = m[0];
+    const grab = field => {
+      const r = text.match(new RegExp(`${field}:\\s*(null|-?\\d+)`));
+      if (!r) return null;
+      return r[1] === 'null' ? null : Number(r[1]);
+    };
+    stores[eid] = {
+      sales: grab('sales'),
+      orders: grab('orders'),
+      guests: grab('guests'),
+    };
+  }
+
+  // Load existing snapshots (or start fresh)
+  let snapshots;
+  try {
+    snapshots = JSON.parse(await fs.readFile(SNAPSHOTS_FILE, 'utf-8'));
+  } catch {
+    snapshots = {
+      _comment: 'Append-only weekly snapshots. Live web app loads this for the week-picker dropdown.',
+      weeks: [],
+    };
+  }
+  if (!Array.isArray(snapshots.weeks)) snapshots.weeks = [];
+
+  // Replace existing entry for this week, or append
+  const idx = snapshots.weeks.findIndex(w => w.weekStartISO === weekStartISO);
+  const entry = { weekStartISO, weekEndISO, weekLabel, stores };
+  if (idx >= 0) snapshots.weeks[idx] = entry;
+  else snapshots.weeks.push(entry);
+
+  // Sort chronologically (oldest first)
+  snapshots.weeks.sort((a, b) => a.weekStartISO.localeCompare(b.weekStartISO));
+
+  await fs.writeFile(SNAPSHOTS_FILE, JSON.stringify(snapshots, null, 2) + '\n');
+  return { totalWeeks: snapshots.weeks.length, justAdded: idx < 0 };
 }
 
 // Update the visible "Week of MMM DD – DD, YYYY" tag at the top of the
@@ -329,6 +384,30 @@ async function main() {
         })(),
     });
     if (labelUpdate.changed) log('🟢 Week labels updated');
+
+    // Append a snapshot of this week's data so the live site can show
+    // the historic-week dropdown.
+    const [y, m, d] = week.weekStartISO.split('-').map(Number);
+    const sd = new Date(y, m - 1, d);
+    const ed = new Date(sd);
+    ed.setDate(sd.getDate() + 6);
+    const monShort = idx => ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][idx];
+    const sm = monShort(sd.getMonth());
+    const em = monShort(ed.getMonth());
+    const weekLabel = sm === em
+      ? `${sm} ${sd.getDate()} – ${ed.getDate()}, ${ed.getFullYear()}`
+      : `${sm} ${sd.getDate()} – ${em} ${ed.getDate()}, ${ed.getFullYear()}`;
+    const weekEndISO = `${ed.getFullYear()}-${String(ed.getMonth()+1).padStart(2,'0')}-${String(ed.getDate()).padStart(2,'0')}`;
+    try {
+      const snapResult = await appendWeeklySnapshot({
+        weekStartISO: week.weekStartISO,
+        weekEndISO,
+        weekLabel,
+      });
+      log(`🟢 Snapshot ${snapResult.justAdded ? 'added' : 'updated'} (${snapResult.totalWeeks} weeks total)`);
+    } catch (e) {
+      log(`⚠️  Snapshot append failed: ${e.message}`);
+    }
   }
 
   // ---- Status + commit -----------------------------------------------------
@@ -362,7 +441,7 @@ async function main() {
   await writeStatus(newStatus);
 
   // Commit + push (only if anything to commit)
-  sh('git add index.html scraper-status.json');
+  sh('git add index.html scraper-status.json weekly-snapshots.json');
   const stamp = `${week.label} — ${successes.length} stores ok, ${errors.length} errors`;
   const commitMsg = overallStatus === 'ok'
     ? `Weekly auto-update: ${stamp}`

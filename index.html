@@ -39,7 +39,36 @@
   }
   .title { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
   .subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
-  .week-tag { font-size: 11px; color: #007aff; font-weight: 600; margin-top: 2px; }
+  .week-tag { font-size: 11px; color: #007aff; font-weight: 600; margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .week-tag-icon { display: inline-block; }
+  .week-tag-select {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    color: #007aff;
+    background: rgba(0,122,255,0.08);
+    border: 1px solid rgba(0,122,255,0.25);
+    border-radius: 6px;
+    padding: 3px 22px 3px 8px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23007aff' d='M5 6L0 0h10z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+  }
+  .week-tag-select:hover { background-color: rgba(0,122,255,0.14); }
+  .week-tag-select:focus { outline: none; box-shadow: 0 0 0 2px rgba(0,122,255,0.2); }
+  .week-tag-current-pill {
+    background: #ecfdf5; color: #065f46; border: 1px solid #34d399;
+    border-radius: 999px; padding: 1px 7px; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .week-tag-historic-pill {
+    background: #fffbeb; color: #92400e; border: 1px solid #f59e0b;
+    border-radius: 999px; padding: 1px 7px; font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
 
   .summary {
     background: white;
@@ -731,7 +760,13 @@
     <div>
       <div class="title">OMC Weekly Ops — Live</div>
       <div class="subtitle">Manager meeting · 11 locations</div>
-      <div class="week-tag">📅 Week of Apr 27 – May 3, 2026</div>
+      <div class="week-tag">
+        <span class="week-tag-icon">📅 Week of</span>
+        <select id="week-picker" class="week-tag-select">
+          <option value="">Apr 27 – May 3, 2026</option>
+        </select>
+        <span id="week-tag-pill"></span>
+      </div>
     </div>
     <div id="overall-grade" class="grade-badge grade-NA">—</div>
   </div>
@@ -1925,6 +1960,108 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   applyFocus("all");
   loadPrevNotes();  // Load last week's notes from notes.json
   checkScraperStatus();  // Show banner if Hanshin auto-scraper is stale or failed
+  loadWeeklySnapshots();  // Populate week-picker dropdown with historical weeks
+
+  // Loads weekly-snapshots.json (committed each week by weekly-update.js),
+  // builds the week-picker dropdown, and wires it up to swap in the
+  // selected week's data into STORES + re-render. The current (latest)
+  // week stays selected by default.
+  let WEEKLY_SNAPSHOTS = [];                 // array of {weekStartISO, ...}
+  let CURRENT_WEEK_BACKUP = null;            // STORES baseline (current/latest)
+  async function loadWeeklySnapshots() {
+    try {
+      const res = await fetch("weekly-snapshots.json", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      const weeks = (data.weeks || []).slice().sort((a, b) =>
+        (a.weekStartISO || "").localeCompare(b.weekStartISO || "")
+      );
+      if (!weeks.length) return;
+      WEEKLY_SNAPSHOTS = weeks;
+
+      // Take a snapshot of the CURRENT STORES values (the live data already
+      // baked into index.html). That's the baseline we restore when user
+      // picks "current week" again.
+      CURRENT_WEEK_BACKUP = {};
+      STORES.forEach(s => {
+        CURRENT_WEEK_BACKUP[s.id] = {
+          sales: s.sales,
+          orders: s.orders,
+          guests: s.guests,
+        };
+      });
+
+      const picker = document.getElementById("week-picker");
+      if (!picker) return;
+      const latest = weeks[weeks.length - 1];
+      // Build options — latest first (= current), then descending
+      picker.innerHTML = "";
+      [...weeks].reverse().forEach((wk, i) => {
+        const opt = document.createElement("option");
+        opt.value = wk.weekStartISO;
+        opt.textContent = wk.weekLabel || `${wk.weekStartISO} – ${wk.weekEndISO}`;
+        if (i === 0) opt.dataset.current = "true";
+        picker.appendChild(opt);
+      });
+      picker.value = latest.weekStartISO;
+      updateWeekTagPill(true);
+
+      picker.addEventListener("change", e => {
+        const wkISO = e.target.value;
+        const isCurrent = wkISO === latest.weekStartISO;
+        applyWeekSnapshot(wkISO, isCurrent);
+      });
+    } catch (e) {
+      console.log("Weekly snapshots unavailable:", e && e.message);
+    }
+  }
+  function updateWeekTagPill(isCurrent) {
+    const pill = document.getElementById("week-tag-pill");
+    if (!pill) return;
+    if (isCurrent) {
+      pill.className = "week-tag-current-pill";
+      pill.textContent = "Current";
+    } else {
+      pill.className = "week-tag-historic-pill";
+      pill.textContent = "Historic";
+    }
+  }
+  function applyWeekSnapshot(weekStartISO, isCurrent) {
+    let snap;
+    if (isCurrent && CURRENT_WEEK_BACKUP) {
+      // Restore in-memory baseline (avoids any drift from snapshot file)
+      STORES.forEach(s => {
+        const b = CURRENT_WEEK_BACKUP[s.id];
+        if (!b) return;
+        s.sales = b.sales;
+        s.orders = b.orders;
+        s.guests = b.guests;
+      });
+    } else {
+      snap = WEEKLY_SNAPSHOTS.find(w => w.weekStartISO === weekStartISO);
+      if (!snap) return;
+      STORES.forEach(s => {
+        const v = snap.stores?.[s.id];
+        if (!v) return;
+        s.sales = v.sales ?? null;
+        s.orders = v.orders ?? null;
+        s.guests = v.guests ?? null;
+      });
+    }
+    updateWeekTagPill(isCurrent);
+    // Rebuild concept averages with the new values + redraw all cards
+    if (typeof CONCEPT_AVGS === "object") {
+      const fresh = computeConceptAvgs();
+      Object.keys(CONCEPT_AVGS).forEach(k => delete CONCEPT_AVGS[k]);
+      Object.assign(CONCEPT_AVGS, fresh);
+    }
+    buildStores();
+    document.querySelectorAll(".prime-input").forEach(i => i.addEventListener("input", recalcAll));
+    recalcAll();
+    applyFocus(currentFocus || "all");
+    // Notes need to be rerendered against existing PREV_NOTES state
+    STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
+  }
 
   // Reads scraper-status.json (committed by scripts/weekly-update.js each
   // Monday) and shows a banner if the auto-scrape failed, missed a week,
