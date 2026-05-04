@@ -1,71 +1,56 @@
 {
-  "lastRunAt": "2026-05-04T15:09:11.771Z",
-  "lastRunStatus": "error",
-  "lastRunScopes": [],
+  "lastRunAt": "2026-05-04T15:46:13.316Z",
+  "lastRunStatus": "ok",
+  "lastRunScopes": [
+    "verona"
+  ],
   "lastRunWeekStartISO": "2026-04-27",
   "lastRunWeekEndISO": "2026-05-03",
-  "lastErrors": [
-    {
-      "source": "hanshin",
-      "error": "No saved session at /Users/dong/Documents/omc-weekly-live/clover-session.json — run scrape-hanshin.js interactively to log in first."
-    },
-    {
-      "source": "verona",
-      "storeId": "ohgane-oakland",
-      "error": "Store button not found on merchant list: \"OHGANE KOREAN BBQ\""
-    },
-    {
-      "source": "verona",
-      "storeId": "ohgane-alameda",
-      "error": "Store button not found on merchant list: \"OHGANE ALAMEDA\""
-    },
-    {
-      "source": "verona",
-      "storeId": "tangjip-hayward",
-      "error": "Store button not found on merchant list: \"TANGJIP HAYWARD\""
-    },
-    {
-      "source": "verona",
-      "storeId": "tangjip-concord",
-      "error": "Store button not found on merchant list: \"TANGJIP CONCORD\""
-    },
-    {
-      "source": "verona",
-      "storeId": "tangjip-alameda",
-      "error": "Store button not found on merchant list: \"TANGJIP ALAMEDA\""
-    },
-    {
-      "source": "verona",
-      "storeId": "spoon-berkeley",
-      "error": "Store button not found on merchant list: \"SPOON KOREAN BISTRO\""
-    },
-    {
-      "source": "verona",
-      "storeId": "bowld-albany",
-      "error": "Store button not found on merchant list: \"BOWLD ALBANY\""
-    },
-    {
-      "source": "toast",
-      "storeId": "ohgane-concord",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    },
-    {
-      "source": "toast",
-      "storeId": "oh-g-burger-berkeley",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    },
-    {
-      "source": "toast",
-      "storeId": "obento-hayward",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    }
-  ],
-  "consecutiveFailures": 1,
+  "lastErrors": [],
+  "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-04-28T16:00:00-07:00",
-    "weekStartISO": "2026-04-20",
-    "weekEndISO": "2026-04-26",
-    "netSales": 24557,
-    "orders": 287
+    "ranAt": "2026-05-04T15:46:13.316Z",
+    "weekStartISO": "2026-04-27",
+    "weekEndISO": "2026-05-03",
+    "scopes": [
+      "verona"
+    ],
+    "stores": [
+      {
+        "source": "verona",
+        "storeId": "ohgane-oakland",
+        "sales": 62705
+      },
+      {
+        "source": "verona",
+        "storeId": "ohgane-alameda",
+        "sales": 65168
+      },
+      {
+        "source": "verona",
+        "storeId": "tangjip-hayward",
+        "sales": 46125
+      },
+      {
+        "source": "verona",
+        "storeId": "tangjip-concord",
+        "sales": 36350
+      },
+      {
+        "source": "verona",
+        "storeId": "tangjip-alameda",
+        "sales": 24443
+      },
+      {
+        "source": "verona",
+        "storeId": "spoon-berkeley",
+        "sales": 14566
+      },
+      {
+        "source": "verona",
+        "storeId": "bowld-albany",
+        "sales": 24266
+      }
+    ]
   }
 }
