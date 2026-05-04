@@ -1183,18 +1183,49 @@
     };
   }
 
+  // Grade = A / B / C / N/A
+  //
+  // Sales side (always evaluated):
+  //   weighted = 0.8 * (sales/target) + 0.20
+  //   A: ≥ 1.00 (≈ at-or-above target)
+  //   B: ≥ 0.85 (within ~19% of target)
+  //   C: below
+  //
+  // Prime cost (when manager has filled in Labor + Food):
+  //   Sales-only A grade can be CAPPED downward by prime cost — running
+  //   way above target doesn't cancel out a bad prime, because at >65%
+  //   prime the margin is gone.
+  //
+  //     ≤ 55%    +0.05 bonus  (excellent prime — borderline B can promote)
+  //     55–60%   no change
+  //     60–65%   −0.05 penalty
+  //     > 65%    HARD CAP at B (no A regardless of sales)
+  //     > 70%    HARD CAP at C (severe — margin negative)
   function calcGrade(s, primeData) {
     if (!s.sales || !s.target) return "N/A";
     const sp = s.sales / s.target;
-    let weighted = 0.4 * sp + 0.25 * sp + 0.15 * sp + 0.20 * 1;
-    if (primeData && primeData.primeTotal) {
-      if (primeData.primeTotal > 65) weighted -= 0.10;
-      else if (primeData.primeTotal > 60) weighted -= 0.05;
+    let weighted = 0.8 * sp + 0.20;
+
+    let primeCap = null;     // 'B' or 'C' — only set when prime triggers cap
+    if (primeData && primeData.filled) {
+      const p = primeData.primeTotal;
+      if (p <= 55) weighted += 0.05;
+      else if (p <= 60) { /* no adjustment */ }
+      else if (p <= 65) weighted -= 0.05;
+      else if (p <= 70) primeCap = 'B';
+      else primeCap = 'C';
     }
-    // A/B/C only
-    if (weighted >= 1.00) return "A";
-    if (weighted >= 0.85) return "B";
-    return "C";
+
+    let grade;
+    if (weighted >= 1.00) grade = "A";
+    else if (weighted >= 0.85) grade = "B";
+    else grade = "C";
+
+    // Apply prime cap (only worsens, never improves)
+    if (primeCap === 'B' && grade === 'A') grade = 'B';
+    if (primeCap === 'C') grade = 'C';
+
+    return grade;
   }
 
   // Compute concept averages for comparison
