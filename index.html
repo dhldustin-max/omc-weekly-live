@@ -429,6 +429,12 @@
   .stat-sub { font-size: 10px; color: #6b7280; margin-top: 2px; }
   .stat-positive { color: #34c759; }
   .stat-negative { color: #ff3b30; }
+  /* Week-over-week delta on the Net Sales cell — Dustin's preferred colors:
+     + (this week up vs last) → blue; - (this week down) → red. */
+  .wow-delta { font-weight: 700; }
+  .wow-up { color: #0a7be8; }
+  .wow-down { color: #dc2626; }
+  .wow-flat { color: #6b7280; font-weight: 600; }
 
   .prime-section {
     background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
@@ -1344,6 +1350,14 @@
           <div class="stat-label">Net Sales</div>
           <div class="stat-value">${fmtMoney(s.sales)}</div>
           <div class="stat-sub">Tgt ${fmtMoney(s.target)}</div>
+          ${(() => {
+            const prev = s.prevWeekSales;
+            if (prev == null || s.sales == null) return '';
+            const diff = s.sales - prev;
+            const cls = diff > 0 ? 'wow-up' : diff < 0 ? 'wow-down' : 'wow-flat';
+            const sign = diff > 0 ? '+' : diff < 0 ? '−' : '±';
+            return `<div class="stat-sub">지난주 ${fmtMoney(prev)} <span class="wow-delta ${cls}">${sign}${fmtMoney(Math.abs(diff))}</span></div>`;
+          })()}
         </div>
         <div class="stat-cell">
           <div class="stat-label">vs Target</div>
@@ -2007,6 +2021,15 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
       picker.value = latest.weekStartISO;
       updateWeekTagPill(true);
 
+      // Compute WoW deltas for the latest week (current view) and re-render
+      // so the Net Sales cell shows "지난주 $X ±$Y" right away.
+      applyWoWDeltas(latest.weekStartISO);
+      buildStores();
+      document.querySelectorAll(".prime-input").forEach(i => i.addEventListener("input", recalcAll));
+      recalcAll();
+      applyFocus(currentFocus || "all");
+      STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
+
       picker.addEventListener("change", e => {
         const wkISO = e.target.value;
         const isCurrent = wkISO === latest.weekStartISO;
@@ -2027,6 +2050,18 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
       pill.textContent = "Historic";
     }
   }
+  // Walk WEEKLY_SNAPSHOTS to find the entry just before viewWeekISO and
+  // attach prev-week's sales to each STORES[i].prevWeekSales. Used by
+  // the Net Sales stat cell to render the "지난주 $X +$Y / -$Y" line.
+  function applyWoWDeltas(viewWeekISO) {
+    if (!WEEKLY_SNAPSHOTS.length) return;
+    const idx = WEEKLY_SNAPSHOTS.findIndex(w => w.weekStartISO === viewWeekISO);
+    const prev = idx > 0 ? WEEKLY_SNAPSHOTS[idx - 1] : null;
+    STORES.forEach(s => {
+      s.prevWeekSales = prev ? (prev.stores?.[s.id]?.sales ?? null) : null;
+    });
+  }
+
   function applyWeekSnapshot(weekStartISO, isCurrent) {
     let snap;
     if (isCurrent && CURRENT_WEEK_BACKUP) {
@@ -2050,6 +2085,8 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
       });
     }
     updateWeekTagPill(isCurrent);
+    // Refresh prev-week deltas relative to the now-selected week
+    applyWoWDeltas(weekStartISO);
     // Rebuild concept averages with the new values + redraw all cards
     if (typeof CONCEPT_AVGS === "object") {
       const fresh = computeConceptAvgs();
