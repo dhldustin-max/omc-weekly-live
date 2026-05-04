@@ -1,35 +1,26 @@
 {
-  "lastRunAt": "2026-05-04T16:11:32.512Z",
+  "lastRunAt": "2026-05-04T21:10:56.672Z",
   "lastRunStatus": "ok",
   "lastRunScopes": [
-    "toast"
+    "hanshin"
   ],
   "lastRunWeekStartISO": "2026-04-27",
   "lastRunWeekEndISO": "2026-05-03",
   "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-05-04T16:11:32.512Z",
+    "ranAt": "2026-05-04T21:10:56.672Z",
     "weekStartISO": "2026-04-27",
     "weekEndISO": "2026-05-03",
     "scopes": [
-      "toast"
+      "hanshin"
     ],
     "stores": [
       {
-        "source": "toast",
-        "storeId": "ohgane-concord",
-        "sales": 69932
-      },
-      {
-        "source": "toast",
-        "storeId": "oh-g-burger-berkeley",
-        "sales": 7436
-      },
-      {
-        "source": "toast",
-        "storeId": "obento-hayward",
-        "sales": 7414
+        "source": "hanshin",
+        "storeId": "hanshin-pocha-oakland",
+        "netSales": 25880,
+        "orders": 265
       }
     ]
   }
