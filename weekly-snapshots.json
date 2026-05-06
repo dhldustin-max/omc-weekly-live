@@ -60,6 +60,11 @@
           "sales": 27194,
           "orders": 480,
           "guests": 511
+        },
+        "mad-for-sushi-dublin": {
+          "sales": 15142,
+          "orders": null,
+          "guests": null
         }
       }
     },
@@ -122,6 +127,11 @@
           "sales": 24266,
           "orders": 480,
           "guests": 511
+        },
+        "mad-for-sushi-dublin": {
+          "sales": 21064,
+          "orders": null,
+          "guests": null
         }
       }
     }

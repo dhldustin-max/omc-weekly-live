@@ -37,13 +37,14 @@ export const VERONA_DASHBOARD_URL = 'https://online.veronapos.com/merchant/';
 // list 2026-04-28 (Note: Ohgane Concord is on Toast per task spec; not
 // included here even though Verona has an entry for it.).
 export const OMC_VERONA_STORES = [
-  { id: 'ohgane-oakland',   veronaPrefix: 'OHGANE KOREAN BBQ' },
-  { id: 'ohgane-alameda',   veronaPrefix: 'OHGANE ALAMEDA' },
-  { id: 'tangjip-hayward',  veronaPrefix: 'TANGJIP HAYWARD' },
-  { id: 'tangjip-concord',  veronaPrefix: 'TANGJIP CONCORD' },
-  { id: 'tangjip-alameda',  veronaPrefix: 'TANGJIP ALAMEDA' },
-  { id: 'spoon-berkeley',   veronaPrefix: 'SPOON KOREAN BISTRO' },
-  { id: 'bowld-albany',     veronaPrefix: 'BOWLD ALBANY' },
+  { id: 'ohgane-oakland',     veronaPrefix: 'OHGANE KOREAN BBQ' },
+  { id: 'ohgane-alameda',     veronaPrefix: 'OHGANE ALAMEDA' },
+  { id: 'tangjip-hayward',    veronaPrefix: 'TANGJIP HAYWARD' },
+  { id: 'tangjip-concord',    veronaPrefix: 'TANGJIP CONCORD' },
+  { id: 'tangjip-alameda',    veronaPrefix: 'TANGJIP ALAMEDA' },
+  { id: 'spoon-berkeley',     veronaPrefix: 'SPOON KOREAN BISTRO' },
+  { id: 'bowld-albany',       veronaPrefix: 'BOWLD ALBANY' },
+  { id: 'mad-for-sushi-dublin', veronaPrefix: 'MAD FOR SUSHI' },
 ];
 
 // Convert a JS Date / ms-timestamp to MM/DD/YYYY (Verona's URL format).

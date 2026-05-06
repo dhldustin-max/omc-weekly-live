@@ -2,7 +2,7 @@
 
 ## What this is
 
-A live web app at **https://dhldustin-max.github.io/omc-weekly-live/** used by Dustin (Director) to run weekly Monday manager meetings across 11 OMC Hospitality restaurants in the Bay Area.
+A live web app at **https://dhldustin-max.github.io/omc-weekly-live/** used by Dustin (Director) to run weekly Monday manager meetings across 12 OMC Hospitality restaurants in the Bay Area.
 
 The app shows Sales vs Target, Prime Cost calculation, A/B/C grade, manager meeting notes, and concept-level comparisons. Updates weekly with last week's POS data.
 
@@ -18,7 +18,7 @@ README.md           # Optional, brief
 
 That's it. Intentionally simple — no build step, no framework, no dependencies. Pure static.
 
-## The 11 stores (concepts → locations)
+## The 12 stores (concepts → locations)
 
 | Concept | Stores | POS |
 |---|---|---|
@@ -26,9 +26,10 @@ That's it. Intentionally simple — no build step, no framework, no dependencies
 | Tangjip (Korean Hot Pot) | Hayward, Concord, Alameda | All Verona |
 | Oh G Burger (K-Fusion) | Berkeley | Toast |
 | Obento (Japanese) | Hayward | Toast |
-| Hanshin Pocha (Bar) | Oakland | Clover (no API access — manual) |
+| Hanshin Pocha (Bar) | Oakland | Clover |
 | Spoon (K-Bistro) | Berkeley | Verona |
 | Bowl'd (K-Rice Bowl) | Albany | Verona |
+| Mad For Sushi (Sushi) | Dublin | Verona |
 
 The `STORES` array in `index.html` (~line 450) is the single source of truth — sales, target, ratings, channel mix.
 
