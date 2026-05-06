@@ -1683,7 +1683,10 @@
   }
 
   function buildStores() {
-    const concepts = ["Ohgane", "Tangjip", "Oh G Burger", "Obento", "Hanshin Pocha", "Spoon", "Bowl'd"];
+    // Derive concept order from the STORES array itself so new stores
+    // (e.g. Mad For Sushi added 2026-05-06) appear without code changes.
+    // Order = first-occurrence-order in STORES.
+    const concepts = [...new Set(STORES.map(s => s.concept))];
     const c = document.getElementById("stores");
     c.innerHTML = "";  // wipe existing cards so re-renders (e.g. week-picker swap) replace, not duplicate
     for (const cn of concepts) {
