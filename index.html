@@ -162,6 +162,49 @@
   }
   @keyframes pulse-warn { 0%, 100% { opacity: 1; } 50% { opacity: 0.85; } }
 
+  /* Floating draft-saved toast (auto-fades after 2s) */
+  .draft-toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111827;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .draft-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+  }
+
+  /* "Auto-restored from draft" notice — shown next to the week tag */
+  .draft-restored-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-left: 6px;
+    cursor: pointer;
+  }
+  .draft-restored-pill:hover { background: #fde68a; }
+  .draft-restored-pill.hidden { display: none !important; }
+
   /* Auto-scraper status banner (shows above help banner when stale/failed) */
   .scraper-banner {
     border-radius: 10px;
@@ -855,6 +898,7 @@
     <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
     <button class="btn btn-secondary" id="copy-btn">📋 Copy</button>
     <button class="btn btn-secondary" id="download-btn">⬇ Download .md</button>
+    <button class="btn btn-secondary" id="save-draft-btn">💾 임시저장</button>
     <button class="btn btn-success" id="upload-btn">📤 Upload to Drive</button>
   </div>
 </div>
@@ -1885,6 +1929,155 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   };
   document.getElementById("upload-btn").onclick = uploadToDrive;
 
+  // === Draft save/restore ===
+  // Persists in-progress meeting state (manager name, date, per-store
+  // labor/food, typed notes, recap checkboxes) to localStorage so a
+  // page refresh doesn't wipe Dustin's typing mid-meeting.
+  //
+  // Two paths:
+  //   - 💾 임시저장 button: explicit save + toast confirmation
+  //   - Auto-save on every input change (debounced 800ms): silent fallback
+  //
+  // On page load: if a draft saved within the last 24h exists, restore
+  // it automatically and show a small "복구됨" pill next to the week tag.
+  const DRAFT_KEY = "omc-meeting-draft";
+  const DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  function collectDraftState() {
+    const primeInputs = {};
+    STORES.forEach(s => {
+      const labor = document.getElementById(`labor-${s.id}`)?.value;
+      const food = document.getElementById(`food-${s.id}`)?.value;
+      if (labor || food) primeInputs[s.id] = { labor: labor || "", food: food || "" };
+    });
+    return {
+      savedAt: new Date().toISOString(),
+      meetingLead: document.getElementById("meeting-lead")?.value || "",
+      meetingDate: document.getElementById("meeting-date")?.value || "",
+      primeInputs,
+      newNotes: JSON.parse(JSON.stringify(newNotes || {})),
+      checkedRecap: JSON.parse(JSON.stringify(checkedRecap || {})),
+    };
+  }
+
+  function saveDraft({ silent = false } = {}) {
+    try {
+      const draft = collectDraftState();
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      if (!silent) showDraftToast("💾 임시저장됨");
+      return true;
+    } catch (e) {
+      if (!silent) showDraftToast("⚠️ 저장 실패: " + e.message);
+      return false;
+    }
+  }
+
+  function loadDraft() {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return null;
+      const draft = JSON.parse(raw);
+      const age = Date.now() - new Date(draft.savedAt).getTime();
+      if (age > DRAFT_MAX_AGE_MS) {
+        localStorage.removeItem(DRAFT_KEY); // expired
+        return null;
+      }
+      return draft;
+    } catch { return null; }
+  }
+
+  function applyDraft(draft) {
+    if (!draft) return;
+    const leadEl = document.getElementById("meeting-lead");
+    const dateEl = document.getElementById("meeting-date");
+    if (leadEl && draft.meetingLead) leadEl.value = draft.meetingLead;
+    if (dateEl && draft.meetingDate) dateEl.value = draft.meetingDate;
+
+    Object.entries(draft.primeInputs || {}).forEach(([sid, vals]) => {
+      const lEl = document.getElementById(`labor-${sid}`);
+      const fEl = document.getElementById(`food-${sid}`);
+      if (lEl && vals.labor) lEl.value = vals.labor;
+      if (fEl && vals.food) fEl.value = vals.food;
+    });
+
+    if (draft.newNotes) {
+      Object.assign(newNotes, draft.newNotes);
+      STORES.forEach(s => renderNewNotes(s.id));
+    }
+    if (draft.checkedRecap) {
+      Object.assign(checkedRecap, draft.checkedRecap);
+      STORES.forEach(s => renderRecapNotes(s.id));
+    }
+
+    recalcAll();
+    showRestoredPill(draft.savedAt);
+  }
+
+  function showDraftToast(msg) {
+    let el = document.getElementById("draft-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "draft-toast";
+      el.className = "draft-toast";
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(el._hideTimer);
+    el._hideTimer = setTimeout(() => el.classList.remove("show"), 1800);
+  }
+
+  function showRestoredPill(savedAt) {
+    const weekTag = document.querySelector(".week-tag");
+    if (!weekTag) return;
+    let pill = document.getElementById("draft-restored-pill");
+    if (!pill) {
+      pill = document.createElement("span");
+      pill.id = "draft-restored-pill";
+      pill.className = "draft-restored-pill";
+      pill.title = "Click to discard draft and reload fresh";
+      pill.onclick = () => {
+        if (confirm("저장된 임시 데이터를 지우고 새로고침할까?")) {
+          localStorage.removeItem(DRAFT_KEY);
+          location.reload();
+        }
+      };
+      weekTag.appendChild(pill);
+    }
+    const t = new Date(savedAt);
+    const hh = String(t.getHours()).padStart(2, "0");
+    const mm = String(t.getMinutes()).padStart(2, "0");
+    pill.textContent = `📥 ${hh}:${mm} 복구됨`;
+    pill.classList.remove("hidden");
+  }
+
+  // Debounced auto-save — fires on any input change in prime fields,
+  // notes, recap checkboxes, manager/date inputs. 800ms debounce so we
+  // don't thrash localStorage on every keystroke.
+  let _autoSaveTimer = null;
+  function autoSave() {
+    clearTimeout(_autoSaveTimer);
+    _autoSaveTimer = setTimeout(() => saveDraft({ silent: true }), 800);
+  }
+  document.addEventListener("input", e => {
+    if (e.target.matches?.("#meeting-lead, #meeting-date, .prime-input, .note-input")) {
+      autoSave();
+    }
+  });
+  document.addEventListener("change", e => {
+    if (e.target.matches?.('input[type="checkbox"][id^="recap-"]')) autoSave();
+  });
+
+  // Manual button
+  document.getElementById("save-draft-btn").onclick = () => saveDraft();
+
+  // On boot: restore if a recent draft exists. Run AFTER buildStores +
+  // recalcAll have populated the DOM so the input elements exist.
+  setTimeout(() => {
+    const draft = loadDraft();
+    if (draft) applyDraft(draft);
+  }, 600);
+
   // === Notes management ===
   function renderRecapNotes(storeId) {
     const list = document.getElementById(`recap-list-${storeId}`);
@@ -1929,18 +2122,21 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     input.value = "";
     renderNewNotes(storeId);
     input.focus();
+    if (typeof autoSave === "function") autoSave();
   }
 
   function removeNote(storeId, idx) {
     if (!newNotes[storeId]) return;
     newNotes[storeId].splice(idx, 1);
     renderNewNotes(storeId);
+    if (typeof autoSave === "function") autoSave();
   }
 
   function toggleRecap(storeId, noteId) {
     if (!checkedRecap[storeId]) checkedRecap[storeId] = {};
     checkedRecap[storeId][noteId] = !checkedRecap[storeId][noteId];
     renderRecapNotes(storeId);
+    if (typeof autoSave === "function") autoSave();
   }
 
   function escapeHtml(s) {
