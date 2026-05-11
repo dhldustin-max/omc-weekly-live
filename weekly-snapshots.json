@@ -4,7 +4,7 @@
     {
       "weekStartISO": "2026-04-20",
       "weekEndISO": "2026-04-26",
-      "weekLabel": "Apr 20 \u2013 26, 2026",
+      "weekLabel": "Apr 20 – 26, 2026",
       "stores": {
         "ohgane-oakland": {
           "sales": 67616,
@@ -71,7 +71,7 @@
     {
       "weekStartISO": "2026-04-27",
       "weekEndISO": "2026-05-03",
-      "weekLabel": "Apr 27 \u2013 May 3, 2026",
+      "weekLabel": "Apr 27 – May 3, 2026",
       "stores": {
         "ohgane-oakland": {
           "sales": 62705,
@@ -138,7 +138,7 @@
     {
       "weekStartISO": "2026-05-04",
       "weekEndISO": "2026-05-10",
-      "weekLabel": "May 4 \u2013 10, 2026",
+      "weekLabel": "May 4 – 10, 2026",
       "stores": {
         "ohgane-oakland": {
           "sales": 81863,

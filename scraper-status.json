@@ -1,22 +1,25 @@
 {
-  "lastRunAt": "2026-05-11T21:15:02.590Z",
-  "lastRunStatus": "ok",
+  "lastRunAt": "2026-05-11T21:27:38.026Z",
+  "lastRunStatus": "partial",
   "lastRunScopes": [
     "hanshin",
-    "verona",
     "toast"
   ],
   "lastRunWeekStartISO": "2026-05-04",
-  "lastRunWeekEndISO": "2026-05-10",
-  "lastErrors": [],
+  "lastRunWeekEndISO": "2026-05-11",
+  "lastErrors": [
+    {
+      "source": "verona",
+      "error": "browserType.launch: Executable doesn't exist at /Users/dong/Library/Caches/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-mac-arm64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+    }
+  ],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-05-11T21:15:02.590Z",
+    "ranAt": "2026-05-11T21:27:38.026Z",
     "weekStartISO": "2026-05-04",
-    "weekEndISO": "2026-05-10",
+    "weekEndISO": "2026-05-11",
     "scopes": [
       "hanshin",
-      "verona",
       "toast"
     ],
     "stores": [
@@ -27,59 +30,19 @@
         "orders": 224
       },
       {
-        "source": "verona",
-        "storeId": "ohgane-oakland",
-        "sales": 81863
-      },
-      {
-        "source": "verona",
-        "storeId": "ohgane-alameda",
-        "sales": 83073
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-hayward",
-        "sales": 52655
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-concord",
-        "sales": 46241
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-alameda",
-        "sales": 29618
-      },
-      {
-        "source": "verona",
-        "storeId": "spoon-berkeley",
-        "sales": 20811
-      },
-      {
-        "source": "verona",
-        "storeId": "bowld-albany",
-        "sales": 30910
-      },
-      {
-        "source": "verona",
-        "storeId": "mad-for-sushi-dublin",
-        "sales": 25016
-      },
-      {
         "source": "toast",
         "storeId": "ohgane-concord",
-        "sales": 57131
+        "sales": 85981
       },
       {
         "source": "toast",
         "storeId": "oh-g-burger-berkeley",
-        "sales": 28591
+        "sales": 6799
       },
       {
         "source": "toast",
         "storeId": "obento-hayward",
-        "sales": 28591
+        "sales": 7370
       }
     ]
   }
