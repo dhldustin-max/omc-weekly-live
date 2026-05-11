@@ -516,6 +516,29 @@
   .prime-prev-line .delta-down { color: #16a34a; font-weight: 700; margin-left: 4px; }
   .prime-prev-line .delta-flat { color: #9ca3af; margin-left: 4px; }
 
+  /* Per-store Prime save button — commits this week's labor/food values
+     to localStorage so they appear as "지난주 Labor/Food" next week. */
+  .prime-save-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+  .prime-save-btn {
+    font-family: inherit; font-size: 11px; font-weight: 700;
+    padding: 4px 12px;
+    border: 1px solid #d1d5db; background: white; color: #1f2937;
+    border-radius: 6px; cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .prime-save-btn:hover { background: #f3f4f6; }
+  .prime-save-btn.is-saved {
+    background: #ecfdf5; color: #065f46; border-color: #10b981;
+  }
+  .prime-save-btn.is-saved:hover { background: #d1fae5; }
+  .prime-saved-pill {
+    font-size: 9px; font-weight: 700;
+    color: #065f46; background: #d1fae5;
+    padding: 2px 8px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .prime-saved-pill.hidden { display: none; }
+
   .extras-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 11px; padding-top: 8px; border-top: 1px solid #f3f4f6; color: #6b7280; }
   .extras-cell { display: flex; flex-direction: column; gap: 2px; }
   .extras-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.3px; }
@@ -1484,6 +1507,10 @@
         </div>
         <div class="prime-breakdown" id="prime-breakdown-${s.id}">Labor — % · Food — %</div>
         <div class="prime-prev-line no-data" id="prime-prev-${s.id}">지난주 데이터 없음</div>
+        <div class="prime-save-row">
+          <span class="prime-saved-pill hidden" id="prime-saved-pill-${s.id}"></span>
+          <button class="prime-save-btn" id="prime-save-btn-${s.id}" data-store-id="${s.id}" onclick="saveCommittedPrime('${s.id}')">💾 Save</button>
+        </div>
       </div>
 
       <div class="action-plan" id="action-${s.id}">
@@ -2076,7 +2103,122 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   setTimeout(() => {
     const draft = loadDraft();
     if (draft) applyDraft(draft);
+    applyCommittedPrimeOnLoad();
   }, 600);
+
+  // === Committed Prime (Save/Edit button per store) ===
+  // The 임시저장 (draft) auto-save handles in-progress edits, but Dustin
+  // wanted explicit "Save" buttons next to each store's Labor/Food
+  // inputs — once saved, the values carry over as "지난주" reference
+  // next week even without going through Upload to Drive.
+  //
+  // Schema:  { [weekStartISO]: { [storeId]: { labor, food, primePct,
+  //                                            sales, savedAt } } }
+  const COMMITTED_PRIME_KEY = "omc-prime-committed";
+
+  function currentWeekStartISO() {
+    // The "current view week" — last full Mon-Sun. Today (Mon) →
+    // last Mon (= today - 7). Same convention used by the launchd
+    // scraper, so the snapshot timeline aligns.
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun..6=Sat
+    const daysSinceMon = (day + 6) % 7;
+    const thisMon = new Date(now);
+    thisMon.setHours(0, 0, 0, 0);
+    thisMon.setDate(thisMon.getDate() - daysSinceMon);
+    const lastMon = new Date(thisMon);
+    lastMon.setDate(thisMon.getDate() - 7);
+    return lastMon.toISOString().slice(0, 10);
+  }
+
+  function loadCommittedPrime() {
+    try { return JSON.parse(localStorage.getItem(COMMITTED_PRIME_KEY) || "{}"); }
+    catch { return {}; }
+  }
+
+  function saveCommittedPrime(storeId) {
+    const lEl = document.getElementById(`labor-${storeId}`);
+    const fEl = document.getElementById(`food-${storeId}`);
+    const labor = parseFloat(lEl?.value) || 0;
+    const food = parseFloat(fEl?.value) || 0;
+    if (!labor && !food) {
+      showDraftToast("⚠️ Labor 또는 Food 값을 먼저 입력하세요");
+      return;
+    }
+    const week = currentWeekStartISO();
+    const store = STORES.find(s => s.id === storeId);
+    const sales = store?.sales || 0;
+    const primePct = sales ? ((labor + food) / sales) * 100 : null;
+    const data = loadCommittedPrime();
+    if (!data[week]) data[week] = {};
+    data[week][storeId] = {
+      labor, food,
+      primePct: primePct != null ? Math.round(primePct * 10) / 10 : null,
+      sales,
+      savedAt: new Date().toISOString(),
+    };
+    try {
+      localStorage.setItem(COMMITTED_PRIME_KEY, JSON.stringify(data));
+      applySavedPill(storeId, data[week][storeId]);
+      showDraftToast(`💾 ${store?.name || storeId} Prime 저장됨`);
+    } catch (e) {
+      showDraftToast("저장 실패: " + e.message);
+    }
+  }
+
+  function applySavedPill(storeId, saved) {
+    const btn = document.getElementById(`prime-save-btn-${storeId}`);
+    const pill = document.getElementById(`prime-saved-pill-${storeId}`);
+    if (!btn || !pill) return;
+    if (saved) {
+      btn.textContent = "✏️ Edit";
+      btn.classList.add("is-saved");
+      const t = new Date(saved.savedAt);
+      const hh = String(t.getHours()).padStart(2, "0");
+      const mm = String(t.getMinutes()).padStart(2, "0");
+      pill.textContent = `✓ Saved ${hh}:${mm}`;
+      pill.classList.remove("hidden");
+    } else {
+      btn.textContent = "💾 Save";
+      btn.classList.remove("is-saved");
+      pill.classList.add("hidden");
+    }
+  }
+
+  // On page load: populate inputs from THIS week's committed prime AND
+  // populate s.prevLabor/prevFood from the most-recent week BEFORE this
+  // week's committed prime (so prev-week display works even without a
+  // full Drive snapshot).
+  function applyCommittedPrimeOnLoad() {
+    const data = loadCommittedPrime();
+    const thisWeek = currentWeekStartISO();
+    const allWeeks = Object.keys(data).sort(); // ascending
+    const prevWeekISO = allWeeks.filter(w => w < thisWeek).pop();
+    const thisWeekData = data[thisWeek] || {};
+    const prevWeekData = prevWeekISO ? data[prevWeekISO] : null;
+
+    STORES.forEach(s => {
+      // This week's saved inputs (if any) → fill + show pill
+      const saved = thisWeekData[s.id];
+      if (saved) {
+        const lEl = document.getElementById(`labor-${s.id}`);
+        const fEl = document.getElementById(`food-${s.id}`);
+        if (lEl && saved.labor != null && !lEl.value) lEl.value = saved.labor;
+        if (fEl && saved.food != null && !fEl.value) fEl.value = saved.food;
+        applySavedPill(s.id, saved);
+      }
+      // Prev week's committed prime → fill s.prevLabor/prevFood if not
+      // already populated from a Drive snapshot.
+      if (prevWeekData && prevWeekData[s.id] && s.prevLabor == null) {
+        const p = prevWeekData[s.id];
+        s.prevLabor = p.labor;
+        s.prevFood = p.food;
+        s.prevPrimePct = p.primePct;
+        s.prevPrimeSales = p.sales;
+      }
+    });
+    recalcAll();
+  }
 
   // === Notes management ===
   function renderRecapNotes(storeId) {
