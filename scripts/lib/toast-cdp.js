@@ -18,7 +18,11 @@
 // Reuses Toast restaurant GUIDs from the populateAccessibleRestaurants
 // endpoint — Toast normalizes GUIDs in the locations= URL param.
 
-import { chromium } from 'playwright';
+// Switched from Playwright connectOverCDP → puppeteer-core because
+// Chrome 148+ rejected Playwright's setDownloadBehavior probe with
+// "Browser context management is not supported". Puppeteer is Chrome's
+// own library and uses a CDP init sequence that current Chrome accepts.
+import puppeteer from 'puppeteer-core';
 import { parseSalesSummary, fmtToastDate, OMC_TOAST_STORES } from './toast.js';
 
 const CDP_ENDPOINT = 'http://localhost:9222';
@@ -35,7 +39,10 @@ const TOAST_STORE_GUIDS = {
 
 async function connectToCdp() {
   try {
-    const browser = await chromium.connectOverCDP(CDP_ENDPOINT);
+    const browser = await puppeteer.connect({
+      browserURL: CDP_ENDPOINT,
+      defaultViewport: null,
+    });
     return browser;
   } catch (e) {
     throw new Error(
@@ -76,21 +83,29 @@ function parseRevenueSummaryNetSales(text) {
   return null;
 }
 
-async function scrapeOneStore(context, guid, startISO, endISO) {
-  const page = await context.newPage();
+async function scrapeOneStore(browser, guid, startISO, endISO) {
+  const page = await browser.newPage();
   try {
+    // KEY: Toast keeps an active restaurant context per session. The
+    // `locations=` URL param only FILTERS, it doesn't switch context —
+    // reports still serve data based on the active restaurant. So we
+    // navigate to the switch endpoint with returnUrl set to the Sales
+    // Summary report we want. Toast switches active restaurant then
+    // redirects to the report URL with proper context.
     const startMD = startISO.replace(/-/g, '');
     const endMD = endISO.replace(/-/g, '');
+    const returnPath = `/restaurants/admin/reports/sales/sales-summary?datePreset=CUSTOM&startDate=${startMD}&endDate=${endMD}`;
     const url =
-      `https://www.toasttab.com/restaurants/admin/reports/sales/sales-summary` +
-      `?datePreset=CUSTOM&startDate=${startMD}&endDate=${endMD}&locations=${guid}`;
+      `https://www.toasttab.com/account/switchrestaurant` +
+      `?guid=${guid}&returnUrl=${encodeURIComponent(returnPath)}`;
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Toast does a redirect to returnUrl after switching — give it a beat
+    await page.bringToFront();
+    await new Promise(r => setTimeout(r, 1500));
 
-    // Wait for the Revenue Summary card to actually appear. Toast's
-    // SPA loads in stages — partial renders (~9k chars) show breakdown
-    // sub-tables but NOT the top-level Revenue Summary card. Manager
-    // UI canonical Net Sales lives in that card, so we MUST wait for
-    // it. Up to 90 seconds total — Toast can be slow.
+    // Wait for the Revenue Summary card to render. Manager-facing Net
+    // Sales lives there; sub-section breakdowns load earlier and have
+    // smaller values that we should ignore.
     try {
       await page.waitForFunction(
         () => document.body.innerText.includes('Revenue Summary'),
@@ -99,18 +114,21 @@ async function scrapeOneStore(context, guid, startISO, endISO) {
     } catch {
       throw new Error('REVENUE_SUMMARY_NOT_LOADED — Toast SPA did not render Revenue Summary card within 90s');
     }
-    // Even after the header appears, the value may take another beat to populate
-    await page.waitForTimeout(2500);
+    // Grace period for value to populate after header appears
+    await new Promise(r => setTimeout(r, 2500));
 
     const text = await page.evaluate(() => document.body.innerText);
+
+    // Detect session-expired bounce to login
+    if (/auth\.toasttab\.com|please sign in/i.test(page.url() + ' ' + text.slice(0, 500))) {
+      throw new Error('TOAST_LOGIN_REQUIRED — log in to Toast in the chrome-debug window');
+    }
+
     const parsed = parseRevenueSummaryNetSales(text);
     if (!parsed) {
-      // Fall back to old heuristic (less accurate but better than nothing)
       const fallback = parseSalesSummary(text);
-      if (fallback) {
-        return { netSales: fallback.netSales, _warning: 'used_fallback_parser' };
-      }
-      throw new Error('PARSE_FAILED — Net sales not found even with Revenue Summary anchor');
+      if (fallback) return { netSales: fallback.netSales, _warning: 'used_fallback_parser' };
+      throw new Error('PARSE_FAILED — Net sales not found');
     }
     return { netSales: parsed.netSales };
   } finally {
@@ -128,11 +146,6 @@ async function scrapeOneStore(context, guid, startISO, endISO) {
 export async function scrapeAllToastViaCdp({ startISO, endISO }) {
   const browser = await connectToCdp();
   try {
-    // Use first available context (the real user's profile)
-    const contexts = browser.contexts();
-    const context = contexts[0];
-    if (!context) throw new Error('No browser context found — Chrome may be in odd state');
-
     const results = [];
     for (const store of OMC_TOAST_STORES) {
       const guid = TOAST_STORE_GUIDS[store.id];
@@ -141,7 +154,7 @@ export async function scrapeAllToastViaCdp({ startISO, endISO }) {
         continue;
       }
       try {
-        const { netSales } = await scrapeOneStore(context, guid, startISO, endISO);
+        const { netSales } = await scrapeOneStore(browser, guid, startISO, endISO);
         results.push({
           id: store.id, netSales,
           source: 'toast-cdp',
@@ -153,7 +166,7 @@ export async function scrapeAllToastViaCdp({ startISO, endISO }) {
     }
     return results;
   } finally {
-    // Don't close the browser — it's Dustin's actual Chrome session
-    await browser.close().catch(() => {});
+    // disconnect (not close) — leave Dustin's Chrome alive
+    await browser.disconnect().catch(() => {});
   }
 }
