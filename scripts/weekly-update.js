@@ -28,9 +28,11 @@ import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 import {
-  scrapeHanshin,
   lastBusinessWeekTimestamps,
 } from './lib/clover-hanshin.js';
+import {
+  scrapeHanshinViaApi,
+} from './lib/clover-api.js';
 import {
   scrapeAllVerona,
   loadEnvFile,
@@ -216,16 +218,18 @@ async function patchStoreInIndex(storeId, fieldsToUpdate) {
 
 // ---- scrape sources -------------------------------------------------------
 
-// Hanshin (Clover) — uses saved Playwright session. Returns { netSales, orders }
-// or throws.
+// Hanshin (Clover) — now uses the official REST API instead of Playwright.
+// Permanent token in .env, no 2FA, no session expiry. Returns
+// { netSales, orders } or throws.
 async function runHanshin({ startTs, endTs }) {
-  const result = await scrapeHanshin({
-    sessionPath: HANSHIN_SESSION,
+  const env = await loadEnvFile(ENV_FILE);
+  if (!env.CLOVER_API_TOKEN) {
+    throw new Error('CLOVER_API_TOKEN missing in .env — falling back is removed; add the token to fix.');
+  }
+  return scrapeHanshinViaApi({
+    apiToken: env.CLOVER_API_TOKEN,
     startTs, endTs,
-    headless: true,
-    dumpDir: TMP_DIR,
   });
-  return result;
 }
 
 // Verona (7 stores) — programmatic V1 login each run. Always uses

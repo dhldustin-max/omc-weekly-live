@@ -116,8 +116,12 @@ async function run() {
     console.log('   3. Wait until Net Sales is visible on the page');
     console.log('   4. Come back here and press ENTER\n');
     await waitForSignal('login-done');
-    await context.storageState({ path: SESSION_PATH });
-    console.log(`✓ Session saved → clover-session.json (gitignored)\n`);
+    process.stderr.write('Saving session…\n');
+    await Promise.race([
+      context.storageState({ path: SESSION_PATH }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('storageState timeout 20s')), 20000)),
+    ]);
+    process.stderr.write(`✓ Session saved → clover-session.json (gitignored)\n`);
   } else if (startTsArg && endTsArg) {
     // Direct timestamp control — bypasses date picker quirks. Useful when
     // Clover's Business Day End != midnight and the date picker would
