@@ -46,6 +46,36 @@ async function connectToCdp() {
   }
 }
 
+// Parse the FULL Sales Summary page. Toast renders multiple "Net sales"
+// labels (Revenue Summary card + Net Sales Summary card + per-category
+// breakdowns). The canonical value is the one inside the "Revenue
+// Summary" card — that's what manager UI surfaces as the headline.
+function parseRevenueSummaryNetSales(text) {
+  // Anchor on "Revenue Summary" header, then scan forward for the first
+  // "Net sales" label and grab the dollar value within ~30 lines.
+  const lines = text.split('\n').map(l => l.trim());
+  let anchor = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^Revenue Summary$/i.test(lines[i])) { anchor = i; break; }
+  }
+  if (anchor === -1) return null;
+
+  const moneyRe = /\$([\d,]+(?:\.\d{1,2})?)/;
+  for (let i = anchor + 1; i < Math.min(lines.length, anchor + 30); i++) {
+    if (/^Net sales$/i.test(lines[i])) {
+      // Net sales line — value is typically on next line or same area
+      for (let j = 1; j <= 3 && i + j < lines.length; j++) {
+        const m = lines[i + j].match(moneyRe);
+        if (m) {
+          const v = parseFloat(m[1].replace(/,/g, ''));
+          if (!isNaN(v) && v >= 0) return { netSales: v, anchorLine: anchor, netLine: i, valueLine: i + j };
+        }
+      }
+    }
+  }
+  return null;
+}
+
 async function scrapeOneStore(context, guid, startISO, endISO) {
   const page = await context.newPage();
   try {
@@ -56,30 +86,32 @@ async function scrapeOneStore(context, guid, startISO, endISO) {
       `?datePreset=CUSTOM&startDate=${startMD}&endDate=${endMD}&locations=${guid}`;
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-    // Wait for SPA to actually render. We poll body length — Toast's
-    // fully-rendered Sales Summary is ~30k+ chars; partial loads are
-    // ~9-10k. Give it up to 30 seconds.
-    let lastLen = 0;
-    let stableTicks = 0;
-    for (let i = 0; i < 30; i++) {
-      await page.waitForTimeout(1000);
-      const len = await page.evaluate(() => document.body.innerText.length);
-      if (len > 25000) break;
-      if (len === lastLen) {
-        stableTicks++;
-        if (stableTicks >= 4 && len > 8000) break; // stable partial = good enough
-      } else {
-        stableTicks = 0;
-        lastLen = len;
-      }
+    // Wait for the Revenue Summary card to actually appear. Toast's
+    // SPA loads in stages — partial renders (~9k chars) show breakdown
+    // sub-tables but NOT the top-level Revenue Summary card. Manager
+    // UI canonical Net Sales lives in that card, so we MUST wait for
+    // it. Up to 90 seconds total — Toast can be slow.
+    try {
+      await page.waitForFunction(
+        () => document.body.innerText.includes('Revenue Summary'),
+        { timeout: 90000, polling: 1500 }
+      );
+    } catch {
+      throw new Error('REVENUE_SUMMARY_NOT_LOADED — Toast SPA did not render Revenue Summary card within 90s');
     }
+    // Even after the header appears, the value may take another beat to populate
+    await page.waitForTimeout(2500);
 
     const text = await page.evaluate(() => document.body.innerText);
-    if (text.length < 5000) {
-      throw new Error(`PARTIAL_LOAD — body only ${text.length} chars, Toast not fully rendered`);
+    const parsed = parseRevenueSummaryNetSales(text);
+    if (!parsed) {
+      // Fall back to old heuristic (less accurate but better than nothing)
+      const fallback = parseSalesSummary(text);
+      if (fallback) {
+        return { netSales: fallback.netSales, _warning: 'used_fallback_parser' };
+      }
+      throw new Error('PARSE_FAILED — Net sales not found even with Revenue Summary anchor');
     }
-    const parsed = parseSalesSummary(text);
-    if (!parsed) throw new Error('PARSE_FAILED — Net sales not found');
     return { netSales: parsed.netSales };
   } finally {
     await page.close().catch(() => {});
