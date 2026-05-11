@@ -1,80 +1,43 @@
 {
-  "lastRunAt": "2026-05-11T14:32:41.203Z",
-  "lastRunStatus": "partial",
+  "lastRunAt": "2026-05-11T20:12:19.126Z",
+  "lastRunStatus": "ok",
   "lastRunScopes": [
-    "verona"
+    "hanshin",
+    "toast"
   ],
   "lastRunWeekStartISO": "2026-05-04",
   "lastRunWeekEndISO": "2026-05-10",
-  "lastErrors": [
-    {
-      "source": "hanshin",
-      "error": "SESSION_EXPIRED — Clover redirected to login. Re-run interactively: node scripts/scrape-hanshin.js"
-    },
-    {
-      "source": "toast",
-      "storeId": "ohgane-concord",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    },
-    {
-      "source": "toast",
-      "storeId": "oh-g-burger-berkeley",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    },
-    {
-      "source": "toast",
-      "storeId": "obento-hayward",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    }
-  ],
+  "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-05-11T14:32:41.203Z",
+    "ranAt": "2026-05-11T20:12:19.126Z",
     "weekStartISO": "2026-05-04",
     "weekEndISO": "2026-05-10",
     "scopes": [
-      "verona"
+      "hanshin",
+      "toast"
     ],
     "stores": [
       {
-        "source": "verona",
-        "storeId": "ohgane-oakland",
-        "sales": 81863
+        "source": "hanshin",
+        "storeId": "hanshin-pocha-oakland",
+        "netSales": 17972,
+        "orders": 224
       },
       {
-        "source": "verona",
-        "storeId": "ohgane-alameda",
-        "sales": 83073
+        "source": "toast",
+        "storeId": "ohgane-concord",
+        "sales": 28591
       },
       {
-        "source": "verona",
-        "storeId": "tangjip-hayward",
-        "sales": 52655
+        "source": "toast",
+        "storeId": "oh-g-burger-berkeley",
+        "sales": 28591
       },
       {
-        "source": "verona",
-        "storeId": "tangjip-concord",
-        "sales": 46241
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-alameda",
-        "sales": 29618
-      },
-      {
-        "source": "verona",
-        "storeId": "spoon-berkeley",
-        "sales": 20811
-      },
-      {
-        "source": "verona",
-        "storeId": "bowld-albany",
-        "sales": 30910
-      },
-      {
-        "source": "verona",
-        "storeId": "mad-for-sushi-dublin",
-        "sales": 25016
+        "source": "toast",
+        "storeId": "obento-hayward",
+        "sales": 7370
       }
     ]
   }
