@@ -41,6 +41,9 @@ import {
 import {
   scrapeAllToast,
 } from './lib/toast.js';
+import {
+  scrapeAllToastViaCdp,
+} from './lib/toast-cdp.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
@@ -342,19 +345,40 @@ async function main() {
   } else { log('⏭  Skipping Verona'); }
 
   // ---- Toast (3 stores) ----
+  // Primary path: CDP (connect to Dustin's logged-in Chrome on :9222).
+  // Reliable because it's a real browser, not Playwright Chromium.
+  // Fallback: saved-session Playwright (worked Apr-May but breaks when
+  // Toast session expires or location IDs rotate).
   if (!skipToast) {
+    const endISO = (() => {
+      const [y,m,d] = week.weekStartISO.split('-').map(Number);
+      const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+6);
+      return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    })();
+
+    let results = null;
+    let usedSource = null;
     try {
-      log('▶ Scraping Toast (3 stores)…');
-      const results = await scrapeAllToast({
-        sessionPath: TOAST_SESSION,
-        startISO: week.weekStartISO,
-        endISO: (() => {
-          const [y,m,d] = week.weekStartISO.split('-').map(Number);
-          const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+6);
-          return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-        })(),
-        headless: true,
-      });
+      log('▶ Scraping Toast (3 stores) via Chrome CDP…');
+      results = await scrapeAllToastViaCdp({ startISO: week.weekStartISO, endISO });
+      usedSource = 'toast-cdp';
+    } catch (cdpErr) {
+      log(`  ⚠️  CDP unavailable: ${cdpErr.message}`);
+      log(`  ↳ Falling back to saved-session Playwright`);
+      try {
+        results = await scrapeAllToast({
+          sessionPath: TOAST_SESSION,
+          startISO: week.weekStartISO, endISO,
+          headless: true,
+        });
+        usedSource = 'toast-fallback';
+      } catch (fbErr) {
+        log(`  ❌ Toast fallback also failed: ${fbErr.message}`);
+        errors.push({ source: 'toast', error: `CDP: ${cdpErr.message} | fallback: ${fbErr.message}` });
+      }
+    }
+
+    if (results) {
       let okCount = 0;
       for (const r of results) {
         if (r.error) {
@@ -363,14 +387,11 @@ async function main() {
           continue;
         }
         const patch = await patchStoreInIndex(r.id, { sales: Math.round(r.netSales) });
-        log(`  ${patch.changed ? '🟢' : '⚪'} ${r.id.padEnd(22)} $${Math.round(r.netSales)}`);
+        log(`  ${patch.changed ? '🟢' : '⚪'} ${r.id.padEnd(22)} $${Math.round(r.netSales)} [${usedSource}]`);
         successes.push({ source: 'toast', storeId: r.id, sales: Math.round(r.netSales) });
         okCount++;
       }
       if (okCount > 0) scrapesRan.push('toast');
-    } catch (err) {
-      log(`  ❌ Toast failed: ${err.message}`);
-      errors.push({ source: 'toast', error: err.message });
     }
   } else { log('⏭  Skipping Toast'); }
 
