@@ -134,6 +134,73 @@
           "guests": null
         }
       }
+    },
+    {
+      "weekStartISO": "2026-05-04",
+      "weekEndISO": "2026-05-10",
+      "weekLabel": "May 4 – 10, 2026",
+      "stores": {
+        "ohgane-oakland": {
+          "sales": 81863,
+          "orders": 491,
+          "guests": 1477
+        },
+        "ohgane-concord": {
+          "sales": 69932,
+          "orders": 642,
+          "guests": 1830
+        },
+        "ohgane-alameda": {
+          "sales": 83073,
+          "orders": 583,
+          "guests": 1292
+        },
+        "tangjip-hayward": {
+          "sales": 52655,
+          "orders": 546,
+          "guests": 634
+        },
+        "tangjip-concord": {
+          "sales": 46241,
+          "orders": 458,
+          "guests": 961
+        },
+        "tangjip-alameda": {
+          "sales": 29618,
+          "orders": 358,
+          "guests": 432
+        },
+        "oh-g-burger-berkeley": {
+          "sales": 7436,
+          "orders": 272,
+          "guests": 272
+        },
+        "obento-hayward": {
+          "sales": 7414,
+          "orders": 201,
+          "guests": 201
+        },
+        "hanshin-pocha-oakland": {
+          "sales": 25880,
+          "orders": 265,
+          "guests": null
+        },
+        "spoon-berkeley": {
+          "sales": 20811,
+          "orders": 247,
+          "guests": 319
+        },
+        "bowld-albany": {
+          "sales": 30910,
+          "orders": 480,
+          "guests": 511
+        },
+        "mad-for-sushi-dublin": {
+          "sales": 25016,
+          "orders": null,
+          "guests": null
+        }
+      }
     }
   ]
 }
