@@ -1,19 +1,25 @@
 {
-  "lastRunAt": "2026-05-11T21:29:30.428Z",
-  "lastRunStatus": "ok",
+  "lastRunAt": "2026-05-18T14:31:20.494Z",
+  "lastRunStatus": "partial",
   "lastRunScopes": [
     "hanshin",
     "verona",
     "toast"
   ],
-  "lastRunWeekStartISO": "2026-05-04",
-  "lastRunWeekEndISO": "2026-05-11",
-  "lastErrors": [],
+  "lastRunWeekStartISO": "2026-05-11",
+  "lastRunWeekEndISO": "2026-05-17",
+  "lastErrors": [
+    {
+      "source": "toast",
+      "storeId": "oh-g-burger-berkeley",
+      "error": "PARSE_FAILED — Net sales not found"
+    }
+  ],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-05-11T21:29:30.428Z",
-    "weekStartISO": "2026-05-04",
-    "weekEndISO": "2026-05-11",
+    "ranAt": "2026-05-18T14:31:20.494Z",
+    "weekStartISO": "2026-05-11",
+    "weekEndISO": "2026-05-17",
     "scopes": [
       "hanshin",
       "verona",
@@ -23,63 +29,58 @@
       {
         "source": "hanshin",
         "storeId": "hanshin-pocha-oakland",
-        "netSales": 17932,
-        "orders": 224
+        "netSales": 25136,
+        "orders": 266
       },
       {
         "source": "verona",
         "storeId": "ohgane-oakland",
-        "sales": 81863
+        "sales": 77006
       },
       {
         "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 83073
+        "sales": 62546
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 52655
+        "sales": 44535
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 46241
+        "sales": 38327
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 29618
+        "sales": 23044
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 20811
+        "sales": 13801
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 30910
+        "sales": 26337
       },
       {
         "source": "verona",
         "storeId": "mad-for-sushi-dublin",
-        "sales": 25016
+        "sales": 14815
       },
       {
         "source": "toast",
         "storeId": "ohgane-concord",
-        "sales": 85981
-      },
-      {
-        "source": "toast",
-        "storeId": "oh-g-burger-berkeley",
-        "sales": 6799
+        "sales": 69047
       },
       {
         "source": "toast",
         "storeId": "obento-hayward",
-        "sales": 7370
+        "sales": 6509
       }
     ]
   }
