@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  OMC weekly Hanshin auto-scrape — launchd job.
+  OMC weekly Verona + Hanshin auto-scrape — launchd job.
+  (Toast 3 stores are handled by the Cowork scheduled task, not here.)
 
   Runs every Monday at 7:30 AM. If the Mac was asleep at the scheduled
   time, launchd runs the job as soon as it wakes up (catch-up). The
@@ -23,6 +24,7 @@
     <array>
         <string>/usr/local/bin/node</string>
         <string>__REPO_ROOT__/scripts/weekly-update.js</string>
+        <string>--include-verona</string>
     </array>
 
     <key>WorkingDirectory</key>

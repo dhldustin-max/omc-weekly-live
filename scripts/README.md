@@ -60,3 +60,7 @@ prints heuristic results (money strings + lines mentioning "sales").
 Net Sales is the value to take.
 
 See `../tasks/CLAUDE-TASK-clover-scraper.md` for full spec.
+
+## Scope (updated 05-28-2026)
+This launchd job runs `weekly-update.js --include-verona` → scrapes **Verona (8) + Hanshin (1)** and pushes.
+**Toast (3 stores) are NOT scraped here** — the Cowork scheduled task `omc-weekly-monday-reminder` handles Toast + its own push. Both pull before pushing, so they merge cleanly (Mac 7:30am, Cowork 8:02am).
