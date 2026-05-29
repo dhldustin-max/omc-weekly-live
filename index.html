@@ -1079,6 +1079,10 @@
         };
       }
     });
+    // Full week-keyed Labor/Food history (전주·전전주… 누적) so Drive holds
+    // the complete archive, not just last week. Both Dustin and the
+    // manager converge on this via load-time merge.
+    snap.primeHistory = loadCommittedPrime();
     return snap;
   }
 
@@ -1151,6 +1155,12 @@
       const j = await res.json();
       if (j && j.ok && j.content && j.content.weekEnding) {
         const driveData = j.content;
+        // Merge Drive's full Labor/Food history into this browser's store
+        // (latest savedAt wins per week+store), then refresh inputs.
+        if (driveData.primeHistory) {
+          mergePrimeHistoryFromDrive(driveData.primeHistory);
+          applyCommittedPrimeOnLoad();
+        }
         const currentWeek = (useData && useData.weekEnding) || "";
         if ((driveData.weekEnding || "") > currentWeek) {
           // Drive has newer data — replace and persist locally for next time.
@@ -2160,6 +2170,7 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     try {
       localStorage.setItem(COMMITTED_PRIME_KEY, JSON.stringify(data));
       applySavedPill(storeId, data[week][storeId]);
+      schedulePrimeDriveSync();
       showDraftToast(`💾 ${store?.name || storeId} Prime 저장됨`);
     } catch (e) {
       showDraftToast("저장 실패: " + e.message);
@@ -2219,6 +2230,112 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     });
     recalcAll();
   }
+
+  // ============================================================
+  // AUTO-SAVE + cross-device Labor/Food history (added 2026-05-28)
+  // Labor/Food now save automatically (no buttons, no PDF needed) and
+  // sync to the Drive backend as a full week-keyed archive, so 전주·
+  // 전전주… all accumulate and Dustin + manager share the same data.
+  // ============================================================
+
+  // Merge two week-keyed prime histories. Shape:
+  //   { "<weekISO>": { "<storeId>": {labor,food,primePct,sales,savedAt} } }
+  // Latest savedAt wins per (week, store).
+  function mergeTwoHistories(a, b) {
+    a = a || {}; b = b || {};
+    const out = {};
+    const weeks = new Set([...Object.keys(a), ...Object.keys(b)]);
+    weeks.forEach(w => {
+      out[w] = {};
+      const stores = new Set([...Object.keys(a[w] || {}), ...Object.keys(b[w] || {})]);
+      stores.forEach(s => {
+        const ea = (a[w] || {})[s], eb = (b[w] || {})[s];
+        if (ea && eb) out[w][s] = ((eb.savedAt || "") >= (ea.savedAt || "")) ? eb : ea;
+        else out[w][s] = ea || eb;
+      });
+    });
+    return out;
+  }
+
+  function mergePrimeHistoryFromDrive(driveHist) {
+    const merged = mergeTwoHistories(loadCommittedPrime(), driveHist);
+    try { localStorage.setItem(COMMITTED_PRIME_KEY, JSON.stringify(merged)); } catch (e) {}
+  }
+
+  // Quiet auto-save (no toast) — writes this week's Labor/Food for one
+  // store into the week-keyed localStorage history + updates the pill.
+  function autoSavePrime(storeId) {
+    const lEl = document.getElementById(`labor-${storeId}`);
+    const fEl = document.getElementById(`food-${storeId}`);
+    if (!lEl && !fEl) return;
+    const labor = parseFloat(lEl?.value) || 0;
+    const food = parseFloat(fEl?.value) || 0;
+    if (!labor && !food) return;
+    const week = currentWeekStartISO();
+    const store = STORES.find(s => s.id === storeId);
+    const sales = store?.sales || 0;
+    const primePct = sales ? ((labor + food) / sales) * 100 : null;
+    const data = loadCommittedPrime();
+    if (!data[week]) data[week] = {};
+    data[week][storeId] = {
+      labor, food,
+      primePct: primePct != null ? Math.round(primePct * 10) / 10 : null,
+      sales,
+      savedAt: new Date().toISOString(),
+    };
+    try {
+      localStorage.setItem(COMMITTED_PRIME_KEY, JSON.stringify(data));
+      applySavedPill(storeId, data[week][storeId]);
+    } catch (e) {}
+  }
+
+  // Debounced push of the full history to Drive (GET-merge-POST so two
+  // people editing don't clobber each other).
+  let _primeSyncTimer = null;
+  function schedulePrimeDriveSync() {
+    clearTimeout(_primeSyncTimer);
+    _primeSyncTimer = setTimeout(primeDriveSyncNow, 2500);
+  }
+  async function primeDriveSyncNow() {
+    const local = loadCommittedPrime();
+    try {
+      let content = {};
+      const res = await fetch(APPS_SCRIPT_STATE_URL, { method: "GET", redirect: "follow" });
+      if (res.ok) { const j = await res.json(); if (j && j.content) content = j.content; }
+      const mergedHist = mergeTwoHistories(content.primeHistory || {}, local);
+      try { localStorage.setItem(COMMITTED_PRIME_KEY, JSON.stringify(mergedHist)); } catch (e) {}
+      content.primeHistory = mergedHist;
+      content.lastUpdated = new Date().toISOString().slice(0, 10);
+      if (!content.weekEnding) content.weekEnding = currentWeekStartISO();
+      const date = document.getElementById("meeting-date")?.value || new Date().toISOString().split("T")[0];
+      const filename = `OMC-meeting-${date}-state.json`;
+      const post = await fetch(APPS_SCRIPT_STATE_URL, {
+        method: "POST",
+        body: JSON.stringify({ filename, content: JSON.stringify(content) }),
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        redirect: "follow",
+      });
+      if (post.ok) {
+        const t = new Date();
+        showDraftToast(`☁️ 자동저장됨 ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`);
+      } else {
+        showDraftToast("⚠️ 자동저장 실패 (브라우저엔 저장됨)");
+      }
+    } catch (e) {
+      showDraftToast("⚠️ 자동저장 실패 (브라우저엔 저장됨)");
+    }
+  }
+
+  // Delegated listener (survives re-renders): typing in any Labor/Food
+  // box auto-saves after a short pause, then syncs to Drive.
+  const _primeAutoTimers = {};
+  document.addEventListener("input", e => {
+    const el = e.target;
+    if (!el || !el.classList || !el.classList.contains("prime-input") || !el.id) return;
+    const sid = el.id.replace(/^(labor|food)-/, "");
+    clearTimeout(_primeAutoTimers[sid]);
+    _primeAutoTimers[sid] = setTimeout(() => { autoSavePrime(sid); schedulePrimeDriveSync(); }, 1200);
+  });
 
   // === Notes management ===
   function renderRecapNotes(storeId) {
