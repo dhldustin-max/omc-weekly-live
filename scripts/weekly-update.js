@@ -63,9 +63,15 @@ function getArg(flag) {
 }
 const dryRun = args.includes('--dry-run');
 const skipPush = args.includes('--no-push');
+// As of 2026-05-28, Verona + Toast scraping moved to Cowork (cloud Chrome,
+// no Mac dependency). Local Mac launchd now only runs Hanshin (Clover API).
+// → Both Verona and Toast default to SKIPPED. Force on with explicit flags
+// for emergency local fallback.
+// Hanshin is expected to migrate from Clover → Toast in ~2 months (2026-07);
+// at that point this whole local script becomes obsolete.
 const skipHanshin = args.includes('--skip-hanshin');
-const skipVerona = args.includes('--skip-verona');
-const skipToast = args.includes('--skip-toast');
+const skipVerona = !args.includes('--include-verona');
+const skipToast = !args.includes('--include-toast');
 const overrideStart = getArg('--start-ts');
 const overrideEnd = getArg('--end-ts');
 

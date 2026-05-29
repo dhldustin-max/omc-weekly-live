@@ -26,16 +26,33 @@ That's it. Intentionally simple — no build step, no framework, no dependencies
 | Tangjip (Korean Hot Pot) | Hayward, Concord, Alameda | All Verona |
 | Oh G Burger (K-Fusion) | Berkeley | Toast |
 | Obento (Japanese) | Hayward | Toast |
-| Hanshin Pocha (Bar) | Oakland | Clover |
+| Hanshin Pocha (Bar) | Oakland | Clover (→ Toast ~2026-07) |
 | Spoon (K-Bistro) | Berkeley | Verona |
 | Bowl'd (K-Rice Bowl) | Albany | Verona |
 | Mad For Sushi (Sushi) | Dublin | Verona |
 
 The `STORES` array in `index.html` (~line 450) is the single source of truth — sales, target, ratings, channel mix.
 
+## Weekly automation (as of 2026-05-28)
+
+| Source | Stores | When | How |
+|---|---|---|---|
+| **Cowork** scheduled task | Verona 8 + Toast 3 (11 total) | Mon ~8am PT | Chrome MCP — persistent cloud Chrome, no Mac dependency |
+| **Mac launchd** (local) | Hanshin Pocha (1) | Mon 7:30am PT | Clover REST API (`scripts/lib/clover-api.js`) — permanent token, no 2FA |
+
+**Coming ~2026-07:** Hanshin migrates from Clover → Toast POS. At that point:
+- Disable local launchd entirely (no more Hanshin Clover scraping)
+- Add Hanshin to Cowork's Toast list
+- All 12 stores covered by Cowork. Local Mac no longer involved.
+
+History: Briefly (2026-05-04 → 2026-05-28) we ran everything on local Mac
+with Playwright + Chrome CDP. That setup broke twice in 2 weeks due to
+Chrome debug window closing / Toast session expiry. Migration back to
+Cowork chosen for reliability — cloud Chrome doesn't depend on Mac state.
+
 ## Weekly workflow (Monday 8am)
 
-1. Last week's POS sales scraped (Toast for 3 stores, Verona for 7, Hanshin manual)
+1. Last week's POS sales scraped (Toast for 3 stores, Verona for 8, Hanshin via Clover API)
 2. Google + Yelp ratings refreshed (slow-changing — can skip most weeks)
 3. `STORES` array in `index.html` updated with new sales numbers
 4. `notes.json`: `weekEnding` updated, `newNotes` from last week → `prevNotes`, `consecutiveC` recomputed (reset on A/B, +1 on C)
