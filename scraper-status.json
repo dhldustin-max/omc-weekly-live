@@ -1,80 +1,26 @@
 {
-  "lastRunAt": "2026-05-25T22:22:44.089Z",
-  "lastRunStatus": "partial",
+  "lastRunAt": "2026-05-29T01:18:04.084Z",
+  "lastRunStatus": "ok",
   "lastRunScopes": [
-    "verona"
+    "hanshin"
   ],
   "lastRunWeekStartISO": "2026-05-18",
   "lastRunWeekEndISO": "2026-05-24",
-  "lastErrors": [
-    {
-      "source": "hanshin",
-      "error": "fetch failed"
-    },
-    {
-      "source": "toast",
-      "storeId": "ohgane-concord",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    },
-    {
-      "source": "toast",
-      "storeId": "oh-g-burger-berkeley",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    },
-    {
-      "source": "toast",
-      "storeId": "obento-hayward",
-      "error": "TOAST_SESSION_EXPIRED — re-run scrape-toast.js to refresh session"
-    }
-  ],
+  "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-05-25T22:22:44.089Z",
+    "ranAt": "2026-05-29T01:18:04.084Z",
     "weekStartISO": "2026-05-18",
     "weekEndISO": "2026-05-24",
     "scopes": [
-      "verona"
+      "hanshin"
     ],
     "stores": [
       {
-        "source": "verona",
-        "storeId": "ohgane-oakland",
-        "sales": 81438
-      },
-      {
-        "source": "verona",
-        "storeId": "ohgane-alameda",
-        "sales": 74880
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-hayward",
-        "sales": 40744
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-concord",
-        "sales": 37186
-      },
-      {
-        "source": "verona",
-        "storeId": "tangjip-alameda",
-        "sales": 22926
-      },
-      {
-        "source": "verona",
-        "storeId": "spoon-berkeley",
-        "sales": 14662
-      },
-      {
-        "source": "verona",
-        "storeId": "bowld-albany",
-        "sales": 27173
-      },
-      {
-        "source": "verona",
-        "storeId": "mad-for-sushi-dublin",
-        "sales": 20073
+        "source": "hanshin",
+        "storeId": "hanshin-pocha-oakland",
+        "netSales": 21019,
+        "orders": 236
       }
     ]
   }
