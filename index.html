@@ -918,11 +918,7 @@
 
 <div class="actions">
   <div class="actions-inner">
-    <button class="btn btn-secondary" onclick="window.print()">🖨 Print</button>
-    <button class="btn btn-secondary" id="copy-btn">📋 Copy</button>
-    <button class="btn btn-secondary" id="download-btn">⬇ Download .md</button>
-    <button class="btn btn-secondary" id="save-draft-btn">💾 임시저장</button>
-    <button class="btn btn-success" id="upload-btn">📤 Upload to Drive</button>
+    <button class="btn btn-success" id="savepdf-btn">💾 Save as PDF</button>
   </div>
 </div>
 
@@ -1948,23 +1944,38 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
     }, 200);
   }
 
-  document.getElementById("copy-btn").onclick = () => {
-    showModal();
-    setTimeout(copyFromModal, 50);
-  };
-  document.getElementById("download-btn").onclick = () => {
-    const msg = buildMessage();
-    const blob = new Blob([msg], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    const date = document.getElementById("meeting-date").value || new Date().toISOString().split("T")[0];
-    a.href = url;
-    a.download = `OMC-weekly-ops-${date}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    alert("✓ 다운로드 완료. Dustin한테 이메일/슬랙으로 보내줘.");
-  };
-  document.getElementById("upload-btn").onclick = uploadToDrive;
+  // Single action button: print → "Save as PDF", and in the background
+  // persist the full meeting state (notes + Labor/Food history) to Drive
+  // so the Monday automation's notes rollover keeps working. (Replaces the
+  // old Print / Copy / Download / 임시저장 / Upload-to-Drive buttons.)
+  async function saveAsPdf() {
+    const date = document.getElementById("meeting-date")?.value || new Date().toISOString().split("T")[0];
+    const originalTitle = document.title;
+    document.title = `OMC-meeting-${date}`;
+    window.print();
+    document.title = originalTitle;
+    try {
+      const snap = buildSnapshot(); // prevNotes + consecutiveC + prevPrime + primeHistory(local)
+      try {
+        const g = await (await fetch(APPS_SCRIPT_STATE_URL, { method: "GET", redirect: "follow" })).json();
+        if (g && g.content && g.content.primeHistory) {
+          snap.primeHistory = mergeTwoHistories(g.content.primeHistory, snap.primeHistory);
+        }
+      } catch (e) {}
+      try { localStorage.setItem(COMMITTED_PRIME_KEY, JSON.stringify(snap.primeHistory || {})); } catch (e) {}
+      saveSnapshot(snap);
+      const res = await fetch(APPS_SCRIPT_STATE_URL, {
+        method: "POST",
+        body: JSON.stringify({ filename: `OMC-meeting-${date}-state.json`, content: JSON.stringify(snap) }),
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        redirect: "follow",
+      });
+      showDraftToast(res.ok ? "☁️ 노트·Labor/Food 저장됨" : "⚠️ Drive 저장 실패 (브라우저엔 저장됨)");
+    } catch (e) {
+      showDraftToast("⚠️ Drive 저장 실패 (브라우저엔 저장됨)");
+    }
+  }
+  document.getElementById("savepdf-btn").onclick = saveAsPdf;
 
   // === Draft save/restore ===
   // Persists in-progress meeting state (manager name, date, per-store
@@ -2106,7 +2117,7 @@ Dustin: 이걸로 v4 PDF 11개 매장 + 7개 컨셉 다시 뽑아줘 (real Prime
   });
 
   // Manual button
-  document.getElementById("save-draft-btn").onclick = () => saveDraft();
+  // (임시저장 버튼 제거됨 — 입력은 800ms마다 자동으로 draft 저장됨)
 
   // On boot: restore if a recent draft exists. Run AFTER buildStores +
   // recalcAll have populated the DOM so the input elements exist.
