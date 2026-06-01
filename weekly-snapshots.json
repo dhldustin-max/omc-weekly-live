@@ -335,6 +335,28 @@
           "guests": null
         }
       }
+    },
+    {
+      "weekStartISO": "2026-05-25",
+      "weekEndISO": "2026-05-31",
+      "weekLabel": "May 25 – 31, 2026",
+      "stores": {
+        "ohgane-concord": {
+          "sales": 79753,
+          "orders": null,
+          "guests": null
+        },
+        "oh-g-burger-berkeley": {
+          "sales": 8078,
+          "orders": null,
+          "guests": null
+        },
+        "obento-hayward": {
+          "sales": 7239,
+          "orders": null,
+          "guests": null
+        }
+      }
     }
   ]
 }
