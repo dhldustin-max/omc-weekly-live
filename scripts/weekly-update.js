@@ -5,18 +5,16 @@
 // via launchd every Monday morning. Replaces the (disabled) Cowork-side
 // scheduled task.
 //
-// Sources:
-//   - Hanshin Pocha (Clover, 1 store) — Playwright with saved session
-//   - Verona (7 stores) — Playwright with programmatic V1 login
-//   - (Toast still TODO — Cowork covers it via fallback for now)
+// Scope: runs via launchd with --include-verona →
+//   - Hanshin Pocha (Clover, 1 store) — Clover REST API (permanent token in .env)
+//   - Verona (8 stores) — Playwright with programmatic V1 login (.env creds)
+//   Toast (3 stores) is handled by the Cowork scheduled task, NOT here.
 //
 // Steps:
 //   1. Compute last completed Mon-Sun business week
-//   2. git pull (catch any commits from elsewhere)
-//   3. Scrape Hanshin → patch index.html
-//   4. Scrape Verona  → patch index.html (7 stores)
-//   5. Update scraper-status.json with combined run state
-//   6. git commit + push
+//   2. git pull --rebase --autostash (absorb the Cowork Toast commit)
+//   3. Scrape Hanshin + Verona → patch index.html + weekly-snapshots.json
+//   4. Update scraper-status.json, then git commit + push
 //
 // Manual test:    node scripts/weekly-update.js --dry-run
 // Force re-run:   node scripts/weekly-update.js --start-ts X --end-ts Y
@@ -38,17 +36,10 @@ import {
   loadEnvFile,
   fmtVeronaDate,
 } from './lib/verona.js';
-import {
-  scrapeAllToast,
-} from './lib/toast.js';
-import {
-  scrapeAllToastViaCdp,
-} from './lib/toast-cdp.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
 const HANSHIN_SESSION = path.join(REPO_ROOT, 'clover-session.json');
-const TOAST_SESSION = path.join(REPO_ROOT, 'toast-session.json');
 const ENV_FILE = path.join(REPO_ROOT, '.env');
 const INDEX_HTML = path.join(REPO_ROOT, 'index.html');
 const STATUS_FILE = path.join(REPO_ROOT, 'scraper-status.json');
@@ -63,15 +54,12 @@ function getArg(flag) {
 }
 const dryRun = args.includes('--dry-run');
 const skipPush = args.includes('--no-push');
-// As of 2026-05-28, Verona + Toast scraping moved to Cowork (cloud Chrome,
-// no Mac dependency). Local Mac launchd now only runs Hanshin (Clover API).
-// → Both Verona and Toast default to SKIPPED. Force on with explicit flags
-// for emergency local fallback.
-// Hanshin is expected to migrate from Clover → Toast in ~2 months (2026-07);
-// at that point this whole local script becomes obsolete.
+// Scope (as of 2026-06-01): this Mac launchd job scrapes Verona (8) + Hanshin (1).
+// Toast (3) is handled by the Cowork scheduled task. Verona defaults to SKIPPED
+// and is turned on by the plist's --include-verona flag.
+// ~2026-07 Hanshin migrates Clover→Toast; at that point Toast moves fully to Cowork.
 const skipHanshin = args.includes('--skip-hanshin');
 const skipVerona = !args.includes('--include-verona');
-const skipToast = !args.includes('--include-toast');
 const overrideStart = getArg('--start-ts');
 const overrideEnd = getArg('--end-ts');
 
@@ -150,7 +138,7 @@ async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel }) {
 }
 
 // Update the visible "Week of MMM DD – DD, YYYY" tag at the top of the
-// page + the data-snapshot comment + the buildMessage Week line.
+// page + the data-snapshot comment line.
 // Without this, the page can show fresh STORES values but stale labels.
 async function patchWeekLabels({ weekStartISO, weekEndISO }) {
   const [ys, ms, ds] = weekStartISO.split('-').map(Number);
@@ -297,7 +285,7 @@ async function main() {
 
   // Refresh repo so we don't push onto a stale base
   if (!dryRun) {
-    if (!shTry('git pull --rebase origin main')) {
+    if (!shTry('git pull --rebase --autostash origin main')) {
       log('⚠️  git pull failed — continuing anyway');
     }
   }
@@ -350,56 +338,8 @@ async function main() {
     }
   } else { log('⏭  Skipping Verona'); }
 
-  // ---- Toast (3 stores) ----
-  // Primary path: CDP (connect to Dustin's logged-in Chrome on :9222).
-  // Reliable because it's a real browser, not Playwright Chromium.
-  // Fallback: saved-session Playwright (worked Apr-May but breaks when
-  // Toast session expires or location IDs rotate).
-  if (!skipToast) {
-    const endISO = (() => {
-      const [y,m,d] = week.weekStartISO.split('-').map(Number);
-      const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+6);
-      return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-    })();
 
-    let results = null;
-    let usedSource = null;
-    try {
-      log('▶ Scraping Toast (3 stores) via Chrome CDP…');
-      results = await scrapeAllToastViaCdp({ startISO: week.weekStartISO, endISO });
-      usedSource = 'toast-cdp';
-    } catch (cdpErr) {
-      log(`  ⚠️  CDP unavailable: ${cdpErr.message}`);
-      log(`  ↳ Falling back to saved-session Playwright`);
-      try {
-        results = await scrapeAllToast({
-          sessionPath: TOAST_SESSION,
-          startISO: week.weekStartISO, endISO,
-          headless: true,
-        });
-        usedSource = 'toast-fallback';
-      } catch (fbErr) {
-        log(`  ❌ Toast fallback also failed: ${fbErr.message}`);
-        errors.push({ source: 'toast', error: `CDP: ${cdpErr.message} | fallback: ${fbErr.message}` });
-      }
-    }
-
-    if (results) {
-      let okCount = 0;
-      for (const r of results) {
-        if (r.error) {
-          log(`  ❌ ${r.id}: ${r.error}`);
-          errors.push({ source: 'toast', storeId: r.id, error: r.error });
-          continue;
-        }
-        const patch = await patchStoreInIndex(r.id, { sales: Math.round(r.netSales) });
-        log(`  ${patch.changed ? '🟢' : '⚪'} ${r.id.padEnd(22)} $${Math.round(r.netSales)} [${usedSource}]`);
-        successes.push({ source: 'toast', storeId: r.id, sales: Math.round(r.netSales) });
-        okCount++;
-      }
-      if (okCount > 0) scrapesRan.push('toast');
-    }
-  } else { log('⏭  Skipping Toast'); }
+  // Toast (3 stores) is handled by the Cowork scheduled task, not here.
 
   // ---- Update visible week labels (only if at least one source succeeded) ----
   if (successes.length > 0) {

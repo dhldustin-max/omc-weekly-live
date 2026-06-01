@@ -33,22 +33,18 @@ That's it. Intentionally simple — no build step, no framework, no dependencies
 
 The `STORES` array in `index.html` (~line 450) is the single source of truth — sales, target, ratings, channel mix.
 
-## Weekly automation (as of 2026-05-28)
+## Weekly automation (as of 2026-06-01)
+
+Two jobs update the repo every Monday, split by what each platform can reach:
 
 | Source | Stores | When | How |
 |---|---|---|---|
-| **Cowork** scheduled task | Verona 8 + Toast 3 (11 total) | Mon ~8am PT | Chrome MCP — persistent cloud Chrome, no Mac dependency |
-| **Mac launchd** (local) | Hanshin Pocha (1) | Mon 7:30am PT | Clover REST API (`scripts/lib/clover-api.js`) — permanent token, no 2FA |
+| **Mac launchd** (`weekly-update.js --include-verona`) | Verona 8 + Hanshin 1 | Mon 7:30am PT | Verona: Playwright + programmatic V1 login (.env creds). Hanshin: Clover REST API (permanent token in .env) |
+| **Cowork** task (`omc-weekly-monday-reminder`) | Toast 3 | Mon 8:02am PT | Claude-in-Chrome extension drives Dustin's real logged-in browser |
 
-**Coming ~2026-07:** Hanshin migrates from Clover → Toast POS. At that point:
-- Disable local launchd entirely (no more Hanshin Clover scraping)
-- Add Hanshin to Cowork's Toast list
-- All 12 stores covered by Cowork. Local Mac no longer involved.
+Why the split: Verona sessions expire fast and need programmatic .env login (only the Mac node script does that unattended); Hanshin's Clover is blocked from the Cowork sandbox; Toast needs a persistent browser session + device-trust (the Cowork Chrome extension). Both jobs `git pull --rebase --autostash` before pushing and each touches only its own stores' lines, so they merge cleanly regardless of run order.
 
-History: Briefly (2026-05-04 → 2026-05-28) we ran everything on local Mac
-with Playwright + Chrome CDP. That setup broke twice in 2 weeks due to
-Chrome debug window closing / Toast session expiry. Migration back to
-Cowork chosen for reliability — cloud Chrome doesn't depend on Mac state.
+**Coming ~2026-07:** Hanshin migrates Clover → Toast. Then add Hanshin as a 4th Toast store in the Cowork task and drop it from the Mac job (Mac → Verona only).
 
 ## Weekly workflow (Monday 8am)
 
@@ -59,7 +55,7 @@ Cowork chosen for reliability — cloud Chrome doesn't depend on Mac state.
 5. Week tag updated (e.g., "Week of Apr 20 – 26, 2026")
 6. `git commit && git push` → GitHub Pages rebuilds in ~30-60s
 
-There's a Cowork scheduled task (`omc-weekly-monday-reminder`) that handles steps 1-2 automatically Monday 8am via Chrome MCP browser scraping. That task lives in Cowork, not Claude Code — keep it there because Chrome browser sessions for Toast/Verona persist across runs.
+The Cowork scheduled task (`omc-weekly-monday-reminder`) scrapes **Toast (3 stores)** Monday 8:02am via the Claude-in-Chrome extension and pushes. Verona (8) + Hanshin (1) are done by the Mac launchd job at 7:30am. See the Weekly automation table above.
 
 ## Key features (what's implemented)
 
