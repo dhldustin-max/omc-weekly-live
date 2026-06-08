@@ -277,7 +277,8 @@ async function main() {
   const prevStatus = await readStatus();
   const alreadyDone = prevStatus?.lastSuccess?.weekStartISO === week.weekStartISO
     && prevStatus.lastSuccess?.scopes?.includes('verona')
-    && prevStatus.lastSuccess?.scopes?.includes('hanshin');
+    && prevStatus.lastSuccess?.scopes?.includes('hanshin')
+    && (prevStatus.lastErrors || []).length === 0; // only skip a CLEAN week; re-attempt partial/errored weeks
   if (alreadyDone && !overrideStart) {
     log(`✓ Already completed both scrapers for week ${week.weekStartISO} — skipping`);
     return;

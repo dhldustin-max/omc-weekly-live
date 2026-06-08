@@ -390,18 +390,50 @@ export async function scrapeAllVerona({ email, password, startDate, endDate, hea
       await page.waitForTimeout(1500);
     }
 
+    // (Re)open the merchant list via the post-login START link. Used at
+    // startup and to recover after a transient error mid-run.
+    async function openMerchantList() {
+      const startLink = page.locator('a:has-text("START"), a[href*="m.v"]:has-text("START")').first();
+      if (await startLink.count()) {
+        await Promise.all([
+          page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {}),
+          startLink.click(),
+        ]);
+        await page.waitForTimeout(1500);
+      }
+    }
+
     const results = [];
     for (let i = 0; i < OMC_VERONA_STORES.length; i++) {
       const store = OMC_VERONA_STORES[i];
-      try {
-        const data = await scrapeStoreByName(page, store.veronaPrefix, startDate, endDate);
-        results.push({ id: store.id, sales: data.sales, scrapedAt: new Date().toISOString() });
-      } catch (err) {
-        results.push({ id: store.id, error: err.message, scrapedAt: new Date().toISOString() });
+      let data = null, lastErr = null;
+      // Up to 2 attempts. A transient network blip (e.g. ERR_NETWORK_CHANGED)
+      // or a broken merchant-list state must not kill this store OR cascade
+      // into the next one. On failure we hard-recover (re-login + reopen list)
+      // then retry once — re-login is safe mid-run and re-issues fresh tokens,
+      // and scrapeStoreByName clicks by store name so it works on the new list.
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          data = await scrapeStoreByName(page, store.veronaPrefix, startDate, endDate);
+          lastErr = null;
+          break;
+        } catch (err) {
+          lastErr = err;
+          if (attempt < 2) {
+            try { await loginV1(page, { email, password }); await openMerchantList(); }
+            catch { try { await openMerchantList(); } catch {} }
+            await page.waitForTimeout(800);
+          }
+        }
       }
-      // Back to merchant list for next iteration (skip after last store)
+      if (data) {
+        results.push({ id: store.id, sales: data.sales, scrapedAt: new Date().toISOString() });
+      } else {
+        results.push({ id: store.id, error: lastErr ? lastErr.message : 'unknown', scrapedAt: new Date().toISOString() });
+      }
+      // Ensure we're back on the merchant list for the next store.
       if (i < OMC_VERONA_STORES.length - 1) {
-        await backToMerchantList(page);
+        await backToMerchantList(page).catch(() => {});
       }
     }
     return results;
