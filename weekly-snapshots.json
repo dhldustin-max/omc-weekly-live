@@ -282,27 +282,37 @@
         "ohgane-concord": {
           "sales": 68652,
           "orders": 642,
-          "guests": 1830
+          "guests": 1830,
+          "labor": 19550.68,
+          "food": 0
         },
         "ohgane-alameda": {
           "sales": 74880,
           "orders": 583,
-          "guests": 1292
+          "guests": 1292,
+          "labor": 15819.86,
+          "food": 16571.7
         },
         "tangjip-hayward": {
           "sales": 40744,
           "orders": 546,
-          "guests": 634
+          "guests": 634,
+          "labor": 0,
+          "food": 10961.03
         },
         "tangjip-concord": {
           "sales": 37186,
           "orders": 458,
-          "guests": 961
+          "guests": 961,
+          "labor": 11551,
+          "food": 14866
         },
         "tangjip-alameda": {
           "sales": 22926,
           "orders": 358,
-          "guests": 432
+          "guests": 432,
+          "labor": 0,
+          "food": 6122.03
         },
         "oh-g-burger-berkeley": {
           "sales": 7448,
@@ -312,7 +322,9 @@
         "obento-hayward": {
           "sales": 7192,
           "orders": 201,
-          "guests": 201
+          "guests": 201,
+          "labor": 2783,
+          "food": 2514
         },
         "hanshin-pocha-oakland": {
           "sales": 21019,
@@ -322,12 +334,16 @@
         "spoon-berkeley": {
           "sales": 14662,
           "orders": 247,
-          "guests": 319
+          "guests": 319,
+          "labor": 5319.48,
+          "food": 3925.24
         },
         "bowld-albany": {
           "sales": 27173,
           "orders": 480,
-          "guests": 511
+          "guests": 511,
+          "labor": 7082.02,
+          "food": 0
         },
         "mad-for-sushi-dublin": {
           "sales": 20073,
@@ -344,42 +360,58 @@
         "ohgane-oakland": {
           "sales": 67476,
           "orders": 491,
-          "guests": 1477
+          "guests": 1477,
+          "labor": 16163.11,
+          "food": 17745.94
         },
         "ohgane-concord": {
           "sales": 79753,
           "orders": 642,
-          "guests": 1830
+          "guests": 1830,
+          "labor": 20169.46,
+          "food": 0
         },
         "ohgane-alameda": {
           "sales": 79280,
           "orders": 583,
-          "guests": 1292
+          "guests": 1292,
+          "labor": 16800.86,
+          "food": 0
         },
         "tangjip-hayward": {
           "sales": 47026,
           "orders": 546,
-          "guests": 634
+          "guests": 634,
+          "labor": 10254.73,
+          "food": 10961.03
         },
         "tangjip-concord": {
           "sales": 42376,
           "orders": 458,
-          "guests": 961
+          "guests": 961,
+          "labor": 11708.6,
+          "food": 0
         },
         "tangjip-alameda": {
           "sales": 21289,
           "orders": 358,
-          "guests": 432
+          "guests": 432,
+          "labor": 0,
+          "food": 6122.03
         },
         "oh-g-burger-berkeley": {
           "sales": 8078,
           "orders": 272,
-          "guests": 272
+          "guests": 272,
+          "labor": 326,
+          "food": 0
         },
         "obento-hayward": {
           "sales": 7239,
           "orders": 201,
-          "guests": 201
+          "guests": 201,
+          "labor": 2738,
+          "food": 0
         },
         "hanshin-pocha-oakland": {
           "sales": 14062,
@@ -389,12 +421,16 @@
         "spoon-berkeley": {
           "sales": 16259,
           "orders": 247,
-          "guests": 319
+          "guests": 319,
+          "labor": 5319.48,
+          "food": 0
         },
         "bowld-albany": {
           "sales": 28822,
           "orders": 480,
-          "guests": 511
+          "guests": 511,
+          "labor": 7224.01,
+          "food": 0
         },
         "mad-for-sushi-dublin": {
           "sales": 17041,
