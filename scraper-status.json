@@ -1,18 +1,18 @@
 {
-  "lastRunAt": "2026-06-08T16:16:52.651Z",
+  "lastRunAt": "2026-06-17T17:05:18.716Z",
   "lastRunStatus": "ok",
   "lastRunScopes": [
     "hanshin",
     "verona"
   ],
-  "lastRunWeekStartISO": "2026-06-01",
-  "lastRunWeekEndISO": "2026-06-07",
+  "lastRunWeekStartISO": "2026-06-08",
+  "lastRunWeekEndISO": "2026-06-14",
   "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-06-08T16:16:52.651Z",
-    "weekStartISO": "2026-06-01",
-    "weekEndISO": "2026-06-07",
+    "ranAt": "2026-06-17T17:05:18.716Z",
+    "weekStartISO": "2026-06-08",
+    "weekEndISO": "2026-06-14",
     "scopes": [
       "hanshin",
       "verona"
@@ -21,48 +21,48 @@
       {
         "source": "hanshin",
         "storeId": "hanshin-pocha-oakland",
-        "netSales": 13194,
-        "orders": 174
+        "netSales": 11335,
+        "orders": 164
       },
       {
         "source": "verona",
         "storeId": "ohgane-oakland",
-        "sales": 58802
+        "sales": 54635
       },
       {
         "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 79765
+        "sales": 64268
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 36992
+        "sales": 39815
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 37630
+        "sales": 34064
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 25106
+        "sales": 21235
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 13483
+        "sales": 13933
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 25461
+        "sales": 27100
       },
       {
         "source": "verona",
         "storeId": "mad-for-sushi-dublin",
-        "sales": 17690
+        "sales": 15436
       }
     ]
   }
