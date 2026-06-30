@@ -648,10 +648,12 @@
         "ohgane-oakland": {
           "sales": 55993,
           "orders": 491,
-          "guests": 1477
+          "guests": 1477,
+          "labor": 17308,
+          "food": 0
         },
         "ohgane-concord": {
-          "sales": 66519,
+          "sales": 66513,
           "orders": 642,
           "guests": 1830
         },
@@ -676,19 +678,21 @@
           "guests": 432
         },
         "oh-g-burger-berkeley": {
-          "sales": 6494,
+          "sales": 7919,
           "orders": 272,
           "guests": 272
         },
         "obento-hayward": {
-          "sales": 7884,
+          "sales": 7325,
           "orders": 201,
           "guests": 201
         },
         "hanshin-pocha-oakland": {
           "sales": 16628,
           "orders": 207,
-          "guests": null
+          "guests": null,
+          "labor": 5254.33,
+          "food": 3427.78
         },
         "spoon-berkeley": {
           "sales": 15323,
