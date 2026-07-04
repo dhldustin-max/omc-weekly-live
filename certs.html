@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자격증 · 교육 만료 추적 — OMC</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    background: #f2f2f7;
+    color: #111827;
+    padding: 16px;
+    line-height: 1.4;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding-bottom: 110px; }
+
+  .help-banner {
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #1e40af;
+  }
+  .help-banner strong { display: block; margin-bottom: 4px; }
+  .help-banner ul { margin: 6px 0 0 18px; }
+  .help-banner li { margin-bottom: 2px; }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .title { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .back-link { font-size: 11px; color: #007aff; font-weight: 600; text-decoration: none; margin-top: 4px; display: inline-block; }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Summary chips */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip {
+    border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 5px; border: 1px solid transparent;
+  }
+  .chip .chip-n { font-size: 13px; }
+  .chip-expired { background: #fef2f2; color: #991b1b; border-color: #fca5a5; }
+  .chip-d30     { background: #fff7ed; color: #9a3412; border-color: #fdba74; }
+  .chip-d90     { background: #fefce8; color: #a16207; border-color: #fde047; }
+  .chip-ok      { background: #ecfdf5; color: #065f46; border-color: #6ee7b7; }
+  .chip-total   { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+
+  /* Filter bar */
+  .filter-bar {
+    background: white; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+    border: 1px solid #e5e7eb; display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end;
+  }
+  .filter-bar label { display: block; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .filter-bar select, .filter-bar input {
+    width: 100%; padding: 7px 10px; font-size: 13px; border: 1px solid #d1d5db;
+    border-radius: 6px; font-family: inherit; background: white;
+  }
+  .add-btn {
+    padding: 9px 16px; font-size: 13px; font-weight: 600; background: #007aff; color: white;
+    border: none; border-radius: 8px; cursor: pointer; font-family: inherit; white-space: nowrap;
+  }
+  .add-btn:hover { opacity: 0.92; }
+
+  /* Add / Edit form card */
+  .form-card {
+    background: white; border-radius: 14px; padding: 14px 16px; margin-bottom: 16px;
+    box-shadow: 0 0 0 1.5px #007aff;
+  }
+  .form-card.hidden { display: none !important; }
+  .form-title { font-size: 13px; font-weight: 700; color: #007aff; margin-bottom: 10px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+  .form-field label { display: block; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .form-field input, .form-field select, .form-field textarea {
+    width: 100%; padding: 7px 10px; font-size: 13px; border: 1px solid #d1d5db;
+    border-radius: 6px; font-family: inherit; background: white;
+  }
+  .form-field textarea { resize: vertical; min-height: 36px; }
+  .form-field.full { grid-column: 1 / -1; }
+  .field-hint { font-size: 10px; color: #059669; margin-top: 3px; font-weight: 600; }
+  .field-hint.hidden { display: none !important; }
+  .form-actions { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { flex: 1; min-width: 120px; padding: 11px 16px; font-size: 13px; font-weight: 600; border-radius: 9px; border: none; cursor: pointer; font-family: inherit; transition: opacity 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: #007aff; color: white; }
+  .btn-primary:hover { opacity: 0.92; }
+  .btn-secondary { background: #f3f4f6; color: #111827; }
+  .btn-secondary:hover { background: #e5e7eb; }
+
+  /* Cert row cards */
+  .cert-row {
+    background: white; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border-left: 4px solid #34c759;
+    display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+  }
+  .cert-row.st-expired { border-left-color: #ff3b30; }
+  .cert-row.st-d30     { border-left-color: #ff9500; }
+  .cert-row.st-d90     { border-left-color: #eab308; }
+  .cert-row.st-ok      { border-left-color: #34c759; }
+
+  .cert-main { flex: 1; min-width: 0; }
+  .cert-name { font-size: 15px; font-weight: 600; }
+  .cert-store { font-size: 11px; color: #6b7280; font-weight: 500; margin-left: 6px; }
+  .cert-item { font-size: 12px; color: #374151; margin-top: 2px; }
+  .cert-notes { font-size: 11px; color: #6b7280; margin-top: 3px; white-space: pre-wrap; }
+
+  .cert-right { text-align: right; flex-shrink: 0; }
+  .status-pill {
+    display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 700;
+  }
+  .status-pill.st-expired { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+  .status-pill.st-d30     { background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; }
+  .status-pill.st-d90     { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
+  .status-pill.st-ok      { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+  .cert-dates { font-size: 11px; color: #6b7280; margin-top: 5px; }
+  .cert-btns { margin-top: 6px; display: flex; gap: 4px; justify-content: flex-end; }
+  .cert-btns button {
+    background: #f3f4f6; border: none; border-radius: 6px; cursor: pointer;
+    font-size: 13px; padding: 4px 8px; font-family: inherit;
+  }
+  .cert-btns button:hover { background: #e5e7eb; }
+  .cert-btns button.del:hover { background: #fee2e2; }
+
+  .empty-state {
+    background: white; border-radius: 14px; padding: 30px 16px; text-align: center;
+    color: #6b7280; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  /* Fixed bottom actions bar (matches weekly app) */
+  .actions {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+    border-top: 1px solid #e5e7eb; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    display: flex; z-index: 100;
+  }
+  .actions-inner { max-width: 920px; margin: 0 auto; width: 100%; display: flex; gap: 10px; flex-wrap: wrap; }
+  .actions .btn { min-width: 110px; }
+  .btn-success { background: #34c759; color: white; }
+  .btn-success:hover { opacity: 0.92; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: #111827; color: white; font-size: 13px; font-weight: 600;
+    padding: 10px 18px; border-radius: 999px; box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+  @media (max-width: 640px) {
+    .filter-bar { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .cert-row { flex-direction: column; }
+    .cert-right { text-align: left; width: 100%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+    .cert-dates { margin-top: 0; }
+    .cert-btns { margin-top: 0; }
+  }
+
+  @media print {
+    .actions, .help-banner, .filter-bar, .form-card, .cert-btns, .back-link { display: none !important; }
+    body { background: white; padding: 0; }
+    .cert-row { box-shadow: none; border: 1px solid #e5e7eb; border-left-width: 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="help-banner">
+    <strong>📋 이 페이지는?</strong>
+    직원 자격증 · 법정교육 · 퍼밋 <strong>만료일 추적용</strong>. 월요일 미팅 때 만료 임박 항목 체크하고 매니저한테 갱신 지시.
+    <ul>
+      <li><strong>성희롱 예방교육 (Sexual Harassment)</strong>: 채용 후 <strong>6개월 이내</strong> 최초 이수 → 이후 <strong>2년마다</strong> 갱신 (캘리포니아 법)</li>
+      <li><strong>Food Handler Card</strong>: 채용 후 <strong>30일 이내</strong> 취득 필수</li>
+      <li>발급일(Issue) 입력하면 만료일 자동 제안됨 — 실제 카드 날짜랑 다르면 직접 수정</li>
+      <li>데이터는 <strong>이 브라우저에만</strong> 저장됨 (localStorage) → 가끔 <strong>💾 Export JSON</strong>으로 백업 필수</li>
+    </ul>
+  </div>
+
+  <div class="header">
+    <div>
+      <div class="title">자격증 · 교육 만료 추적</div>
+      <div class="subtitle">Certification Expiry Tracker · 14 locations</div>
+      <a class="back-link" href="index.html">← Weekly Ops 메인으로</a>
+    </div>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="filter-bar">
+    <div>
+      <label>매장 필터 · Store</label>
+      <select id="filter-store">
+        <option value="">전체 매장 (All)</option>
+      </select>
+    </div>
+    <div>
+      <label>이름 검색 · Search name</label>
+      <input type="search" id="search-name" placeholder="직원 이름...">
+    </div>
+    <button class="add-btn" id="add-btn">＋ 추가 · Add</button>
+  </div>
+
+  <div class="form-card hidden" id="form-card">
+    <div class="form-title" id="form-title">＋ 새 항목 추가</div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>매장 · Store *</label>
+        <select id="f-store"></select>
+      </div>
+      <div class="form-field">
+        <label>직원 이름 · Employee *</label>
+        <input type="text" id="f-name" placeholder="예: 김민수 / Jose G.">
+      </div>
+      <div class="form-field">
+        <label>항목 · Item *</label>
+        <select id="f-item"></select>
+      </div>
+      <div class="form-field hidden" id="f-item-other-wrap">
+        <label>기타 항목 이름 · Other item</label>
+        <input type="text" id="f-item-other" placeholder="예: Manager ServSafe">
+      </div>
+      <div class="form-field">
+        <label>발급일 · Issue date</label>
+        <input type="date" id="f-issue">
+      </div>
+      <div class="form-field">
+        <label>만료일 · Expiry date *</label>
+        <input type="date" id="f-expiry">
+        <div class="field-hint hidden" id="expiry-hint">✓ 자동 제안됨 — 실제 날짜랑 다르면 수정</div>
+      </div>
+      <div class="form-field full">
+        <label>메모 · Notes</label>
+        <textarea id="f-notes" rows="2" placeholder="예: 온라인 코스 링크 보냄 / 갱신 진행중"></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="save-btn">저장 · Save</button>
+      <button class="btn btn-secondary" id="cancel-btn">취소 · Cancel</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<div class="actions">
+  <div class="actions-inner">
+    <button class="btn btn-success" id="export-json-btn">💾 Export JSON</button>
+    <button class="btn btn-secondary" id="import-json-btn">📥 Import JSON</button>
+    <button class="btn btn-secondary" id="export-csv-btn">📊 Export CSV</button>
+  </div>
+</div>
+<input type="file" id="import-file" accept=".json,application/json" style="display:none">
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== Config =====
+  var LS_KEY = "omc_certs_v1";
+
+  var STORES = [
+    "Ohgane Oakland", "Ohgane Concord", "Ohgane Alameda",
+    "Tangjip Hayward", "Tangjip Concord", "Tangjip Alameda",
+    "Obento Hayward", "Mad for Sushi Dublin", "Oh G Burger Berkeley",
+    "Hanshin Pocha Oakland", "Spoon Berkeley", "Bowl'd Albany",
+    "Jjamppong Zizon Oakland", "Jjamppong Zizon Hayward"
+  ];
+
+  // Auto-suggest rules: years = issue + N years; june30 = next June 30 (school year)
+  var ITEMS = [
+    { key: "food-handler", label: "Food Handler Card (푸드핸들러)", years: 3 },
+    { key: "rbs",          label: "RBS — 주류 서빙 (Alcohol)", years: 3 },
+    { key: "sh-training",  label: "성희롱 예방교육 (Sexual Harassment Training)", years: 2 },
+    { key: "work-permit",  label: "Work Permit — 미성년 취업허가 (Minor)", june30: true },
+    { key: "other",        label: "기타 (Other)" }
+  ];
+
+  var STATUS_META = {
+    expired: { ko: "만료",     cls: "st-expired" },
+    d30:     { ko: "30일 이내", cls: "st-d30" },
+    d90:     { ko: "90일 이내", cls: "st-d90" },
+    ok:      { ko: "OK",       cls: "st-ok" }
+  };
+
+  // ===== State =====
+  var rows = loadRows();
+  var editingId = null;
+  var expiryTouched = false;   // true once user manually edits expiry (stop auto-suggest)
+
+  // ===== Persistence =====
+  function loadRows() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return [];
+      var data = JSON.parse(raw);
+      var arr = Array.isArray(data) ? data : (data && Array.isArray(data.rows) ? data.rows : []);
+      return arr.filter(function (r) { return r && r.name && r.expiry; });
+    } catch (e) {
+      console.warn("certs load failed:", e && e.message);
+      return [];
+    }
+  }
+  function saveRows() {
+    localStorage.setItem(LS_KEY, JSON.stringify({ version: 1, updated: new Date().toISOString(), rows: rows }));
+  }
+
+  // ===== Date helpers (local-time safe) =====
+  function parseYMD(s) {
+    var p = String(s || "").split("-");
+    return new Date(+p[0], (+p[1] || 1) - 1, +p[2] || 1);
+  }
+  function fmtYMD(d) {
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return d.getFullYear() + "-" + m + "-" + day;
+  }
+  function daysUntil(expiry) {
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    return Math.round((parseYMD(expiry) - today) / 86400000);
+  }
+  function statusOf(days) {
+    if (days < 0) return "expired";
+    if (days <= 30) return "d30";
+    if (days <= 90) return "d90";
+    return "ok";
+  }
+  function suggestExpiry(itemKey, issueStr) {
+    if (!issueStr) return "";
+    var def = null;
+    for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].key === itemKey) def = ITEMS[i];
+    if (!def) return "";
+    var d = parseYMD(issueStr);
+    if (def.june30) {
+      // Next June 30 after the issue date (school-year permit)
+      var y = d.getFullYear();
+      if (d.getMonth() > 5 || (d.getMonth() === 5 && d.getDate() >= 30)) y += 1;
+      return y + "-06-30";
+    }
+    if (def.years) {
+      var nd = new Date(d);
+      nd.setFullYear(nd.getFullYear() + def.years);
+      return fmtYMD(nd);
+    }
+    return "";  // "other" — no suggestion
+  }
+
+  // ===== Utils =====
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function itemLabel(r) {
+    if (r.item === "other") return r.itemOther ? "기타: " + r.itemOther : "기타 (Other)";
+    for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].key === r.item) return ITEMS[i].label;
+    return r.item || "—";
+  }
+  function newId() {
+    return (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+      : "r" + Date.now() + Math.random().toString(36).slice(2, 7);
+  }
+  var toastTimer = null;
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2000);
+  }
+  function download(filename, text, mime) {
+    var blob = new Blob([text], { type: mime || "application/octet-stream" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function todayStr() { return fmtYMD(new Date()); }
+
+  // ===== Render =====
+  function render() {
+    renderChips();
+    renderList();
+  }
+
+  function renderChips() {
+    var counts = { expired: 0, d30: 0, d90: 0, ok: 0 };
+    rows.forEach(function (r) { counts[statusOf(daysUntil(r.expiry))]++; });
+    document.getElementById("chips").innerHTML =
+      '<span class="chip chip-expired">만료 <span class="chip-n">' + counts.expired + '</span></span>' +
+      '<span class="chip chip-d30">30일 이내 <span class="chip-n">' + counts.d30 + '</span></span>' +
+      '<span class="chip chip-d90">90일 이내 <span class="chip-n">' + counts.d90 + '</span></span>' +
+      '<span class="chip chip-ok">OK <span class="chip-n">' + counts.ok + '</span></span>' +
+      '<span class="chip chip-total">전체 <span class="chip-n">' + rows.length + '</span></span>';
+  }
+
+  function renderList() {
+    var storeFilter = document.getElementById("filter-store").value;
+    var q = document.getElementById("search-name").value.trim().toLowerCase();
+
+    var visible = rows.filter(function (r) {
+      if (storeFilter && r.store !== storeFilter) return false;
+      if (q && String(r.name || "").toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    // Sort by expiry ascending — most urgent first
+    visible.sort(function (a, b) { return a.expiry < b.expiry ? -1 : a.expiry > b.expiry ? 1 : 0; });
+
+    var listEl = document.getElementById("list");
+    if (visible.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">' +
+        (rows.length === 0
+          ? "아직 데이터 없음 — 위의 <strong>＋ 추가</strong> 버튼으로 첫 항목 입력"
+          : "필터/검색 결과 없음 · No results") +
+        "</div>";
+      return;
+    }
+
+    listEl.innerHTML = visible.map(function (r) {
+      var days = daysUntil(r.expiry);
+      var st = statusOf(days);
+      var meta = STATUS_META[st];
+      var dTag = days < 0 ? "D+" + (-days) : "D-" + days;
+      var pillText = st === "expired" ? "만료 · " + dTag : (st === "ok" ? "OK" : meta.ko + " · " + dTag);
+      var dates = "만료 <strong>" + escapeHtml(r.expiry) + "</strong>" + (r.issue ? " · 발급 " + escapeHtml(r.issue) : "");
+      return '<div class="cert-row ' + meta.cls + '">' +
+        '<div class="cert-main">' +
+          '<div class="cert-name">' + escapeHtml(r.name) +
+            '<span class="cert-store">' + escapeHtml(r.store) + '</span></div>' +
+          '<div class="cert-item">' + escapeHtml(itemLabel(r)) + '</div>' +
+          (r.notes ? '<div class="cert-notes">📝 ' + escapeHtml(r.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="cert-right">' +
+          '<span class="status-pill ' + meta.cls + '">' + pillText + '</span>' +
+          '<div class="cert-dates">' + dates + '</div>' +
+          '<div class="cert-btns">' +
+            '<button onclick="editRow(\'' + r.id + '\')" title="수정 · Edit">✏️</button>' +
+            '<button class="del" onclick="deleteRow(\'' + r.id + '\')" title="삭제 · Delete">🗑</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  // ===== Form =====
+  function openForm(row) {
+    editingId = row ? row.id : null;
+    expiryTouched = !!row;   // editing an existing row → don't clobber its expiry
+    document.getElementById("form-title").textContent = row ? "✏️ 항목 수정 · Edit" : "＋ 새 항목 추가 · Add";
+    document.getElementById("f-store").value = row ? row.store : STORES[0];
+    document.getElementById("f-name").value = row ? row.name : "";
+    document.getElementById("f-item").value = row ? row.item : ITEMS[0].key;
+    document.getElementById("f-item-other").value = row ? (row.itemOther || "") : "";
+    document.getElementById("f-issue").value = row ? (row.issue || "") : "";
+    document.getElementById("f-expiry").value = row ? row.expiry : "";
+    document.getElementById("f-notes").value = row ? (row.notes || "") : "";
+    document.getElementById("expiry-hint").classList.add("hidden");
+    syncOtherField();
+    document.getElementById("form-card").classList.remove("hidden");
+    document.getElementById("form-card").scrollIntoView({ behavior: "smooth", block: "center" });
+    document.getElementById("f-name").focus();
+  }
+  function closeForm() {
+    editingId = null;
+    document.getElementById("form-card").classList.add("hidden");
+  }
+  function syncOtherField() {
+    var isOther = document.getElementById("f-item").value === "other";
+    document.getElementById("f-item-other-wrap").classList.toggle("hidden", !isOther);
+  }
+  function maybeSuggestExpiry() {
+    if (expiryTouched) return;
+    var sugg = suggestExpiry(document.getElementById("f-item").value, document.getElementById("f-issue").value);
+    if (sugg) {
+      document.getElementById("f-expiry").value = sugg;
+      document.getElementById("expiry-hint").classList.remove("hidden");
+    }
+  }
+  function submitForm() {
+    var store = document.getElementById("f-store").value;
+    var name = document.getElementById("f-name").value.trim();
+    var item = document.getElementById("f-item").value;
+    var itemOther = document.getElementById("f-item-other").value.trim();
+    var issue = document.getElementById("f-issue").value;
+    var expiry = document.getElementById("f-expiry").value;
+    var notes = document.getElementById("f-notes").value.trim();
+
+    if (!name) { alert("직원 이름 입력해주세요 (Employee name required)"); return; }
+    if (!expiry) { alert("만료일 입력해주세요 (Expiry date required)"); return; }
+    if (issue && expiry < issue) { alert("만료일이 발급일보다 빠름 — 날짜 확인해주세요"); return; }
+
+    var data = { store: store, name: name, item: item, itemOther: item === "other" ? itemOther : "", issue: issue, expiry: expiry, notes: notes };
+    if (editingId) {
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i].id === editingId) { data.id = editingId; rows[i] = data; break; }
+      }
+    } else {
+      data.id = newId();
+      rows.push(data);
+    }
+    saveRows();
+    closeForm();
+    render();
+    showToast("💾 저장됨 · Saved");
+  }
+
+  // ===== Row actions (global for inline onclick) =====
+  window.editRow = function (id) {
+    var row = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i].id === id) row = rows[i];
+    if (row) openForm(row);
+  };
+  window.deleteRow = function (id) {
+    var row = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i].id === id) row = rows[i];
+    if (!row) return;
+    if (!confirm("삭제할까요?\n" + row.name + " — " + itemLabel(row))) return;
+    rows = rows.filter(function (r) { return r.id !== id; });
+    saveRows();
+    render();
+    showToast("🗑 삭제됨 · Deleted");
+  };
+
+  // ===== Export / Import =====
+  function exportJSON() {
+    var payload = { version: 1, exported: new Date().toISOString(), count: rows.length, rows: rows };
+    download("omc-certs-" + todayStr() + ".json", JSON.stringify(payload, null, 2), "application/json");
+    showToast("💾 JSON 다운로드됨");
+  }
+  function exportCSV() {
+    function q(v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }
+    var header = ["Store", "Employee", "Item", "Issue Date", "Expiry Date", "Days Left", "Status", "Notes"];
+    var sorted = rows.slice().sort(function (a, b) { return a.expiry < b.expiry ? -1 : 1; });
+    var lines = [header.join(",")].concat(sorted.map(function (r) {
+      var days = daysUntil(r.expiry);
+      return [r.store, r.name, itemLabel(r), r.issue || "", r.expiry, days, STATUS_META[statusOf(days)].ko, r.notes || ""].map(q).join(",");
+    }));
+    // BOM so Excel opens Korean text correctly
+    download("omc-certs-" + todayStr() + ".csv", "﻿" + lines.join("\r\n"), "text/csv;charset=utf-8");
+    showToast("📊 CSV 다운로드됨");
+  }
+  function importJSON(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        var arr = Array.isArray(data) ? data : (data && Array.isArray(data.rows) ? data.rows : null);
+        if (!arr) throw new Error("rows 배열이 없음");
+        var clean = arr.filter(function (r) { return r && r.name && r.expiry; }).map(function (r) {
+          return {
+            id: r.id || newId(),
+            store: r.store || STORES[0],
+            name: String(r.name),
+            item: r.item || "other",
+            itemOther: r.itemOther || "",
+            issue: r.issue || "",
+            expiry: String(r.expiry),
+            notes: r.notes || ""
+          };
+        });
+        if (!confirm("현재 " + rows.length + "개 데이터를 파일의 " + clean.length + "개로 교체합니다.\n(Replace ALL current data — 되돌릴 수 없음)\n계속할까요?")) return;
+        rows = clean;
+        saveRows();
+        render();
+        showToast("📥 " + clean.length + "개 가져옴 · Imported");
+      } catch (e) {
+        alert("JSON 파일을 읽을 수 없음: " + (e && e.message));
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ===== Init =====
+  function init() {
+    // Store dropdowns (filter + form)
+    var filterSel = document.getElementById("filter-store");
+    var formSel = document.getElementById("f-store");
+    STORES.forEach(function (s) {
+      var o1 = document.createElement("option"); o1.value = s; o1.textContent = s; filterSel.appendChild(o1);
+      var o2 = document.createElement("option"); o2.value = s; o2.textContent = s; formSel.appendChild(o2);
+    });
+    // Item dropdown
+    var itemSel = document.getElementById("f-item");
+    ITEMS.forEach(function (it) {
+      var o = document.createElement("option"); o.value = it.key; o.textContent = it.label; itemSel.appendChild(o);
+    });
+
+    document.getElementById("add-btn").onclick = function () { openForm(null); };
+    document.getElementById("save-btn").onclick = submitForm;
+    document.getElementById("cancel-btn").onclick = closeForm;
+    document.getElementById("filter-store").onchange = renderList;
+    document.getElementById("search-name").oninput = renderList;
+
+    itemSel.onchange = function () { syncOtherField(); maybeSuggestExpiry(); };
+    document.getElementById("f-issue").onchange = maybeSuggestExpiry;
+    document.getElementById("f-expiry").oninput = function () {
+      expiryTouched = true;
+      document.getElementById("expiry-hint").classList.add("hidden");
+    };
+
+    document.getElementById("export-json-btn").onclick = exportJSON;
+    document.getElementById("export-csv-btn").onclick = exportCSV;
+    document.getElementById("import-json-btn").onclick = function () {
+      document.getElementById("import-file").click();
+    };
+    document.getElementById("import-file").onchange = function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (f) importJSON(f);
+      e.target.value = "";  // allow re-importing same file
+    };
+
+    render();
+  }
+  init();
+</script>
+</body>
+</html>
