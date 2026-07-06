@@ -861,7 +861,7 @@
       <div>
         <div class="focus-bar-label">🎯 Current Meeting</div>
         <div class="focus-bar-value" id="focus-name">All Stores (Director View)</div>
-        <div class="focus-bar-status" id="focus-status">11 stores visible · Director mode</div>
+        <div class="focus-bar-status" id="focus-status">12 stores visible · Director mode</div>
       </div>
       <select id="focus-select">
         <option value="all">📊 All Stores (Director only)</option>
@@ -877,6 +877,7 @@
           <option value="hanshin-pocha-oakland">Hanshin Pocha Oakland</option>
           <option value="spoon-berkeley">Spoon Korean Bistro</option>
           <option value="bowld-albany">Bowl'd Albany</option>
+          <option value="jjamppong-zizon-oakland">Jjamppong Zizon Oakland</option>
         </optgroup>
       </select>
     </div>
@@ -1002,6 +1003,13 @@
       sales: 13059, target: 53888, floor: 48499, stretch: 60624, rent: 21000,
       orders: null, guests: null,
       googleRating: 4.0, yelpRating: 4.1,
+      channelDine: null },
+    // Jjamppong Zizon Oakland — added 07-06-2026. Toast POS. Rent $6.5K/mo (~10% of monthly sales target). GUID e2168fc9-5879-41e6-8cf0-a805a4885819
+    { id: "jjamppong-zizon-oakland", name: "Jjamppong Zizon Oakland", concept: "Jjamppong Zizon", cuisine: "Korean-Chinese Noodle",
+      location: "Oakland, CA", pos: "Toast", isNew: true,
+      sales: 14025, target: 15000, floor: 13500, stretch: 16875, rent: 6500,
+      orders: null, guests: null,
+      googleRating: null, yelpRating: null,
       channelDine: null },
   ];
 
@@ -1517,11 +1525,11 @@
       <div class="extras-row">
         <div class="extras-cell">
           <span class="extras-label">⭐ Google</span>
-          <span class="extras-value">${s.googleRating}</span>
+          <span class="extras-value">${s.googleRating ?? '—'}</span>
         </div>
         <div class="extras-cell">
           <span class="extras-label">⭐ Yelp</span>
-          <span class="extras-value">${s.yelpRating}</span>
+          <span class="extras-value">${s.yelpRating ?? '—'}</span>
         </div>
         <div class="extras-cell">
           <span class="extras-label">Channel</span>
@@ -2269,7 +2277,7 @@
     });
     if (isAll) {
       document.getElementById("focus-name").textContent = "All Stores (Director View)";
-      document.getElementById("focus-status").textContent = "11 stores visible · Director mode";
+      document.getElementById("focus-status").textContent = "12 stores visible · Director mode";
       document.getElementById("nav-bar").classList.add("hidden");
     } else {
       const s = STORES.find(x => x.id === focusId);
