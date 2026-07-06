@@ -1,0 +1,2550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Hire Welcome</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    background: #f2f2f7;
+    color: #111827;
+    padding: 16px;
+    line-height: 1.45;
+    min-height: 100vh;
+  }
+  .container { max-width: 640px; margin: 0 auto; padding-bottom: 100px; }
+
+  /* Top bar */
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .brand-mark { font-weight: 800; font-size: 16px; letter-spacing: -0.3px; color: #111827; }
+  .lang-toggle { display: flex; gap: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 999px; padding: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .lang-toggle button {
+    border: 0; background: transparent; padding: 5px 12px; font-size: 12px; font-weight: 600;
+    color: #6b7280; cursor: pointer; border-radius: 999px; font-family: inherit;
+  }
+  .lang-toggle button.active { background: #111827; color: #fff; }
+
+  /* Progress bar */
+  .wizard-progress {
+    display: flex; gap: 4px; margin-bottom: 18px;
+    background: #fff; padding: 8px; border-radius: 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .step {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 5px 2px; border-radius: 8px;
+    font-size: 10px; color: #9ca3af; font-weight: 600;
+  }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #f3f4f6; color: #9ca3af; font-weight: 700; font-size: 11px;
+    border: 2px solid #f3f4f6;
+  }
+  .step.active { color: #111827; }
+  .step.active .step-num { background: #111827; color: #fff; border-color: #111827; }
+  .step.done { color: #16a34a; }
+  .step.done .step-num { background: #16a34a; color: #fff; border-color: #16a34a; }
+  .step-label { text-transform: uppercase; letter-spacing: 0.4px; font-size: 9px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #f9fafb;
+    border-radius: 18px;
+    padding: 22px 22px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(15,23,42,0.18);
+  }
+  .hero-eyebrow { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+  .hero-title { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-top: 8px; line-height: 1.25; }
+  .hero-body { font-size: 13.5px; color: #cbd5e1; margin-top: 10px; }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: 14px; padding: 16px 18px;
+    margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #f1f5f9;
+  }
+  .card h2 { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 10px; }
+  .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px; }
+  .card h4 { font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; }
+  .card p { font-size: 13.5px; color: #374151; margin-bottom: 6px; }
+  .card .meta { font-size: 11.5px; color: #6b7280; margin-top: 10px; }
+
+  /* Form fields */
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
+  .field input { width: 100%; padding: 11px 13px; font-size: 15px; border: 1px solid #d1d5db; border-radius: 8px; font-family: inherit; background: #fff; }
+  .field input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 3px rgba(17,24,39,0.08); }
+  .field-readonly { background: #f9fafb; padding: 10px 12px; border-radius: 8px; border: 1px dashed #d1d5db; margin-bottom: 8px; }
+  .field-readonly .ro-label { font-size: 10px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .field-readonly .ro-value { font-size: 14px; color: #111827; font-weight: 600; margin-top: 2px; }
+
+  /* Selfie page */
+  .selfie-preview-wrap {
+    width: 100%; aspect-ratio: 1/1;
+    background: #f3f4f6; border-radius: 16px; overflow: hidden;
+    margin: 14px 0;
+    border: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .selfie-preview-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .selfie-empty {
+    text-align: center; color: #9ca3af; font-size: 14px; padding: 20px;
+  }
+  .selfie-empty .icon { font-size: 56px; margin-bottom: 10px; }
+
+  /* Big action button row */
+  .btn-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-top: 12px;
+  }
+  .btn-action {
+    padding: 14px 12px;
+    background: #111827; color: #fff;
+    border: 0; border-radius: 10px;
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .btn-action:hover { background: #1f2937; }
+  .btn-action.secondary {
+    background: #fff; color: #111827; border: 1px solid #d1d5db;
+  }
+  .btn-action.secondary:hover { background: #f9fafb; }
+  .btn-action .ba-emoji { font-size: 22px; }
+  .btn-action .ba-label { font-size: 13px; }
+
+  /* Doc cards */
+  .doc-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 14px; margin-bottom: 10px;
+  }
+  .doc-card-head {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+  }
+  .doc-card-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #f3f4f6; font-size: 18px; flex-shrink: 0;
+  }
+  .doc-card-title { font-weight: 700; font-size: 14px; }
+  .doc-card-sub { font-size: 11.5px; color: #6b7280; margin-top: 1px; }
+  .doc-card-status { margin-left: auto; font-size: 18px; }
+  .doc-preview {
+    width: 100%; max-height: 200px; object-fit: cover;
+    border-radius: 10px; margin-top: 6px; display: block;
+  }
+  .doc-pdf-preview {
+    padding: 24px; text-align: center; background: #f3f4f6;
+    border-radius: 10px; font-size: 13px; color: #4b5563;
+    margin-top: 6px;
+  }
+
+  /* Form download rows */
+  .form-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+  .form-row:last-child { border-bottom: 0; }
+  .form-row .icon {
+    width: 28px; height: 28px; border-radius: 8px; background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+  }
+  .form-row .name { font-size: 13.5px; font-weight: 600; }
+  .form-row .desc { font-size: 11.5px; color: #6b7280; margin-top: 2px; }
+  .form-row .actions { display: flex; gap: 6px; }
+  .form-row a {
+    font-size: 11.5px; padding: 5px 10px; border-radius: 6px;
+    background: #111827; color: #fff; text-decoration: none; font-weight: 600;
+    white-space: nowrap;
+  }
+  .form-row a.secondary { background: #fff; color: #111827; border: 1px solid #d1d5db; }
+
+  /* Buttons */
+  .btn {
+    display: inline-block; padding: 12px 18px; border-radius: 10px;
+    background: #111827; color: #fff; font-size: 14px; font-weight: 700;
+    border: 0; cursor: pointer; text-decoration: none; font-family: inherit;
+  }
+  .btn:hover { background: #1f2937; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary { background: #fff; color: #111827; border: 1px solid #d1d5db; }
+  .btn-secondary:hover { background: #f9fafb; }
+  .btn-big {
+    display: block; width: 100%; padding: 16px; text-align: center;
+    border-radius: 12px; background: #2563eb; color: #fff;
+    font-size: 15px; font-weight: 700; text-decoration: none; font-family: inherit;
+    border: 0; cursor: pointer;
+  }
+  .btn-big:hover { background: #1d4ed8; }
+  .btn-big:disabled { background: #9ca3af; cursor: not-allowed; }
+  .btn-success {
+    background: #16a34a !important; color: #fff !important;
+  }
+  .btn-success:hover { background: #15803d !important; }
+
+  /* Wizard nav */
+  .wizard-nav { display: flex; gap: 10px; justify-content: space-between; margin-top: 18px; }
+  .wizard-nav .btn { flex: 1; }
+
+  /* Done page */
+  .done-hero {
+    text-align: center; padding: 30px 20px;
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: #fff; border-radius: 16px; margin-bottom: 14px;
+  }
+  .done-hero .check { font-size: 60px; }
+  .done-hero h2 { font-size: 24px; font-weight: 800; margin-top: 8px; }
+  .done-hero p { font-size: 14px; opacity: 0.95; margin-top: 6px; }
+
+  .verify-list { list-style: none; padding: 0; }
+  .verify-list li {
+    padding: 10px 0; border-bottom: 1px solid #f3f4f6;
+    font-size: 13.5px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .verify-list li:last-child { border-bottom: 0; }
+  .verify-list .v-check { color: #16a34a; font-weight: 700; }
+  .verify-list .v-warn { color: #d97706; font-weight: 700; }
+  .verify-list .v-fail { color: #dc2626; font-weight: 700; }
+
+  .thumb-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-top: 12px;
+  }
+  .thumb-item {
+    aspect-ratio: 1/1; background: #f3f4f6; border-radius: 8px;
+    overflow: hidden; position: relative;
+  }
+  .thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb-item.empty {
+    display: flex; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 11px; text-align: center; padding: 8px;
+  }
+  .thumb-item .thumb-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.55); color: #fff; font-size: 10px;
+    padding: 3px 6px; text-align: center; font-weight: 600;
+  }
+
+  /* Pills */
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+  .pill-legal { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+  .pill-optional { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; }
+  .pill-required { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+  /* Warnings */
+  .warn-card { background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #dc2626; color: #991b1b; }
+  .warn-card h3 { color: #991b1b; }
+  .info-card { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #2563eb; }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.78);
+    padding: 16px;
+  }
+  .modal-content {
+    background: #fff; border-radius: 16px; padding: 18px;
+    max-width: 500px; width: 100%;
+    max-height: 92vh; overflow-y: auto;
+  }
+  .modal-content h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; }
+  .modal-content p { font-size: 13px; color: #4b5563; }
+  .modal-img {
+    width: 100%; max-height: 60vh; object-fit: contain;
+    border-radius: 10px; margin: 12px 0;
+    background: #000;
+  }
+  .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .modal-actions button {
+    padding: 12px; border-radius: 10px;
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    cursor: pointer; border: 0;
+  }
+  .modal-actions .modal-retake { background: #fff; color: #111827; border: 1px solid #d1d5db; }
+  .modal-actions .modal-accept { background: #16a34a; color: #fff; }
+
+  /* Signature pad */
+  .sig-wrap {
+    border: 2px dashed #9ca3af; border-radius: 12px;
+    background: #fff; margin: 10px 0;
+    aspect-ratio: 3/1; position: relative;
+    overflow: hidden;
+  }
+  .sig-wrap canvas {
+    width: 100%; height: 100%; display: block;
+    touch-action: none;
+  }
+  .sig-placeholder {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 13px; pointer-events: none;
+  }
+  .sig-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .sig-actions button {
+    padding: 8px 14px; font-size: 13px; font-weight: 600;
+    background: #fff; color: #111827; border: 1px solid #d1d5db;
+    border-radius: 8px; cursor: pointer; font-family: inherit;
+  }
+
+  /* Acknowledgment checkbox (legacy single) */
+  .ack-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px; background: #fffbeb;
+    border: 1px solid #fde68a; border-radius: 10px;
+    margin: 10px 0;
+  }
+  .ack-row input[type="checkbox"] { width: 20px; height: 20px; margin-top: 1px; flex-shrink: 0; accent-color: #16a34a; }
+  .ack-row label { font-size: 13.5px; cursor: pointer; line-height: 1.5; color: #78350f; }
+
+  /* Multi-acknowledgment cards on Page 4 */
+  .ack-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .ack-card.checked { border-color: #6ee7b7; background: #f0fdf4; }
+  .ack-card-head { display: flex; gap: 10px; align-items: flex-start; }
+  .ack-card-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #f3f4f6; font-size: 17px; flex-shrink: 0;
+  }
+  .ack-card-title { font-weight: 700; font-size: 14px; line-height: 1.3; }
+  .ack-card-subtitle { font-size: 11px; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .ack-card-body { font-size: 12.5px; color: #374151; line-height: 1.55; margin-top: 8px; }
+  .ack-card-pdf {
+    display: inline-block; margin-top: 8px;
+    font-size: 12px; padding: 6px 10px; border-radius: 6px;
+    background: #111827; color: #fff; text-decoration: none; font-weight: 600;
+  }
+  .ack-card-pdf.disabled { background: #d1d5db; color: #6b7280; pointer-events: none; }
+  .ack-card-checkbox {
+    display: flex; gap: 10px; align-items: flex-start;
+    margin-top: 10px; padding: 10px;
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
+    cursor: pointer;
+  }
+  .ack-card.checked .ack-card-checkbox { background: #ecfdf5; border-color: #86efac; }
+  .ack-card-checkbox input { width: 18px; height: 18px; flex-shrink: 0; accent-color: #16a34a; margin-top: 1px; }
+  .ack-card-checkbox label { font-size: 12.5px; line-height: 1.5; cursor: pointer; color: #78350f; font-weight: 600; }
+  .ack-card.checked .ack-card-checkbox label { color: #14532d; }
+  .ack-section-header { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: #6b7280; margin: 18px 2px 8px; }
+  .ack-section-header:first-child { margin-top: 2px; }
+  .ack-card-separate { border-color: #c7d2fe; background: #f5f3ff; }
+  .ack-card-separate .ack-card-subtitle { color: #6366f1; font-weight: 700; }
+
+  /* Wage Theft Prevention Notice — wage info table */
+  .wage-table {
+    margin-top: 8px;
+    border: 1px solid #e5e7eb; border-radius: 8px;
+    background: #f9fafb;
+    overflow: hidden;
+  }
+  .wage-table-row {
+    display: grid; grid-template-columns: 145px 1fr;
+    padding: 8px 12px; gap: 8px;
+    font-size: 12.5px; border-bottom: 1px solid #e5e7eb;
+  }
+  .wage-table-row:last-child { border-bottom: 0; }
+  .wage-table-row .wt-label { color: #6b7280; font-weight: 600; }
+  .wage-table-row .wt-value { color: #111827; }
+  .wage-table-row .wt-value.missing { color: #b91c1c; font-style: italic; }
+
+  /* Page 4 sticky progress + sign card */
+  .ack-progress {
+    position: sticky; top: 8px;
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 8px 12px; margin-bottom: 10px;
+    font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .ack-progress-bar { flex: 1; height: 6px; border-radius: 3px; background: #f3f4f6; overflow: hidden; }
+  .ack-progress-fill { height: 100%; background: #16a34a; transition: width 0.2s; }
+  .ack-progress-text { color: #6b7280; white-space: nowrap; }
+
+  /* Submission status */
+  .submit-status {
+    margin-top: 12px; padding: 12px; border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    text-align: center;
+  }
+  .submit-status.success { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+  .submit-status.error { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
+  .submit-status.loading { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; }
+
+  /* Footer */
+  .footer { text-align: center; font-size: 11px; color: #9ca3af; margin-top: 30px; }
+  .footer a { color: #9ca3af; text-decoration: underline; }
+
+  /* Language visibility */
+  body[data-lang="en"] [lang="es"] { display: none; }
+  body[data-lang="es"] [lang="en"] { display: none; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body data-lang="en">
+<div class="container">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark" id="topbar-store" lang="en">New Hire Welcome</span>
+      <span class="brand-mark" id="topbar-store-es" lang="es">Bienvenida</span>
+    </div>
+    <div class="lang-toggle">
+      <button id="lang-en" class="active" onclick="setLang('en')">EN</button>
+      <button id="lang-es" onclick="setLang('es')">ES</button>
+    </div>
+  </div>
+
+  <div id="no-link-warn" class="card warn-card" hidden>
+    <h3 lang="en">⚠️ Personalized link required</h3>
+    <h3 lang="es">⚠️ Se requiere enlace personalizado</h3>
+    <p lang="en">Your manager should send you a personalized link with your store and role pre-set. Check your text or email — or ask them.</p>
+    <p lang="es">Tu gerente debe enviarte un enlace personalizado con tu tienda y rol. Revisa tu mensaje o correo — o pregúntale.</p>
+  </div>
+
+  <div id="wizard">
+
+    <div class="wizard-progress">
+      <div class="step active" data-step="1"><span class="step-num">1</span><span class="step-label" lang="en">Info</span><span class="step-label" lang="es">Info</span></div>
+      <div class="step" data-step="2"><span class="step-num">2</span><span class="step-label" lang="en">Selfie</span><span class="step-label" lang="es">Selfie</span></div>
+      <div class="step" data-step="3"><span class="step-num">3</span><span class="step-label" lang="en">Docs</span><span class="step-label" lang="es">Docs</span></div>
+      <div class="step" data-step="4"><span class="step-num">4</span><span class="step-label" lang="en">Sign</span><span class="step-label" lang="es">Firma</span></div>
+      <div class="step" data-step="5"><span class="step-num">5</span><span class="step-label" lang="en">Done</span><span class="step-label" lang="es">Listo</span></div>
+    </div>
+
+    <!-- ============ PAGE 1: INFO ============ -->
+    <section class="wizard-page" data-page="1">
+      <div class="hero">
+        <div class="hero-eyebrow" lang="en">51% RULE · OUR PHILOSOPHY</div>
+        <div class="hero-eyebrow" lang="es">REGLA DEL 51% · NUESTRA FILOSOFÍA</div>
+        <h1 class="hero-title" lang="en" id="hero-title-en">Welcome. Hospitality is a team sport — we hire for who you are first, then teach the rest.</h1>
+        <h1 class="hero-title" lang="es" id="hero-title-es">Bienvenido. La hospitalidad es un deporte de equipo — contratamos primero por quién eres, luego enseñamos el resto.</h1>
+        <p class="hero-body" lang="en">A few quick steps before your first day. Should take ~5 minutes on your phone.</p>
+        <p class="hero-body" lang="es">Unos pasos rápidos antes de tu primer día. ~5 minutos desde tu teléfono.</p>
+      </div>
+
+      <!-- PRIVACY NOTICE (CCPA/CPRA disclosure) -->
+      <div class="card" style="border-left:4px solid #6366f1;background:#f5f3ff;">
+        <h4 lang="en" style="color:#3730a3;">🔒 Your privacy</h4>
+        <h4 lang="es" style="color:#3730a3;">🔒 Tu privacidad</h4>
+        <p lang="en" style="font-size:12.5px;color:#1f2937;line-height:1.55;">
+          The photos and information you provide stay <b>on this device</b> until the last step, when you email the finished PDF packet <b>yourself, from your own email account,</b> directly to your store's operating LLC (for I-9 verification, payroll setup, and identity confirmation). Nothing is uploaded to any file-sharing service. After you confirm the email was sent, <b>all photos are automatically erased from this device.</b> You can request deletion of your data at any time via your manager (CCPA/CPRA right). By continuing, you confirm you've read this.
+        </p>
+        <p lang="es" style="font-size:12.5px;color:#1f2937;line-height:1.55;">
+          Las fotos e información que proporcionas permanecen <b>en este dispositivo</b> hasta el último paso, cuando tú mismo envías el PDF terminado <b>desde tu propia cuenta de correo</b> directamente al LLC operativo de tu tienda (para verificación I-9, nómina y confirmación de identidad). Nada se sube a servicios de archivos. Al confirmar el envío, <b>todas las fotos se borran automáticamente de este dispositivo.</b> Puedes pedir la eliminación de tus datos en cualquier momento a través de tu gerente (derecho CCPA/CPRA). Al continuar, confirmas que has leído esto.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 lang="en">Your information</h3>
+        <h3 lang="es">Tu información</h3>
+        <div class="field">
+          <label lang="en">Full legal name</label>
+          <label lang="es">Nombre legal completo</label>
+          <input id="hire-name" type="text" autocomplete="name" placeholder="First + Last / Nombre + Apellido" />
+        </div>
+        <div class="field">
+          <label lang="en">Mobile phone</label>
+          <label lang="es">Teléfono móvil</label>
+          <input id="hire-phone" type="tel" autocomplete="tel" placeholder="(555) 123-4567" />
+        </div>
+        <div class="field">
+          <label lang="en">Date of birth</label>
+          <label lang="es">Fecha de nacimiento</label>
+          <input id="hire-dob" type="date" />
+        </div>
+        <div class="field">
+          <label lang="en">Start date</label>
+          <label lang="es">Fecha de inicio</label>
+          <input id="hire-startdate" type="date" />
+        </div>
+        <div id="minor-warning" style="display:none; margin-top:10px; padding:12px; border-radius:10px; background:#fef3c7; border:1px solid #f59e0b;">
+          <p lang="en" style="margin:0; font-size:13px; color:#92400e;"><b>Under 18:</b> California requires a valid <b>work permit</b> BEFORE your first shift. Ask your school (or district office) for the permit and bring it to your manager on Day 1. Minors may not serve or pour alcohol.</p>
+          <p lang="es" style="margin:0; font-size:13px; color:#92400e;"><b>Menor de 18:</b> California exige un <b>permiso de trabajo</b> válido ANTES de tu primer turno. Pídelo en tu escuela (o distrito escolar) y entrégalo a tu gerente el Día 1. Los menores no pueden servir alcohol.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 lang="en">Set by your manager (read-only)</h4>
+        <h4 lang="es">Configurado por tu gerente (solo lectura)</h4>
+        <div class="field-readonly">
+          <div class="ro-label" lang="en">Store</div><div class="ro-label" lang="es">Tienda</div>
+          <div class="ro-value" id="ro-store">—</div>
+        </div>
+        <div class="field-readonly">
+          <div class="ro-label" lang="en">Role</div><div class="ro-label" lang="es">Rol</div>
+          <div class="ro-value" id="ro-role">—</div>
+        </div>
+        <div class="field-readonly">
+          <div class="ro-label" lang="en">Manager</div><div class="ro-label" lang="es">Gerente</div>
+          <div class="ro-value" id="ro-manager">—</div>
+        </div>
+        <div class="field-readonly">
+          <div class="ro-label" lang="en">Buddy / Trainer</div><div class="ro-label" lang="es">Buddy / Entrenador</div>
+          <div class="ro-value" id="ro-buddy">—</div>
+        </div>
+      </div>
+
+      <div id="page1-hint" class="card info-card" hidden>
+        <p lang="en" style="font-size:12.5px;color:#1e40af;">Fill in your name, phone, and start date to continue.</p>
+        <p lang="es" style="font-size:12.5px;color:#1e40af;">Completa tu nombre, teléfono y fecha de inicio para continuar.</p>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 2: SELFIE ============ -->
+    <section class="wizard-page" data-page="2" hidden>
+      <div class="card">
+        <h3 lang="en">📷 Take a selfie</h3>
+        <h3 lang="es">📷 Toma un selfie</h3>
+        <p lang="en">A clear photo of your face — your manager will use it to recognize you on Day 1.</p>
+        <p lang="es">Una foto clara de tu cara — tu gerente la usará para reconocerte el Día 1.</p>
+
+        <div class="selfie-preview-wrap" id="selfie-preview-wrap">
+          <div class="selfie-empty" id="selfie-empty">
+            <div class="icon">📷</div>
+            <div lang="en">Tap a button below.</div>
+            <div lang="es">Toca un botón abajo.</div>
+          </div>
+          <img id="selfie-photo" hidden alt="Your selfie" />
+        </div>
+
+        <input type="file" id="selfie-camera-input" accept="image/*" capture="user" hidden onchange="onFileSelected('selfie-data', event, true)" />
+        <input type="file" id="selfie-gallery-input" accept="image/*" hidden onchange="onFileSelected('selfie-data', event, true)" />
+
+        <div class="btn-row">
+          <button class="btn-action" onclick="document.getElementById('selfie-camera-input').click()">
+            <span class="ba-emoji">📷</span>
+            <span class="ba-label" lang="en">Take selfie</span>
+            <span class="ba-label" lang="es">Tomar selfie</span>
+          </button>
+          <button class="btn-action secondary" onclick="document.getElementById('selfie-gallery-input').click()">
+            <span class="ba-emoji">🖼️</span>
+            <span class="ba-label" lang="en">Pick from gallery</span>
+            <span class="ba-label" lang="es">Elegir de galería</span>
+          </button>
+        </div>
+
+        <p class="meta" lang="en">💡 We'll show you the photo before saving so you can confirm it's clear.</p>
+        <p class="meta" lang="es">💡 Te mostraremos la foto antes de guardar para que confirmes que está clara.</p>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 3: DOCUMENTS ============ -->
+    <section class="wizard-page" data-page="3" hidden>
+      <div class="card">
+        <h3 lang="en">📋 Step 1 — Download tax forms, fill them out</h3>
+        <h3 lang="es">📋 Paso 1 — Descarga formularios fiscales, llénalos</h3>
+        <p lang="en">Tap each form to download. Fill on your phone (PDF reader) or print → fill → photo. Then upload the signed copies in Step 2 below.</p>
+        <p lang="es">Toca cada formulario para descargar. Llena en el teléfono (lector PDF) o imprime → llena → foto. Luego sube las copias firmadas en el Paso 2.</p>
+
+        <div class="form-row">
+          <div class="icon">🇺🇸</div>
+          <div>
+            <div class="name">Form I-9 <span class="pill pill-legal">3-day deadline</span></div>
+            <div class="desc" lang="en">Employment Eligibility Verification.</div>
+            <div class="desc" lang="es">Verificación de Elegibilidad de Empleo.</div>
+          </div>
+          <div class="actions"><a href="https://www.uscis.gov/sites/default/files/document/forms/i-9.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+
+        <div class="form-row">
+          <div class="icon">💵</div>
+          <div>
+            <div class="name">Form W-4</div>
+            <div class="desc" lang="en">Federal income tax withholding.</div>
+            <div class="desc" lang="es">Retención de impuestos federales.</div>
+          </div>
+          <div class="actions">
+            <a href="https://www.irs.gov/pub/irs-pdf/fw4.pdf" target="_blank" rel="noopener">EN</a>
+            <a href="https://www.irs.gov/pub/irs-pdf/fw4sp.pdf" target="_blank" rel="noopener" class="secondary">ES</a>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="icon">🐻</div>
+          <div>
+            <div class="name">CA DE 4</div>
+            <div class="desc" lang="en">California state tax withholding.</div>
+            <div class="desc" lang="es">Retención de impuestos estatales CA.</div>
+          </div>
+          <div class="actions"><a href="https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de4.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 lang="en">📖 California pamphlets — required reading</h3>
+        <h3 lang="es">📖 Folletos de California — lectura obligatoria</h3>
+        <p lang="en">California requires your employer to give you these at hire. Open each one (they're yours to keep — no signature needed here; you'll confirm receipt in the Sign step).</p>
+        <p lang="es">California exige que tu empleador te entregue estos folletos al contratarte. Abre cada uno (son tuyos — no necesitas firmar aquí; confirmarás que los recibiste en el paso de Firma).</p>
+
+        <div class="form-row">
+          <div class="icon">🩹</div>
+          <div>
+            <div class="name">Workers' Comp — Time of Hire</div>
+            <div class="desc" lang="en">What to do if you're hurt at work (DWC).</div>
+            <div class="desc" lang="es">Qué hacer si te lastimas en el trabajo (DWC).</div>
+          </div>
+          <div class="actions">
+            <a href="https://www.dir.ca.gov/dwc/DWCPamphlets/TimeOfHirePamphlet.pdf" target="_blank" rel="noopener" onclick="recordPamphletOpen()">EN</a>
+            <a href="https://www.dir.ca.gov/dwc/DWCPamphlets/TimeOfHirePamphlet_spanish.pdf" target="_blank" rel="noopener" class="secondary" onclick="recordPamphletOpen()">ES</a>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="icon">🏥</div>
+          <div>
+            <div class="name">SDI — DE 2515</div>
+            <div class="desc" lang="en">State Disability Insurance benefits.</div>
+            <div class="desc" lang="es">Seguro Estatal de Incapacidad.</div>
+          </div>
+          <div class="actions">
+            <a href="https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de2515.pdf" target="_blank" rel="noopener" onclick="recordPamphletOpen()">EN</a>
+            <a href="https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de2515s.pdf" target="_blank" rel="noopener" class="secondary" onclick="recordPamphletOpen()">ES</a>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="icon">👶</div>
+          <div>
+            <div class="name">Paid Family Leave — DE 2511</div>
+            <div class="desc" lang="en">Paid leave to care for family / new child.</div>
+            <div class="desc" lang="es">Licencia pagada para cuidar familia / bebé.</div>
+          </div>
+          <div class="actions">
+            <a href="https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de2511.pdf" target="_blank" rel="noopener" onclick="recordPamphletOpen()">EN</a>
+            <a href="https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de2511s.pdf" target="_blank" rel="noopener" class="secondary" onclick="recordPamphletOpen()">ES</a>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="icon">🛡️</div>
+          <div>
+            <div class="name">Sexual Harassment (CRD)</div>
+            <div class="desc" lang="en">Your rights + how to report (CA Civil Rights Dept).</div>
+            <div class="desc" lang="es">Tus derechos y cómo reportar (Depto. de Derechos Civiles de CA).</div>
+          </div>
+          <div class="actions"><a href="https://calcivilrights.ca.gov/posters/sexual-harassment/" target="_blank" rel="noopener" onclick="recordPamphletOpen()">Link</a></div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left:4px solid #d97706;background:#fffbeb;">
+        <h4 lang="en" style="color:#92400e;">⚠️ Federal I-9 reminder</h4>
+        <h4 lang="es" style="color:#92400e;">⚠️ Recordatorio Federal I-9</h4>
+        <p lang="en" style="font-size:12.5px;color:#78350f;line-height:1.55;">
+          On <b>Day 1</b>, your manager must <b>physically examine your ORIGINAL ID and SSN/work authorization documents in person</b> (federal law — within 3 business days of hire). The photos you upload here are for <b>pre-screening only</b>. Bring your original documents on Day 1 — they are not optional.
+        </p>
+        <p lang="es" style="font-size:12.5px;color:#78350f;line-height:1.55;">
+          El <b>Día 1</b>, tu gerente debe <b>examinar físicamente tus documentos ORIGINALES de ID y SSN/autorización de trabajo en persona</b> (ley federal — dentro de 3 días hábiles de la contratación). Las fotos que subes aquí son <b>solo para pre-revisión</b>. Trae tus documentos originales el Día 1 — no son opcionales.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3 lang="en">📷 Step 2 — Capture documents</h3>
+        <h3 lang="es">📷 Paso 2 — Captura documentos</h3>
+        <p lang="en">Each card has 2 buttons: take a photo with your phone camera, or pick an existing file. Required: Photo ID front + back, SSN/work auth, signed tax forms.</p>
+        <p lang="es">Cada tarjeta tiene 2 botones: toma foto con tu cámara, o elige archivo existente. Requerido: ID frente + reverso, SSN/autorización, formularios fiscales firmados.</p>
+
+        <div id="doc-cards"></div>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 4: ACKNOWLEDGMENTS + SIGNATURE ============ -->
+    <section class="wizard-page" data-page="4" hidden>
+      <div class="ack-progress" id="ack-progress">
+        <div class="ack-progress-bar"><div class="ack-progress-fill" id="ack-progress-fill" style="width:0%"></div></div>
+        <span class="ack-progress-text" id="ack-progress-text">0 / 7</span>
+      </div>
+
+      <div class="card info-card">
+        <p lang="en" style="font-size:13px;color:#1e40af;margin:0;"><b>Open and read each document first</b> — its checkbox unlocks after you open it. Then check every box. <b>One signature at the bottom covers all of them.</b></p>
+        <p lang="es" style="font-size:13px;color:#1e40af;margin:0;"><b>Abre y lee cada documento primero</b> — su casilla se desbloquea al abrirlo. Luego marca todas las casillas. <b>Una firma al final cubre todos los puntos.</b></p>
+      </div>
+
+      <!-- Dynamic acknowledgment cards (handbook + WTPN + harassment + workers comp + sick leave + at-will + meal/rest) -->
+      <div id="ack-cards"></div>
+
+      <div class="card">
+        <h3 lang="en">✍️ Sign here</h3>
+        <h3 lang="es">✍️ Firma aquí</h3>
+        <p lang="en" style="font-size:12.5px;color:#6b7280;">Your signature below confirms <b>all</b> the items above. Use your finger on phone, mouse on computer.</p>
+        <p lang="es" style="font-size:12.5px;color:#6b7280;">Tu firma confirma <b>todos</b> los puntos de arriba. Usa el dedo en el teléfono, ratón en la computadora.</p>
+        <div class="sig-wrap">
+          <canvas id="sig-canvas" width="900" height="300"></canvas>
+          <div id="sig-placeholder" class="sig-placeholder">
+            <span lang="en">✏️ Sign here</span>
+            <span lang="es">✏️ Firma aquí</span>
+          </div>
+        </div>
+        <div class="sig-actions">
+          <button onclick="clearSig()">
+            <span lang="en">↻ Clear</span>
+            <span lang="es">↻ Limpiar</span>
+          </button>
+          <span style="font-size:11.5px;color:#6b7280;margin-left:auto;align-self:center;" id="sig-date-text"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 5: DONE + SUBMIT ============ -->
+    <section class="wizard-page" data-page="5" hidden>
+      <div class="done-hero">
+        <div class="check">✅</div>
+        <h2 lang="en">Almost done!</h2>
+        <h2 lang="es">¡Casi listo!</h2>
+        <p lang="en">Review what we have, then submit.</p>
+        <p lang="es">Revisa lo que tenemos, luego envía.</p>
+      </div>
+
+      <div class="card">
+        <h4 lang="en">What we'll send</h4>
+        <h4 lang="es">Lo que enviaremos</h4>
+        <ul class="verify-list" id="verify-list"></ul>
+      </div>
+
+      <div class="card">
+        <h4 lang="en">Photo review</h4>
+        <h4 lang="es">Revisión de fotos</h4>
+        <div class="thumb-grid" id="thumb-grid"></div>
+      </div>
+
+      <div class="card">
+        <h4 lang="en">Submit</h4>
+        <h4 lang="es">Enviar</h4>
+        <p lang="en">Tap below — your phone's share sheet opens with the PDF attached. Pick your <b>Mail / Gmail</b> app and send it to:</p>
+        <p lang="es">Toca abajo — se abre el menú de compartir con el PDF adjunto. Elige tu app de <b>Mail / Gmail</b> y envíalo a:</p>
+        <div style="display:flex;gap:8px;align-items:center;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px;margin:8px 0;">
+          <b id="company-email-display" style="font-size:14px;flex:1;word-break:break-all;">—</b>
+          <button class="btn btn-secondary" style="padding:6px 10px;font-size:12px;" onclick="copyCompanyEmail()">
+            <span lang="en">Copy</span><span lang="es">Copiar</span>
+          </button>
+        </div>
+
+        <button class="btn-big" id="submit-btn" onclick="submitToManager()">
+          <span lang="en">📧 Submit</span>
+          <span lang="es">📧 Enviar</span>
+        </button>
+        <div id="submit-status" class="submit-status" hidden></div>
+
+        <div id="sent-confirm" class="upload-confirm-row" hidden>
+          <label>
+            <input type="checkbox" id="sent-confirm-cb" onchange="onSentConfirm()" />
+            <span>
+              <b lang="en">I sent the email with the PDF attached.</b>
+              <b lang="es">Envié el correo con el PDF adjunto.</b>
+              <br>
+              <span style="font-size:11.5px;color:#92400e;" lang="en">Checking this erases your photos, ID, and signature from this device for your privacy.</span>
+              <span style="font-size:11.5px;color:#92400e;" lang="es">Al marcar, tus fotos, ID y firma se borran de este dispositivo por tu privacidad.</span>
+            </span>
+          </label>
+        </div>
+
+        <p class="meta" lang="en" id="submit-help-en">🔒 The PDF goes straight from your phone through <b>your own email account</b> — it is never uploaded to any file-sharing site. After you confirm it was sent, all photos are erased from this device.</p>
+        <p class="meta" lang="es" id="submit-help-es">🔒 El PDF va directo desde tu teléfono por <b>tu propia cuenta de correo</b> — nunca se sube a sitios de archivos. Al confirmar el envío, todas las fotos se borran de este dispositivo.</p>
+      </div>
+
+      <div class="card">
+        <h4 lang="en">Backup option</h4>
+        <h4 lang="es">Opción de respaldo</h4>
+        <p lang="en">If sharing fails, download the PDF packet and email it yourself (or bring your phone on Day 1).</p>
+        <p lang="es">Si compartir falla, descarga el PDF y envíalo tú mismo (o trae tu teléfono el Día 1).</p>
+        <button class="btn btn-secondary" id="save-all-btn" onclick="downloadPacket()" style="width:100%;margin-top:6px;">
+          <span lang="en">💾 Download the PDF packet</span>
+          <span lang="es">💾 Descargar el paquete PDF</span>
+        </button>
+      </div>
+
+      <div class="card">
+        <h4 lang="en">Need help before Day 1?</h4>
+        <h4 lang="es">¿Necesitas ayuda antes del Día 1?</h4>
+        <p style="font-size:13.5px;color:#374151;line-height:1.7;">
+          <span lang="en">Text your manager <b id="help-manager">—</b> or your buddy <b id="help-buddy">—</b>. They're expecting you.</span>
+          <span lang="es">Mensajea a tu gerente <b id="help-manager-es">—</b> o a tu buddy <b id="help-buddy-es">—</b>. Te están esperando.</span>
+        </p>
+      </div>
+    </section>
+
+    <div class="wizard-nav">
+      <button id="btn-back" class="btn btn-secondary" onclick="goPrev()" disabled>
+        <span lang="en">← Back</span><span lang="es">← Atrás</span>
+      </button>
+      <button id="btn-next" class="btn" onclick="goNext()">
+        <span lang="en">Next →</span><span lang="es">Siguiente →</span>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span lang="en">Each restaurant operates as its own LLC.</span>
+    <span lang="es">Cada restaurante opera como su propio LLC.</span>
+    <div style="margin-top:6px;">
+      <a href="#" onclick="resetAll(); return false;" lang="en">Start over</a>
+      <a href="#" onclick="resetAll(); return false;" lang="es">Empezar de nuevo</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ CONFIRMATION MODAL ============ -->
+<div class="modal" id="confirm-modal" hidden>
+  <div class="modal-content">
+    <h3 lang="en">📋 Is this photo clear and readable?</h3>
+    <h3 lang="es">📋 ¿Esta foto es clara y legible?</h3>
+    <p lang="en" id="confirm-modal-text-en">Make sure all text and your face are clearly visible. Blurry or cropped photos will be rejected.</p>
+    <p lang="es" id="confirm-modal-text-es">Asegúrate de que el texto y tu cara sean visibles. Fotos borrosas serán rechazadas.</p>
+    <img id="confirm-modal-img" class="modal-img" alt="" />
+    <div class="modal-actions">
+      <button class="modal-retake" onclick="cancelConfirm()">
+        <span lang="en">↻ Retake</span>
+        <span lang="es">↻ Volver a tomar</span>
+      </button>
+      <button class="modal-accept" onclick="acceptConfirm()">
+        <span lang="en">✓ Looks good</span>
+        <span lang="es">✓ Se ve bien</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- pdf-lib for embedding signature into the handbook PDF (lazy loaded on Page 4) -->
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
+<script>
+// ============ DATA ============
+const STORES = [
+  // Per-store wage info for Wage Theft Prevention Notice (CA Labor Code §2810.5).
+  // legalEntity = real employer of record (Secretary of State name) from the OMC handbook generator.
+  // handbookUrl = that entity's own generated CA handbook (converted to PDF). payday is the
+  // entity's default; payRate is per-hire (URL param ?payRate=18, overtime auto 1.5x).
+  // address/phone/workersCompCarrier still need filling per LLC.
+  { id: "ohgane-oakland", entityFolder: "02_KhoCorporation_Ohgane_Oakland",       name: "Ohgane Oakland",       legalEntity: "KHO CORPORATION (dba Ohgane Korean BBQ)",        web3formsKey: "f6d6a95b-2ee5-4e3d-a054-b5a1eec203f9", handbookUrl: "docs/02_KhoCorporation_Ohgane_Oakland/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "3915 Broadway, Oakland, CA 94611", phone: "(510) 594-8300", workersCompCarrier: "Amtrust, 800 Superior Ave E 21st Fl, Cleveland OH 44114, 877-528-7878 (Policy SWC1624156)" },
+  { id: "ohgane-concord", entityFolder: "03_OhDakInc_Ohgane_Concord",       name: "Ohgane Concord",       legalEntity: "OH! DAK, INC. (dba Ohgane Korean BBQ)",            web3formsKey: "", handbookUrl: "docs/03_OhDakInc_Ohgane_Concord/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "1671 Willow Pass Rd, Concord, CA 94520", phone: "(925) 798-9292", workersCompCarrier: "Markel, 10275 West Higgins Rd Ste 750, Rosemont IL 60018, (888) 500-3344 (Policy MWC0129864-09)" },
+  { id: "ohgane-alameda", entityFolder: "01_OhAlameda_Ohgane_Alameda",       name: "Ohgane Alameda",       legalEntity: "OH ALAMEDA, INC. (dba Ohgane Korean BBQ)",            web3formsKey: "", handbookUrl: "docs/01_OhAlameda_Ohgane_Alameda/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "2211 S Shore Center #160, Alameda, CA 94501", phone: "(510) 594-8300", workersCompCarrier: "Markel, 10275 West Higgins Rd Ste 750, Rosemont IL 60018, (888) 500-3344 (Policy MWC0187130-06)" },
+  { id: "tangjip-hayward", entityFolder: "05_OhMainInc_Tangjip_Hayward",      name: "Tangjip Hayward",      legalEntity: "OH MAIN INC (dba Tangjip)",                     web3formsKey: "", handbookUrl: "docs/05_OhMainInc_Tangjip_Hayward/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "22507 Main St, Hayward, CA 94541", phone: "(510) 727-1568", workersCompCarrier: "" },
+  { id: "tangjip-concord", entityFolder: "07_OhPakInc_Tangjip_Concord",      name: "Tangjip Concord",      legalEntity: "OH PAK, INC. (dba Tangjip)",                      web3formsKey: "", handbookUrl: "docs/07_OhPakInc_Tangjip_Concord/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "1679 Willow Pass Rd, Concord, CA 94520", phone: "(925) 265-8333", workersCompCarrier: "Markel, 10275 West Higgins Rd Ste 750, Rosemont IL 60018, (888) 500-3344 (Policy MWC0231894-02)" },
+  { id: "tangjip-alameda", entityFolder: "06_EatBopCorp_Tangjip_Alameda",      name: "Tangjip Alameda",      legalEntity: "EAT BOP CORPORATION (dba Tangjip)",                    web3formsKey: "", handbookUrl: "docs/06_EatBopCorp_Tangjip_Alameda/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "2201 #D, S Shore Center, Alameda, CA 94501", phone: "(510) 263-8717", workersCompCarrier: "Markel, 10275 West Higgins Rd Ste 750, Rosemont IL 60018, (888) 500-3344 (Policy MWC0139958-08)" },
+  { id: "oh-g-burger-berkeley", entityFolder: "10_ChiyangInc_OhGBurger_Berkeley", name: "Oh G Burger Berkeley", legalEntity: "CHIYANG, INC. (dba Oh G Burger)",                 web3formsKey: "", handbookUrl: "docs/10_ChiyangInc_OhGBurger_Berkeley/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "1823 Solano Ave, Berkeley, CA 94707", phone: "(510) 559-9313", workersCompCarrier: "Farmers, 6301 Owensmouth Ave, Woodland Hills CA 91367, (888) 711-4249 (Policy A09523223)" },
+  { id: "obento-hayward", entityFolder: "08_OhBentoInc_Obento_Hayward",       name: "Obento Hayward",       legalEntity: "OH BENTO INC (dba Obento)",                     web3formsKey: "", handbookUrl: "docs/08_OhBentoInc_Obento_Hayward/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "22501 Main St, Hayward, CA 94541", phone: "(951) 961-9924", workersCompCarrier: "Farmers, 6301 Owensmouth Ave, Woodland Hills CA 91367, (888) 711-4249 (Policy A09525826)" },
+  { id: "hanshin-pocha-oakland", entityFolder: "11_MandSLlc_HanshinPocha_Oakland",name: "Hanshin Pocha Oakland",legalEntity: "M&S LLC (dba Hanshin Pocha)",                   web3formsKey: "", handbookUrl: "docs/11_MandSLlc_HanshinPocha_Oakland/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "4869 Telegraph Ave, Oakland, CA 94609", phone: "(510) 654-2000", workersCompCarrier: "Amtrust, 800 Superior Ave E 21st Fl, Cleveland OH 44114, 877-528-7878 (Policy SNP1586005)" },
+  // Spoon (Berkeley) + Bowl'd (Albany) are the SAME entity JECHI INC — one handbook with both city addenda.
+  { id: "spoon-berkeley", entityFolder: "04_JechiInc_Bowld_Albany_Spoon",       name: "Spoon Korean Bistro",  legalEntity: "JECHI, INC. (dba Spoon Korean Bistro)",          web3formsKey: "", handbookUrl: "docs/04_JechiInc_Bowld_Albany_Spoon/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "933 Ashby Ave, Berkeley, CA 94710", phone: "(510) 704-9555", workersCompCarrier: "Markel, 10275 West Higgins Rd Ste 750, Rosemont IL 60018, (888) 500-3344 (Policy MWC0197330-05)" },
+  { id: "bowld-albany", entityFolder: "04_JechiInc_Bowld_Albany_Spoon",         name: "Bowl'd Albany",        legalEntity: "JECHI, INC. (dba Bowl’d Korean Rice Bar)",        web3formsKey: "", handbookUrl: "docs/04_JechiInc_Bowld_Albany_Spoon/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "1479 Solano Ave, Albany, CA 94706", phone: "(510) 526-6223", workersCompCarrier: "Markel, 10275 West Higgins Rd Ste 750, Rosemont IL 60018, (888) 500-3344 (Policy MWC0197330-05)" },
+  { id: "mad-for-sushi-dublin", entityFolder: "09_OhDublin_MadForSushi_Dublin", name: "Mad For Sushi Dublin", legalEntity: "OH DUBLIN INC (dba Mad for Sushi)",                 web3formsKey: "", handbookUrl: "docs/09_OhDublin_MadForSushi_Dublin/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "7222 Regional St, Dublin, CA 94568", phone: "(925) 248-8915", workersCompCarrier: "" },
+  { id: "jjamppong-zizon-oakland", entityFolder: "12_OhBroadwayInc_JjamppongZizon_Oakland", name: "Jjamppong Zizon Oakland", legalEntity: "OH BROADWAY INC (dba Jjamppong Zizon)", web3formsKey: "", handbookUrl: "docs/12_OhBroadwayInc_JjamppongZizon_Oakland/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "3905 Broadway, Oakland, CA 94611", phone: "(510) 907-3174", workersCompCarrier: "Farmers, 6301 Owensmouth Ave, Woodland Hills CA 91367, (888) 711-4249 (Policy A09527476)" },
+  { id: "jjamppong-zizon-hayward", entityFolder: "13_OhHaywardInc_JjamppongZizon_Hayward", name: "Jjamppong Zizon Hayward", legalEntity: "OH HAYWARD INC (dba Jjamppong Zizon)", web3formsKey: "", handbookUrl: "docs/13_OhHaywardInc_JjamppongZizon_Hayward/01_Handbook.pdf", payday: "every other Friday (bi-weekly)", address: "", phone: "", workersCompCarrier: "Farmers, 6301 Owensmouth Ave, Woodland Hills CA 91367, (888) 711-4249 (Policy A09528625)" },
+];
+
+// Acknowledgments shown on Page 4. ONE signature covers all of them.
+// group "documents" = real per-entity PDFs (from the OMC handbook generator) with an Open button;
+//   `doc` (and optional `docES`) is the filename inside docs/<store.entityFolder>/.
+// group "policies" = statement-only acknowledgments. "ack-wtpn" also renders the live wage table.
+const ACK_ITEMS = [
+  // ---- Documents to open & sign ----
+  {
+    key: "ack-handbook", icon: "📘", group: "documents", doc: "01_Handbook.pdf", docES: "08_Handbook_ES.pdf",
+    en: { title: "Employee Handbook", body: "I have read the Employee Handbook (including the city wage addendum) and agree to follow the policies in it." },
+    es: { title: "Manual del Empleado", body: "He leído el Manual del Empleado (incluido el apéndice de salario de la ciudad) y acepto seguir las políticas." }
+  },
+  {
+    key: "ack-arbitration", icon: "⚖️", group: "documents", doc: "02_Arbitration_EN.pdf", docES: "03_Arbitration_ES.pdf", separate: true,
+    en: { title: "Mutual Arbitration Agreement", subtitle: "Separate legal agreement", body: "I have read and voluntarily agree to the Mutual Arbitration Agreement. I understand it requires covered disputes to be resolved by binding arbitration instead of court, and that it is a separate agreement from the handbook." },
+    es: { title: "Acuerdo Mutuo de Arbitraje", subtitle: "Acuerdo legal por separado", body: "He leído y acepto voluntariamente el Acuerdo Mutuo de Arbitraje. Entiendo que requiere que las disputas cubiertas se resuelvan por arbitraje vinculante en lugar de un tribunal, y que es un acuerdo separado del manual." }
+  },
+  {
+    key: "ack-offer", icon: "💼", group: "documents", doc: "04_Offer_Letter.pdf", docES: "09_Offer_Letter_ES.pdf",
+    en: { title: "At-Will Offer Letter", body: "I accept the offer of at-will employment. I understand either I or my employer (the operating LLC of this restaurant) may end the employment relationship at any time, with or without cause or notice." },
+    es: { title: "Carta de Oferta (Empleo de Voluntad)", body: "Acepto la oferta de empleo de voluntad. Entiendo que cualquiera de las partes (yo o el LLC operativo del restaurante) puede terminar la relación laboral en cualquier momento, con o sin causa o aviso." }
+  },
+  {
+    key: "ack-forms", icon: "📝", group: "documents", doc: "05_New_Hire_Forms_EN_ES.pdf",
+    en: { title: "New Hire Forms & Wage Notice", subtitle: "incl. CA Labor Code §2810.5", body: "I have received and reviewed the new hire forms, including the §2810.5 wage notice and the meal-period record/waiver pages." },
+    es: { title: "Formularios de Nuevo Empleado y Aviso Salarial", subtitle: "incl. CA Labor Code §2810.5", body: "He recibido y revisado los formularios de nuevo empleado, incluido el aviso salarial §2810.5 y las páginas de registro/renuncia del período de comida." }
+  },
+  {
+    key: "ack-pto", icon: "🏖️", group: "documents", doc: "06_PTO_Vacation_Policy.pdf", docES: "10_PTO_Vacation_Policy_ES.pdf",
+    en: { title: "PTO / Vacation Policy", body: "I have read the PTO / Vacation policy. I understand the Company does not offer paid vacation or PTO; paid sick leave is separate and is provided as required by California law." },
+    es: { title: "Política de PTO / Vacaciones", body: "He leído la política de PTO / Vacaciones. Entiendo que la Empresa no ofrece vacaciones pagadas ni PTO; la licencia pagada por enfermedad es aparte y se otorga según la ley de California." }
+  },
+  {
+    key: "ack-wvpp", icon: "⚠️", group: "documents", doc: "07_WVPP_and_Incident_Log.pdf", docES: "11_WVPP_ES.pdf",
+    en: { title: "Workplace Violence Prevention Plan", subtitle: "CA SB 553", body: "I have received the Workplace Violence Prevention Plan and know how to report a violent incident, threat, or concern." },
+    es: { title: "Plan de Prevención de Violencia Laboral", subtitle: "CA SB 553", body: "He recibido el Plan de Prevención de Violencia Laboral y sé cómo reportar un incidente violento, amenaza o preocupación." }
+  },
+  // ---- Policies you acknowledge (statements) ----
+  {
+    key: "ack-wtpn", icon: "💰", group: "policies", showWageInfo: true,
+    en: { title: "Pay Rate Confirmation", subtitle: "Wage Theft Prevention — §2810.5", body: "I confirm the pay rate, overtime rate, payday, and employer information shown above are correct." },
+    es: { title: "Confirmación de Salario", subtitle: "Prevención de Robo Salarial — §2810.5", body: "Confirmo que el salario, la tasa de hora extra, el día de pago y la información del empleador mostrados arriba son correctos." }
+  },
+  {
+    key: "ack-harass", icon: "🛡️", group: "policies",
+    en: { title: "Sexual Harassment Prevention Policy", body: "I have received the company's sexual harassment prevention policy. I understand that harassment, retaliation, and discrimination are prohibited and that I can report concerns to my manager, the Director, or the CA Civil Rights Department." },
+    es: { title: "Política de Prevención de Acoso Sexual", body: "He recibido la política de prevención de acoso sexual de la compañía. Entiendo que el acoso, las represalias y la discriminación están prohibidos y puedo reportar al gerente, al Director, o al CA Civil Rights Department." }
+  },
+  {
+    key: "ack-comp", icon: "🏥", group: "policies",
+    en: { title: "Workers' Compensation Pamphlet", subtitle: "CA Labor Code §3551", body: "I have received the workers' compensation pamphlet describing my rights if I am injured on the job." },
+    es: { title: "Folleto de Compensación de Trabajadores", subtitle: "CA Labor Code §3551", body: "He recibido el folleto de compensación de trabajadores que describe mis derechos si me lesiono en el trabajo." }
+  },
+  {
+    key: "ack-sick", icon: "🤒", group: "policies",
+    en: { title: "Paid Sick Leave Notice", subtitle: "Healthy Workplaces, Healthy Families Act", body: "I have been notified of my paid sick leave rights under the Healthy Workplaces, Healthy Families Act." },
+    es: { title: "Aviso de Licencia por Enfermedad Pagada", subtitle: "Healthy Workplaces, Healthy Families Act", body: "He sido notificado de mis derechos de licencia por enfermedad pagada bajo HWHFA." }
+  },
+  {
+    key: "ack-breaks", icon: "☕", group: "policies",
+    en: { title: "Meal & Rest Break Policy", body: "I understand California law gives me a 30-minute uninterrupted, duty-free meal break for shifts over 5 hours, and a paid 10-minute rest break for every 4 hours worked. If I am not given a break, I will tell my manager or the Director immediately." },
+    es: { title: "Política de Descansos para Comer y Descansar", body: "Entiendo que la ley de CA me da un descanso de 30 minutos sin interrupciones para comer en turnos de más de 5 horas, y un descanso pagado de 10 minutos por cada 4 horas trabajadas. Si no recibo un descanso, le diré al gerente o al Director inmediatamente." }
+  },
+  {
+    key: "ack-pamphlets", icon: "📖", group: "policies",
+    en: { title: "California Pamphlets", subtitle: "SDI, PFL, Sexual Harassment", body: "I received links to the required California pamphlets on the Documents step and can open them any time: State Disability Insurance (DE 2515), Paid Family Leave (DE 2511), and the Civil Rights Department's sexual harassment information." },
+    es: { title: "Folletos de California", subtitle: "SDI, PFL, Acoso Sexual", body: "Recibí los enlaces a los folletos obligatorios de California en el paso de Documentos y puedo abrirlos cuando quiera: Seguro Estatal de Incapacidad (DE 2515), Licencia Familiar Pagada (DE 2511) y la información sobre acoso sexual del Departamento de Derechos Civiles." }
+  }
+];
+
+// Timestamp when the employee opens any required CA pamphlet link (audit trail support
+// for the ack-pamphlets acknowledgment; pamphlets are external state PDFs, not per-store docs).
+function recordPamphletOpen() {
+  const s = getState();
+  if (!s['opened-ack-pamphlets']) patchState({ 'opened-ack-pamphlets': new Date().toISOString() });
+}
+
+// Build the URL to a per-store generated document (handbook, arbitration, offer, etc.)
+function storeDocUrl(store, filename) {
+  if (!store || !store.entityFolder || !filename) return null;
+  return 'docs/' + store.entityFolder + '/' + filename;
+}
+
+const ROLES = {
+  server: { en: "Server", es: "Mesero/a" },
+  host: { en: "Host", es: "Anfitrión/a" },
+  bartender: { en: "Bartender", es: "Bartender" },
+  busser: { en: "Busser", es: "Ayudante de mesa" },
+  linecook: { en: "Line Cook", es: "Cocinero de línea" },
+  prepcook: { en: "Prep Cook", es: "Cocinero de prep" },
+  dishwasher: { en: "Dishwasher", es: "Lavaplatos" },
+  chef: { en: "Chef", es: "Chef" },
+  manager: { en: "Manager", es: "Gerente" },
+  agm: { en: "Asst. GM", es: "Subgerente" }
+};
+
+const DOC_SLOTS = [
+  { key: "doc-id-front",  icon: "🪪", required: true,  critical: true,  acceptPdf: false, en: "Photo ID — front",  es: "ID con foto — frente",  sub_en: "Driver's License / State ID / Passport", sub_es: "Licencia / ID Estatal / Pasaporte" },
+  { key: "doc-id-back",   icon: "🪪", required: true,  critical: true,  acceptPdf: false, en: "Photo ID — back",   es: "ID con foto — reverso", sub_en: "Same card, back side", sub_es: "Misma tarjeta, lado reverso" },
+  { key: "doc-ssn",       icon: "🆔", required: true,  critical: true,  acceptPdf: false, en: "Work authorization document (your choice)", es: "Documento de autorización de trabajo (a tu elección)", sub_en: "ANY document YOU choose from the I-9 Lists (e.g., Social Security card, birth certificate, permanent resident card, EAD)", sub_es: "CUALQUIER documento que TÚ elijas de las listas del I-9 (ej.: tarjeta de Seguro Social, acta de nacimiento, tarjeta de residente, EAD)" },
+  { key: "doc-food",      icon: "🍴", required: false, critical: false, acceptPdf: false, en: "Food Handler Card", es: "Tarjeta de Manejo de Alimentos", sub_en: "Optional — skip if you don't have one", sub_es: "Opcional — omite si no la tienes" },
+  { key: "doc-tax-forms", icon: "📝", required: true, critical: false, acceptPdf: true,  en: "Signed tax forms (I-9, W-4, DE 4)", es: "Formularios fiscales firmados", sub_en: "Download from Step 1, fill out, then upload signed copies (PDF or photo)", sub_es: "Descarga del Paso 1, llena, luego sube copias firmadas (PDF o foto)" }
+];
+
+const STORAGE_KEY = "omc_intake_v3";
+const TOTAL_PAGES = 5;
+
+// ============ STATE ============
+function getState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function setState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+function patchState(patch) {
+  const s = getState();
+  Object.assign(s, patch);
+  try { setState(s); } catch (err) { console.warn("localStorage quota", err); }
+}
+
+// ============ URL PARAMS ============
+// Tamper-evidence for the pay rate in manager links. The manager link generator
+// (open the app with ?manager-tools) computes k = checksum(store|role|payRate).
+// If an employee edits payRate in the URL, k no longer matches and the rate is
+// REJECTED — the signed wage notice then shows "confirm with manager" instead of
+// printing a tampered number. (Not cryptography — tamper-evidence + evidence trail.)
+function linkChecksum(storeId, roleId, payRate) {
+  const str = [storeId || '', roleId || '', String(payRate || ''), 'OMC-K1'].join('|');
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
+function ingestUrlParams() {
+  const params = new URLSearchParams(location.search);
+  const s = getState();
+  let any = false;
+  ["store", "role", "manager", "buddy"].forEach(f => {
+    const v = params.get(f);
+    if (v) { s["mgr_" + f] = v; any = true; }
+  });
+  // payRate is only accepted with a matching checksum (see linkChecksum above).
+  const pr = params.get("payRate");
+  if (pr) {
+    const k = params.get("k");
+    if (k && k === linkChecksum(params.get("store"), params.get("role"), pr)) {
+      s["mgr_payRate"] = pr; s["mgr_payRate_verified"] = true; delete s["mgr_payRate_invalid"];
+    } else {
+      delete s["mgr_payRate"];
+      s["mgr_payRate_invalid"] = true; // shown as a warning; wage notice omits the rate
+    }
+    any = true;
+  }
+  const n = params.get("name");
+  if (n && !s["hire-name"]) s["hire-name"] = n;
+  // Manager sets the employee's language in the link (?lang=es). It becomes the default
+  // (and is locked unless the employee taps the toggle). Persist as the chosen lang.
+  const lg = (params.get("lang") || "").toLowerCase();
+  if (lg === "es" || lg === "en") { s["mgr_lang"] = lg; s.lang = lg; any = true; }
+  if (any) setState(s);
+  return !!getState()["mgr_store"];
+}
+
+// ============ LANGUAGE ============
+function getLang() { return document.body.getAttribute('data-lang') || 'en'; }
+function setLang(l) {
+  document.body.setAttribute('data-lang', l);
+  document.getElementById('lang-en').classList.toggle('active', l === 'en');
+  document.getElementById('lang-es').classList.toggle('active', l === 'es');
+  patchState({ lang: l });
+  renderReadOnly();
+  renderTopAndHero();
+  renderDocCards();
+  renderAckCards();
+  renderVerifyList();
+  renderThumbnails();
+  renderHelpNames();
+  renderSigDate();
+}
+
+// ============ TOP BAR + HERO ============
+function renderTopAndHero() {
+  const s = getState();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  const tbEn = document.getElementById('topbar-store');
+  const tbEs = document.getElementById('topbar-store-es');
+  const heroEn = document.getElementById('hero-title-en');
+  const heroEs = document.getElementById('hero-title-es');
+  if (store) {
+    tbEn.textContent = store.name + ' · Welcome';
+    tbEs.textContent = store.name + ' · Bienvenida';
+    heroEn.textContent = `Welcome to ${store.name}. Hospitality is a team sport — we hire for who you are first, then teach the rest.`;
+    heroEs.textContent = `Bienvenido a ${store.name}. La hospitalidad es un deporte de equipo — contratamos primero por quién eres, luego enseñamos el resto.`;
+  } else {
+    tbEn.textContent = 'New Hire Welcome';
+    tbEs.textContent = 'Bienvenida';
+    heroEn.textContent = 'Welcome. Hospitality is a team sport — we hire for who you are first, then teach the rest.';
+    heroEs.textContent = 'Bienvenido. La hospitalidad es un deporte de equipo — contratamos primero por quién eres, luego enseñamos el resto.';
+  }
+}
+
+// ============ READ-ONLY ============
+function renderReadOnly() {
+  const s = getState();
+  const lang = getLang();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  document.getElementById('ro-store').textContent = store ? store.name : '—';
+  const roleObj = ROLES[s["mgr_role"]];
+  document.getElementById('ro-role').textContent = roleObj ? (lang === 'en' ? roleObj.en : roleObj.es) : (s["mgr_role"] || '—');
+  document.getElementById('ro-manager').textContent = s["mgr_manager"] || '—';
+  document.getElementById('ro-buddy').textContent = s["mgr_buddy"] || '—';
+}
+
+// ============ WIZARD NAV ============
+function getCurrentPage() {
+  const s = getState();
+  return Math.max(1, Math.min(TOTAL_PAGES, parseInt(s.page || '1', 10)));
+}
+
+function showPage(n) {
+  n = Math.max(1, Math.min(TOTAL_PAGES, n));
+  patchState({ page: n });
+  document.querySelectorAll('.wizard-page').forEach(el => {
+    el.hidden = (parseInt(el.getAttribute('data-page'), 10) !== n);
+  });
+  document.querySelectorAll('.step').forEach(el => {
+    const sn = parseInt(el.getAttribute('data-step'), 10);
+    el.classList.toggle('active', sn === n);
+    el.classList.toggle('done', sn < n);
+  });
+  document.getElementById('btn-back').disabled = (n === 1);
+  const nextBtn = document.getElementById('btn-next');
+  if (n === TOTAL_PAGES) nextBtn.innerHTML = '<span lang="en">Done</span><span lang="es">Listo</span>';
+  else if (n === TOTAL_PAGES - 1) nextBtn.innerHTML = '<span lang="en">Review →</span><span lang="es">Revisar →</span>';
+  else nextBtn.innerHTML = '<span lang="en">Next →</span><span lang="es">Siguiente →</span>';
+
+  if (n === 2) renderSelfie();
+  if (n === 3) renderDocCards();
+  if (n === 4) initSignaturePage();
+  if (n === TOTAL_PAGES) { renderVerifyList(); renderThumbnails(); renderHelpNames(); }
+  evaluateNext();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goPrev() {
+  const n = getCurrentPage();
+  if (getState()['purged-at']) {
+    alert(getLang() === 'en' ? 'This intake is complete and its data was erased. Tap "Start over" to begin a new one.' : 'Este proceso terminó y sus datos fueron borrados. Toca "Empezar de nuevo" para uno nuevo.');
+    return;
+  }
+  if (n > 1) showPage(n - 1);
+}
+async function goNext() {
+  const n = getCurrentPage();
+  if (n < TOTAL_PAGES) {
+    if (canAdvanceFrom(n)) {
+      // Leaving Page 4 (handbook+sign) → try to embed signature into the handbook PDF
+      if (n === 4) {
+        await tryGenerateSignedHandbook();
+      }
+      showPage(n + 1);
+    } else if (n === 1) {
+      const h = document.getElementById('page1-hint');
+      if (h) h.hidden = false;
+    }
+  } else {
+    alert(getLang() === 'en' ? 'You can close this page now. See you on Day 1!' : 'Puedes cerrar esta página. ¡Te vemos el Día 1!');
+  }
+}
+
+async function tryGenerateSignedHandbook() {
+  const btn = document.getElementById('btn-next');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = (getLang() === 'en' ? '⏳ Preparing signed handbook...' : '⏳ Preparando manual...');
+  try {
+    const pdfDataUrl = await generateSignedHandbook();
+    if (pdfDataUrl) patchState({ "handbook-signed-pdf": pdfDataUrl });
+  } catch (err) {
+    console.warn("Signed handbook generation failed:", err);
+  } finally {
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  }
+}
+
+// Stamp the employee e-signature image (+ typed date) directly onto a document's esignBlock
+// page — on the "Employee signature ____  Date ____" underline. The generator places that
+// underline a fixed distance below the top of a fresh final page, so ESIGN_LINE_Y is stable
+// across documents and survives the docx→PDF (Pages) conversion.
+const ESIGN_LINE_Y = 626;
+async function stampEsignOnPage(pdfDoc, page, font, s, termsText) {
+  const { rgb } = PDFLib;
+  if (!s['signature-data'] || !page) return;
+  try {
+    const sigImg = await pdfDoc.embedPng(dataUrlToUint8Array(s['signature-data']));
+    const targetW = 170, r = targetW / sigImg.width, h = sigImg.height * r;
+    page.drawImage(sigImg, { x: 80, y: ESIGN_LINE_Y, width: targetW, height: h });
+    page.drawText(new Date().toLocaleDateString(), { x: 360, y: ESIGN_LINE_Y + 6, size: 11, font });
+    // Optional per-hire confirmed-terms line, drawn below the signature labels (clear space).
+    if (termsText) {
+      page.drawText(termsText, { x: 80, y: ESIGN_LINE_Y - 48, size: 9, font, color: rgb(0.1, 0.1, 0.1) });
+    }
+  } catch (e) { console.warn('e-sign stamp failed:', e); }
+}
+
+async function generateSignedHandbook() {
+  const s = getState();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  if (!store) return null;
+  if (!store.handbookUrl) return null;
+  if (!s["signature-data"]) return null;
+  // Require ALL acknowledgments before generating a signed packet.
+  if (!ACK_ITEMS.every(a => !!s[a.key])) return null;
+  if (typeof PDFLib === 'undefined') return null;
+
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  // Spanish hires sign the Spanish handbook (courtesy translation; English controls).
+  // Falls back to the English handbook if the ES file isn't available.
+  const esLang = (s['lang'] === 'es');
+  let handbookBytes = null;
+  if (esLang && store.entityFolder) {
+    try {
+      const resEs = await fetch(storeDocUrl(store, '08_Handbook_ES.pdf'));
+      if (resEs.ok) handbookBytes = await resEs.arrayBuffer();
+    } catch (e) { /* fall through to English */ }
+  }
+  if (!handbookBytes) {
+    try {
+      const res = await fetch(store.handbookUrl);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      handbookBytes = await res.arrayBuffer();
+    } catch (err) {
+      console.warn("Couldn't fetch handbook PDF (CORS or network):", err);
+      return null;
+    }
+  }
+
+  let pdfDoc;
+  try {
+    pdfDoc = await PDFDocument.load(handbookBytes);
+  } catch (err) {
+    console.warn("Couldn't parse handbook PDF:", err);
+    return null;
+  }
+
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  let sigImg = null;
+  try {
+    const sigBytes = dataUrlToUint8Array(s["signature-data"]);
+    sigImg = await pdfDoc.embedPng(sigBytes);
+  } catch (err) {
+    console.warn("Couldn't embed signature image:", err);
+  }
+
+  // Stamp the employee signature onto the handbook's OWN acknowledgment signature line
+  // (the esignBlock page is the handbook's current last page, before we append the summary).
+  try {
+    await stampEsignOnPage(pdfDoc, pdfDoc.getPage(pdfDoc.getPageCount() - 1), font, s);
+  } catch (e) { console.warn('handbook esign stamp failed:', e); }
+
+  const W = 612, H = 792;
+  // Render the summary pages in the employee's language (esLang set at the top of this function).
+  const T = esLang ? {
+    header: 'RECONOCIMIENTOS Y FIRMA DEL EMPLEADO',
+    name: 'Nombre', phone: 'Teléfono', dob: 'Fecha de nacimiento', start: 'Fecha de inicio', store: 'Restaurante',
+    llc: 'LLC operadora', manager: 'Gerente', signedAt: 'Firmado (UTC)',
+    wtpn: 'AVISO DE PREVENCIÓN DE ROBO DE SALARIOS (CA Labor Code 2810.5)',
+    notProvided: '— (aún no proporcionado por el gerente)',
+    acks: 'RECONOCIMIENTOS', sig: 'FIRMA',
+    confirm: 'Con mi firma abajo, confirmo que he leído y acepto todos los reconocimientos anteriores.',
+    sigLabel: 'Firma del empleado', signed: 'Firmado', date: 'Fecha',
+    viaApp: '(Firmado digitalmente mediante la aplicación de ingreso de nuevos empleados de la empresa)'
+  } : {
+    header: 'EMPLOYEE ACKNOWLEDGMENTS & SIGNATURE',
+    name: 'Name', phone: 'Phone', dob: 'Date of birth', start: 'Start date', store: 'Store',
+    llc: 'Operating LLC', manager: 'Manager', signedAt: 'Signed at (UTC)',
+    wtpn: 'WAGE THEFT PREVENTION NOTICE (CA Labor Code 2810.5)',
+    notProvided: '— (not yet provided by manager)',
+    acks: 'ACKNOWLEDGMENTS', sig: 'SIGNATURE',
+    confirm: 'By signing below, I confirm I have read and agree to all the acknowledgments above.',
+    sigLabel: 'Employee signature', signed: 'Signed', date: 'Date',
+    viaApp: '(Signed digitally via the company\'s new-hire intake app)'
+  };
+
+  // Helper to start a new page and draw header.
+  const newAckPage = () => {
+    const p = pdfDoc.addPage([W, H]);
+    p.drawText(T.header, { x: 50, y: H - 50, size: 13, font: fontBold });
+    p.drawLine({ start: { x: 50, y: H - 60 }, end: { x: W - 50, y: H - 60 }, thickness: 0.6, color: rgb(0.7, 0.7, 0.7) });
+    return p;
+  };
+
+  // ============ Page 1 of acknowledgments — header + employee/store info + acks ============
+  let page = newAckPage();
+  let y = H - 80;
+
+  // Employee + store info block
+  const fields = [
+    [T.name,           s["hire-name"]      || '-'],
+    [T.phone,          s["hire-phone"]     || '-'],
+    [T.dob,            s["hire-dob"]       || '-'],
+    [T.start,          s["hire-startdate"] || '-'],
+    [T.store,          store.name],
+    [T.llc,            store.legalEntity],
+    [T.manager,        s["mgr_manager"] || '-'],
+    [T.signedAt,       new Date().toISOString()]
+  ];
+  fields.forEach(([k, v]) => {
+    page.drawText(k + ':', { x: 50, y, size: 9.5, font: fontBold });
+    page.drawText(String(v), { x: 145, y, size: 9.5, font });
+    y -= 13;
+  });
+  y -= 10;
+
+  // Wage Theft Prevention Notice block — surfaces in plain text on the signed packet
+  page.drawText(T.wtpn, { x: 50, y, size: 10, font: fontBold });
+  y -= 14;
+  const wi = getWageInfo();
+  wi.rows.forEach(r => {
+    const v = r.value;
+    const out = isPlaceholder(v) ? T.notProvided : String(v);
+    page.drawText((esLang && r.labelEs ? r.labelEs : r.labelEn) + ':', { x: 50, y, size: 9, font: fontBold });
+    page.drawText(out, { x: 200, y, size: 9, font });
+    y -= 12;
+  });
+  y -= 10;
+
+  // Acknowledgment items (full text, in the employee's language). Wraps onto a new page if needed.
+  page.drawText(T.acks, { x: 50, y, size: 10, font: fontBold });
+  y -= 14;
+  for (const item of ACK_ITEMS) {
+    const txt = (esLang && item.es) ? item.es : item.en;
+    const checked = !!s[item.key] ? '[X]' : '[ ]';
+    const titleLine = checked + ' ' + txt.title + (txt.subtitle ? ' (' + txt.subtitle + ')' : '');
+    page.drawText(titleLine, { x: 50, y, size: 9.5, font: fontBold });
+    y -= 12;
+    const lines = wrapText(txt.body, 95);
+    for (const line of lines) {
+      if (y < 110) {
+        page = newAckPage();
+        y = H - 80;
+      }
+      page.drawText(line, { x: 60, y, size: 8.5, font, color: rgb(0.2, 0.2, 0.2) });
+      y -= 11;
+    }
+    y -= 4;
+    if (y < 110) { page = newAckPage(); y = H - 80; }
+  }
+  y -= 10;
+
+  // Signature block
+  if (y < 200) { page = newAckPage(); y = H - 80; }
+  page.drawText(T.sig, { x: 50, y, size: 11, font: fontBold });
+  y -= 14;
+  page.drawText(T.confirm, { x: 50, y, size: 9, font });
+  y -= 18;
+
+  if (sigImg) {
+    const targetW = 300;
+    const ratio = targetW / sigImg.width;
+    const targetH = sigImg.height * ratio;
+    page.drawImage(sigImg, { x: 50, y: y - targetH, width: targetW, height: targetH });
+    y -= targetH + 4;
+  }
+  page.drawLine({ start: { x: 50, y }, end: { x: 350, y }, thickness: 1, color: rgb(0,0,0) });
+  y -= 12;
+  page.drawText(T.sigLabel, { x: 50, y, size: 8, font, color: rgb(0.4,0.4,0.4) });
+  y -= 12;
+  page.drawText(T.signed + ': ' + (s["hire-name"] || '-') + '   |   ' + T.date + ': ' + new Date().toLocaleDateString(), { x: 50, y, size: 9, font });
+  y -= 16;
+  page.drawText(T.viaApp, { x: 50, y, size: 8, font, color: rgb(0.4,0.4,0.4) });
+
+  const pdfBytes = await pdfDoc.save();
+  return uint8ArrayToDataUrl(pdfBytes, 'application/pdf');
+}
+
+function dataUrlToUint8Array(dataUrl) {
+  const arr = dataUrl.split(',');
+  const bstr = atob(arr[1]);
+  const u8 = new Uint8Array(bstr.length);
+  for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
+  return u8;
+}
+function uint8ArrayToDataUrl(u8, mime) {
+  let bin = '';
+  for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+  return 'data:' + mime + ';base64,' + btoa(bin);
+}
+
+// Build ONE consolidated PDF the manager will receive:
+//   - Cover page: employee info + submitted checklist + pending items
+//   - Photo pages: selfie, ID front/back, SSN, food handler card
+//   - Tax forms (PDF or photo, embedded)
+//   - Signed Employee Handbook (handbook + signature page already appended)
+async function generateConsolidatedPdf() {
+  if (typeof PDFLib === 'undefined') return null;
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const s = getState();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  if (!store) return null;
+
+  const out = await PDFDocument.create();
+  const font = await out.embedFont(StandardFonts.Helvetica);
+  const fontBold = await out.embedFont(StandardFonts.HelveticaBold);
+  const W = 612, H = 792;
+  const role = ROLES[s["mgr_role"]];
+
+  // ============ COVER PAGE ============
+  const cover = out.addPage([W, H]);
+  let y = H - 60;
+
+  cover.drawText('NEW HIRE INTAKE PACKET', { x: 50, y, size: 9, font: fontBold, color: rgb(0.45, 0.45, 0.45) });
+  y -= 20;
+  cover.drawText(s["hire-name"] || '(no name)', { x: 50, y, size: 24, font: fontBold });
+  y -= 24;
+  cover.drawText(store.name + ' · ' + (role ? role.en : (s["mgr_role"] || '—')), { x: 50, y, size: 12, font, color: rgb(0.35, 0.35, 0.35) });
+  y -= 28;
+
+  cover.drawLine({ start: { x: 50, y }, end: { x: W - 50, y }, thickness: 0.6, color: rgb(0.85, 0.85, 0.85) });
+  y -= 22;
+
+  // Employee info column
+  cover.drawText('EMPLOYEE', { x: 50, y, size: 9, font: fontBold, color: rgb(0.4, 0.4, 0.4) });
+  y -= 14;
+  const empFields = [
+    ['Full name', s["hire-name"] || '—'],
+    ['Phone', s["hire-phone"] || '—'],
+    ['Date of birth', (s["hire-dob"] || '—') + (ageAtStart(s) !== null ? '  (age ' + ageAtStart(s) + ' at start' + (ageAtStart(s) < 18 ? ' — MINOR' : '') + ')' : '')],
+    ['Start date', s["hire-startdate"] || '—'],
+    ['Role', role ? role.en : (s["mgr_role"] || '—')]
+  ];
+  empFields.forEach(([k, v]) => {
+    cover.drawText(k + ':', { x: 50, y, size: 10, font: fontBold });
+    cover.drawText(String(v), { x: 145, y, size: 10, font });
+    y -= 14;
+  });
+  y -= 8;
+
+  cover.drawText('STORE & MANAGER', { x: 50, y, size: 9, font: fontBold, color: rgb(0.4, 0.4, 0.4) });
+  y -= 14;
+  const storeFields = [
+    ['Store', store.name],
+    ['Operating LLC', store.legalEntity],
+    ['Manager', s["mgr_manager"] || '—'],
+    ['Buddy / trainer', s["mgr_buddy"] || '—']
+  ];
+  storeFields.forEach(([k, v]) => {
+    cover.drawText(k + ':', { x: 50, y, size: 10, font: fontBold });
+    cover.drawText(String(v), { x: 145, y, size: 10, font });
+    y -= 14;
+  });
+  y -= 8;
+
+  cover.drawText('SUBMITTED', { x: 50, y, size: 9, font: fontBold, color: rgb(0.4, 0.4, 0.4) });
+  y -= 14;
+  cover.drawText(new Date().toLocaleString(), { x: 50, y, size: 10, font });
+  y -= 24;
+
+  cover.drawLine({ start: { x: 50, y }, end: { x: W - 50, y }, thickness: 0.6, color: rgb(0.85, 0.85, 0.85) });
+  y -= 18;
+
+  // Submitted items checklist
+  cover.drawText('[X] INCLUDED IN THIS PACKET', { x: 50, y, size: 11, font: fontBold, color: rgb(0.05, 0.45, 0.2) });
+  y -= 16;
+  const submittedItems = [
+    { key: 'selfie-data', label: 'Selfie photo' },
+    { key: 'doc-id-front', label: 'Photo ID - front' },
+    { key: 'doc-id-back', label: 'Photo ID - back' },
+    { key: 'doc-ssn', label: 'SSN card / work authorization' },
+    { key: 'doc-food', label: 'California Food Handler Card' },
+    { key: 'doc-tax-forms', label: 'Signed tax forms (I-9, W-4, DE 4)' },
+    { key: 'handbook-signed-pdf', label: 'Signed Handbook + acknowledgments + companion documents (Arbitration, Offer Letter, New Hire Forms/Wage Notice, PTO, WVPP) appended below' },
+    { key: 'signature-data', label: 'Standalone digital signature (handbook PDF unavailable)' }
+  ];
+  let submittedCount = 0;
+  submittedItems.forEach(it => {
+    if (!s[it.key]) return;
+    if (it.key === 'signature-data' && s['handbook-signed-pdf']) return;
+    cover.drawText('  [X]  ' + it.label, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
+    y -= 13;
+    submittedCount++;
+  });
+  if (submittedCount === 0) {
+    cover.drawText('  (nothing captured)', { x: 50, y, size: 10, font, color: rgb(0.5, 0.5, 0.5) });
+    y -= 13;
+  }
+  y -= 12;
+
+  // Pending items
+  cover.drawText('[ ] STILL PENDING - manager to complete on/after Day 1', { x: 50, y, size: 11, font: fontBold, color: rgb(0.7, 0.4, 0.05) });
+  y -= 16;
+  const pendingItems = [];
+  const coverAge = ageAtStart(s);
+  if (coverAge !== null && coverAge < 18) {
+    pendingItems.push('MINOR (under 18) - VALID WORK PERMIT REQUIRED BEFORE FIRST SHIFT (CDE form B1-4; school/district issues it). Verify permitted hours; NO alcohol service. ACTION REQUIRED');
+  }
+  if (!s['doc-food']) pendingItems.push('California Food Handler Card - within 30 days of hire (CA SB 476, employer-paid)');
+  if (!s['handbook-signed-pdf'] && !s['signature-data']) pendingItems.push('Employee Handbook + 6 acknowledgments + signature');
+  if (!s['doc-tax-forms']) pendingItems.push('Signed tax forms (I-9, W-4, DE 4)');
+  pendingItems.push('Sexual Harassment Prevention training - within 6 months (CA AB 1825 / SB 1343, then every 2 years)');
+  pendingItems.push('Workplace Violence Prevention training - initial + annual refresh (CA SB 553)');
+  if (role && /server|bartender|host/i.test(role.en)) {
+    pendingItems.push('Responsible Beverage Service (RBS) certification - within 60 days (CA ABC, alcohol service only)');
+  }
+  pendingItems.push('I-9 Section 2 (employer verification of original docs in person - within 3 days of hire)');
+  pendingItems.push('Direct Deposit setup - N/A (this LLC issues paper checks via CPA)');
+  pendingItems.push('Emergency contact form (manager-provided form, signed Day 1)');
+  pendingItems.push('Day 1 in-person signatures - employee re-signs in ink + officer countersigns (LAST PAGE of this packet - print it)');
+  pendingItems.forEach(item => {
+    const lines = wrapText(item, 90);
+    lines.forEach((line, idx) => {
+      cover.drawText((idx === 0 ? '  -  ' : '     ') + line, { x: 50, y, size: 9.5, font, color: rgb(0.4, 0.3, 0.05) });
+      y -= 12;
+    });
+  });
+
+  // Footer
+  cover.drawText('Assembled by the company\'s new-hire intake app from the employee\'s phone.', {
+    x: 50, y: 78, size: 8, font, color: rgb(0.45, 0.45, 0.45)
+  });
+  cover.drawText('All photos were confirmed for clarity by the employee at capture. Signed handbook page is at the end of this PDF.', {
+    x: 50, y: 66, size: 8, font, color: rgb(0.45, 0.45, 0.45)
+  });
+
+  // ============ PHOTO PAGES ============
+  const photoSlots = [
+    { key: 'selfie-data', label: 'SELFIE' },
+    { key: 'doc-id-front', label: 'PHOTO ID — FRONT' },
+    { key: 'doc-id-back', label: 'PHOTO ID — BACK' },
+    { key: 'doc-ssn', label: 'SSN CARD / WORK AUTHORIZATION' },
+    { key: 'doc-food', label: 'CALIFORNIA FOOD HANDLER CARD' }
+  ];
+  for (const slot of photoSlots) {
+    if (!s[slot.key]) continue;
+    const data = s[slot.key];
+    if (!/^data:image\//.test(data)) continue;
+    await drawImagePage(out, font, fontBold, slot.label, s["hire-name"] || '', data, W, H);
+  }
+
+  // ============ TAX FORMS (PDF or photo) ============
+  if (s['doc-tax-forms']) {
+    const data = s['doc-tax-forms'];
+    if (data.startsWith('data:application/pdf')) {
+      try {
+        const taxDoc = await PDFDocument.load(dataUrlToUint8Array(data), { ignoreEncryption: true });
+        const pages = await out.copyPages(taxDoc, taxDoc.getPageIndices());
+        pages.forEach(p => out.addPage(p));
+      } catch (err) {
+        console.warn("Couldn't merge tax-form PDF:", err);
+        const page = out.addPage([W, H]);
+        page.drawText('SIGNED TAX FORMS — could not embed PDF', { x: 50, y: H - 60, size: 12, font: fontBold, color: rgb(0.7, 0.1, 0.1) });
+      }
+    } else if (/^data:image\//.test(data)) {
+      await drawImagePage(out, font, fontBold, 'SIGNED TAX FORMS (I-9, W-4, DE 4)', s["hire-name"] || '', data, W, H);
+    }
+  }
+
+  // ============ SIGNED HANDBOOK (handbook + appended signature page) ============
+  if (s['handbook-signed-pdf']) {
+    try {
+      const hbDoc = await PDFDocument.load(dataUrlToUint8Array(s['handbook-signed-pdf']), { ignoreEncryption: true });
+      const pages = await out.copyPages(hbDoc, hbDoc.getPageIndices());
+      pages.forEach(p => out.addPage(p));
+    } catch (err) {
+      console.warn("Couldn't merge signed-handbook PDF:", err);
+    }
+  } else if (s['signature-data']) {
+    // Fallback: standalone signature page only (no handbook PDF)
+    const page = out.addPage([W, H]);
+    page.drawText('EMPLOYEE HANDBOOK ACKNOWLEDGMENT (handbook PDF unavailable)', { x: 50, y: H - 60, size: 12, font: fontBold });
+    page.drawText('Standalone signature only — request handbook fetch failed (CORS or 404).', { x: 50, y: H - 80, size: 10, font, color: rgb(0.5, 0, 0) });
+    try {
+      const sigImg = await out.embedPng(dataUrlToUint8Array(s['signature-data']));
+      const ratio = (W - 100) / sigImg.width;
+      page.drawImage(sigImg, { x: 50, y: H - 250, width: sigImg.width * ratio, height: sigImg.height * ratio });
+    } catch (err) {}
+  }
+
+  // ============ COMPANION DOCUMENTS (arbitration, offer, forms, PTO, WVPP) ============
+  // Append the per-entity companion PDFs the employee acknowledged, so the manager gets the
+  // full signed set in one packet. The employee's acknowledgment + signature are recorded on
+  // the signed-handbook signature page above (which lists every acknowledged item).
+  if (store.entityFolder) {
+    // esign: true → this document has an esignBlock signature page (from the generator); after
+    // merging, stamp the employee's e-signature directly on that document's own signature line.
+    const companions = [
+      { ackKey: 'ack-arbitration', file: (s['lang'] === 'es') ? '03_Arbitration_ES.pdf' : '02_Arbitration_EN.pdf', label: 'MUTUAL ARBITRATION AGREEMENT', esign: true },
+      { ackKey: 'ack-offer',  file: (s['lang'] === 'es') ? '09_Offer_Letter_ES.pdf' : '04_Offer_Letter.pdf', label: 'AT-WILL OFFER LETTER', esign: true },
+      { ackKey: 'ack-forms',  file: '05_New_Hire_Forms_EN_ES.pdf',  label: 'NEW HIRE FORMS & WAGE NOTICE' },
+      { ackKey: 'ack-pto',    file: (s['lang'] === 'es') ? '10_PTO_Vacation_Policy_ES.pdf' : '06_PTO_Vacation_Policy.pdf', label: 'PTO / VACATION POLICY' },
+      { ackKey: 'ack-wvpp',   file: (s['lang'] === 'es') ? '11_WVPP_ES.pdf' : '07_WVPP_and_Incident_Log.pdf', label: 'WORKPLACE VIOLENCE PREVENTION PLAN (SB 553)' }
+    ];
+    for (const c of companions) {
+      if (!s[c.ackKey]) continue; // only include documents the employee acknowledged
+      const url = storeDocUrl(store, c.file);
+      if (!url) continue;
+      // Divider page so the manager can see where each acknowledged document begins
+      const div = out.addPage([W, H]);
+      div.drawText('ACKNOWLEDGED DOCUMENT', { x: 50, y: H - 70, size: 9, font: fontBold, color: rgb(0.45, 0.45, 0.45) });
+      div.drawText(c.label, { x: 50, y: H - 92, size: 16, font: fontBold });
+      div.drawText('Acknowledged by ' + (s['hire-name'] || '-') + (c.esign ? ' — signed on the document\'s own signature line.' : ' — receipt acknowledged on the summary page in this packet.'), { x: 50, y: H - 114, size: 10, font, color: rgb(0.3, 0.3, 0.3) });
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const bytes = await res.arrayBuffer();
+        const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+        const pages = await out.copyPages(doc, doc.getPageIndices());
+        pages.forEach(p => out.addPage(p));
+        // Stamp the e-signature on this document's own signature line (last page = esignBlock page).
+        // For the offer letter, also stamp the confirmed per-hire terms (position, pay, start date).
+        if (c.esign && pages.length) {
+          let terms = null;
+          if (c.ackKey === 'ack-offer') {
+            const role = ROLES[s['mgr_role']];
+            const pr = parseFloat(s['mgr_payRate']);
+            terms = 'Confirmed terms — Position: ' + (role ? role.en : (s['mgr_role'] || '-'))
+                  + (isFinite(pr) ? '  ·  Pay: $' + pr.toFixed(2) + '/hr (OT $' + (pr * 1.5).toFixed(2) + ')' : '')
+                  + (s['hire-startdate'] ? '  ·  Start: ' + s['hire-startdate'] : '');
+          }
+          await stampEsignOnPage(out, pages[pages.length - 1], font, s, terms);
+        }
+      } catch (err) {
+        console.warn('Could not append companion doc ' + c.file + ':', err);
+        div.drawText('(Could not load this document: ' + (err.message || err) + ')', { x: 50, y: H - 150, size: 10, font, color: rgb(0.7, 0, 0) });
+      }
+    }
+  }
+
+  // ============ AUDIT TRAIL ============
+  // Per-item timestamps counter the "one cloned signature / never read it" attack (Ruiz):
+  // shows each acknowledgment was individually checked, when documents were opened,
+  // when the signature was drawn, and whether the pay-rate link was checksum-verified.
+  {
+    const ap = out.addPage([W, H]);
+    let ay = H - 60;
+    ap.drawText('ELECTRONIC SIGNATURE AUDIT TRAIL', { x: 50, y: ay, size: 13, font: fontBold }); ay -= 16;
+    ap.drawText('Recorded automatically by the company\'s new-hire intake app on the employee\'s device.', { x: 50, y: ay, size: 8.5, font, color: rgb(0.4, 0.4, 0.4) }); ay -= 20;
+    const fmt = (iso) => { try { return iso ? new Date(iso).toLocaleString() : '-'; } catch (e) { return iso || '-'; } };
+    const meta = [
+      ['Employee', s['hire-name'] || '-'],
+      ['Store / Entity', store.name + '  /  ' + store.legalEntity],
+      ['Signature drawn at', fmt(s['signature-at'])],
+      ['Packet assembled at', new Date().toLocaleString()],
+      ['Pay rate on manager link', s['mgr_payRate'] ? ('$' + s['mgr_payRate'] + '/hr — checksum VERIFIED') : (s['mgr_payRate_invalid'] ? 'REJECTED (checksum mismatch — possible URL edit)' : 'not provided')],
+      ['Device / browser', (navigator.userAgent || '-').slice(0, 95)]
+    ];
+    meta.forEach(([k, v]) => {
+      ap.drawText(k + ':', { x: 50, y: ay, size: 9, font: fontBold });
+      ap.drawText(String(v), { x: 190, y: ay, size: 9, font });
+      ay -= 13;
+    });
+    ay -= 10;
+    ap.drawText('ITEM-BY-ITEM ACKNOWLEDGMENTS', { x: 50, y: ay, size: 10, font: fontBold }); ay -= 14;
+    for (const item of ACK_ITEMS) {
+      ap.drawText(item.en.title, { x: 50, y: ay, size: 8.5, font: fontBold }); ay -= 11;
+      const opened = s['opened-' + item.key];
+      const line = 'Checked: ' + fmt(s['ackts-' + item.key]) + (item.doc ? ('    |    Document opened: ' + (opened ? fmt(opened) : 'not opened in app')) : '');
+      ap.drawText(line, { x: 62, y: ay, size: 8, font, color: rgb(0.25, 0.25, 0.25) }); ay -= 13;
+      if (ay < 90) break;
+    }
+  }
+
+  // ============ DAY 1 IN-PERSON SIGNATURES (wet ink, both parties) ============
+  // The manager PRINTS this page; on Day 1 the employee re-confirms in ink and an
+  // officer countersigns in ink. E-sign + audit trail proves pre-Day-1 disclosure;
+  // the wet signatures remove any authentication argument entirely.
+  {
+    const cp = out.addPage([W, H]);
+    let cy = H - 56;
+    cp.drawText('DAY 1 IN-PERSON SIGNATURES', { x: 50, y: cy, size: 13, font: fontBold }); cy -= 16;
+    cp.drawText('MANAGER: print this page. On the employee\'s first day, both parties sign below in ink. File with the packet.', { x: 50, y: cy, size: 8.5, font, color: rgb(0.45, 0.45, 0.45) }); cy -= 26;
+
+    const sigBlock = (label) => {
+      cp.drawLine({ start: { x: 50, y: cy }, end: { x: 320, y: cy }, thickness: 1, color: rgb(0, 0, 0) });
+      cp.drawLine({ start: { x: 350, y: cy }, end: { x: 470, y: cy }, thickness: 1, color: rgb(0, 0, 0) });
+      cy -= 12;
+      cp.drawText(label, { x: 50, y: cy, size: 8, font, color: rgb(0.35, 0.35, 0.35) });
+      cp.drawText('Date', { x: 350, y: cy, size: 8, font, color: rgb(0.35, 0.35, 0.35) });
+      cy -= 30;
+    };
+
+    // --- Part 1: employee in-person ratification ---
+    // For Spanish-language hires the statement they ink-sign is printed in Spanish,
+    // with the English original underneath (so the employee understood what they signed
+    // AND the controlling English text is on the same page).
+    const dayEs = (s['lang'] === 'es');
+    cp.drawText(dayEs ? '1.  CONFIRMACIÓN DEL EMPLEADO (en persona)' : '1.  EMPLOYEE CONFIRMATION (in person)', { x: 50, y: cy, size: 11, font: fontBold }); cy -= 16;
+    const confirmEn = 'I, ' + (s['hire-name'] || '________________') + ', confirm in person that I electronically signed this intake packet on ' + new Date().toLocaleDateString() + ', and I re-affirm each acknowledgment in it — including the Employee Handbook acknowledgment, the Mutual Arbitration Agreement, and the At-Will Offer Letter. The electronic signature in this packet is mine.';
+    if (dayEs) {
+      const confirmEs = 'Yo, ' + (s['hire-name'] || '________________') + ', confirmo en persona que firmé electrónicamente este paquete de ingreso el ' + new Date().toLocaleDateString() + ', y reafirmo cada reconocimiento en él — incluyendo el acuse del Manual del Empleado, el Acuerdo Mutuo de Arbitraje y la Carta de Oferta de empleo a voluntad. La firma electrónica en este paquete es mía.';
+      wrapText(confirmEs, 92).forEach(line => { cp.drawText(line, { x: 50, y: cy, size: 10, font }); cy -= 14; });
+      cy -= 4;
+      wrapText('(English original) ' + confirmEn, 110).forEach(line => { cp.drawText(line, { x: 50, y: cy, size: 8, font, color: rgb(0.4, 0.4, 0.4) }); cy -= 11; });
+    } else {
+      wrapText(confirmEn, 92).forEach(line => { cp.drawText(line, { x: 50, y: cy, size: 10, font }); cy -= 14; });
+    }
+    cy -= 22;
+    sigBlock(dayEs ? 'Firma del empleado (con tinta) — ' + (s['hire-name'] || '') : 'Employee signature (in ink) — ' + (s['hire-name'] || ''));
+    cy -= 8;
+
+    // --- Part 2: employer countersignature ---
+    cp.drawText('2.  EMPLOYER COUNTERSIGNATURE', { x: 50, y: cy, size: 11, font: fontBold }); cy -= 16;
+    wrapText('On behalf of ' + store.legalEntity + ', the undersigned officer or authorized manager accepts and countersigns the Employee Handbook acknowledgment, the Mutual Arbitration Agreement, and the At-Will Offer Letter contained in this packet, and confirms the employee\'s original documents were or will be verified in person (Form I-9, Section 2) within three business days of the first day of work.', 92)
+      .forEach(line => { cp.drawText(line, { x: 50, y: cy, size: 10, font }); cy -= 14; });
+    cy -= 22;
+    sigBlock('Officer / authorized manager signature (in ink) — ' + store.legalEntity.split(' (dba')[0]);
+    cp.drawLine({ start: { x: 50, y: cy }, end: { x: 320, y: cy }, thickness: 1, color: rgb(0, 0, 0) });
+    cy -= 12;
+    cp.drawText('Printed name and title', { x: 50, y: cy, size: 8, font, color: rgb(0.35, 0.35, 0.35) });
+    cy -= 26;
+    cp.drawText('Employee: ' + (s['hire-name'] || '-') + '    |    E-signed: ' + new Date().toLocaleDateString() + '    |    Store: ' + store.name, { x: 50, y: cy, size: 9, font });
+    cy -= 14;
+    cp.drawText('File this signed page with the packet in the entity\'s personnel records. Do not distribute.', { x: 50, y: cy, size: 8, font, color: rgb(0.4, 0.4, 0.4) });
+  }
+
+  return await out.save();
+}
+
+async function drawImagePage(pdfDoc, font, fontBold, label, subtitle, dataUrl, W, H) {
+  const page = pdfDoc.addPage([W, H]);
+  const { rgb } = PDFLib;
+  page.drawText(label, { x: 50, y: H - 50, size: 14, font: fontBold });
+  if (subtitle) page.drawText(subtitle, { x: 50, y: H - 68, size: 10, font, color: rgb(0.4, 0.4, 0.4) });
+  try {
+    const u8 = dataUrlToUint8Array(dataUrl);
+    const isPng = dataUrl.includes('image/png');
+    const img = isPng ? await pdfDoc.embedPng(u8) : await pdfDoc.embedJpg(u8);
+    const maxW = W - 100;
+    const maxH = H - 130;
+    const ratio = Math.min(maxW / img.width, maxH / img.height);
+    const drawW = img.width * ratio;
+    const drawH = img.height * ratio;
+    page.drawImage(img, { x: (W - drawW) / 2, y: (H - drawH) / 2 - 25, width: drawW, height: drawH });
+  } catch (err) {
+    page.drawText('(Could not embed image: ' + err.message + ')', { x: 50, y: H / 2, size: 10, font, color: rgb(0.7, 0, 0) });
+  }
+}
+
+function wrapText(text, maxChars) {
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    if ((cur + ' ' + w).trim().length > maxChars) {
+      if (cur) lines.push(cur);
+      cur = w;
+    } else {
+      cur = (cur + ' ' + w).trim();
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function canAdvanceFrom(n) {
+  const s = getState();
+  if (n === 1) return !!(s["hire-name"] && s["hire-phone"] && s["hire-dob"] && s["hire-startdate"]);
+  if (n === 2) return !!s["selfie-data"];
+  if (n === 3) return DOC_SLOTS.filter(d => d.required).every(d => !!s[d.key]);
+  if (n === 4) return ACK_ITEMS.every(a => !!s[a.key]) && !!s["signature-data"];
+  return true;
+}
+
+function evaluateNext() {
+  const n = getCurrentPage();
+  const ok = canAdvanceFrom(n);
+  document.getElementById('btn-next').disabled = !ok && n < TOTAL_PAGES;
+  if (n === 1) { const h = document.getElementById('page1-hint'); if (h && ok) h.hidden = true; }
+}
+
+// ============ PAGE 1 ============
+function bindInputs() {
+  ['hire-name', 'hire-phone', 'hire-dob', 'hire-startdate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const handler = () => { patchState({ [id]: el.value }); if (id === 'hire-dob' || id === 'hire-startdate') updateMinorWarning(); evaluateNext(); };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  });
+}
+function loadInputs() {
+  const s = getState();
+  ['hire-name', 'hire-phone', 'hire-dob', 'hire-startdate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && s[id] != null) el.value = s[id];
+  });
+  updateMinorWarning();
+}
+
+// Age at start date (falls back to today if no start date yet). Returns null without a DOB.
+function ageAtStart(s) {
+  s = s || getState();
+  if (!s['hire-dob']) return null;
+  const dob = new Date(s['hire-dob'] + 'T00:00:00');
+  if (isNaN(dob)) return null;
+  const ref = s['hire-startdate'] ? new Date(s['hire-startdate'] + 'T00:00:00') : new Date();
+  let age = ref.getFullYear() - dob.getFullYear();
+  const m = ref.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && ref.getDate() < dob.getDate())) age--;
+  return (age >= 0 && age < 120) ? age : null;
+}
+function updateMinorWarning() {
+  const el = document.getElementById('minor-warning');
+  if (!el) return;
+  const age = ageAtStart();
+  el.style.display = (age !== null && age < 18) ? 'block' : 'none';
+}
+
+// ============ FILE PROCESSING ============
+function fileToDataUrl(file, maxW, maxH, quality, callback) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (file.type === 'application/pdf') {
+      callback(e.target.result, true);
+      return;
+    }
+    const img = new Image();
+    img.onload = () => {
+      const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      let q = quality;
+      let dataUrl = canvas.toDataURL('image/jpeg', q);
+      while (dataUrl.length > 800000 && q > 0.4) {
+        q -= 0.15;
+        dataUrl = canvas.toDataURL('image/jpeg', q);
+      }
+      callback(dataUrl, false);
+    };
+    img.onerror = () => callback(null, false);
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Triggered by every file input on the page
+function onFileSelected(slotKey, evt, isCritical) {
+  const file = evt.target.files && evt.target.files[0];
+  evt.target.value = ''; // reset so same file can be picked again
+  if (!file) return;
+  const maxDim = (slotKey === 'selfie-data') ? 800 : 1400;
+  fileToDataUrl(file, maxDim, maxDim, 0.85, (dataUrl, isPdf) => {
+    if (!dataUrl) return;
+    if (isCritical && !isPdf) {
+      // Show confirmation modal first
+      showConfirmModal(slotKey, dataUrl);
+    } else {
+      saveDoc(slotKey, dataUrl);
+    }
+  });
+}
+
+function saveDoc(slotKey, dataUrl) {
+  patchState({ [slotKey]: dataUrl });
+  if (slotKey === 'selfie-data') renderSelfie();
+  else renderDocCards();
+  evaluateNext();
+}
+
+// ============ CONFIRMATION MODAL ============
+let pendingConfirm = null;
+function showConfirmModal(slotKey, dataUrl) {
+  pendingConfirm = { slotKey, dataUrl };
+  document.getElementById('confirm-modal-img').src = dataUrl;
+  // Update modal title based on slot
+  const lang = getLang();
+  const slot = DOC_SLOTS.find(d => d.key === slotKey);
+  const isSelfie = slotKey === 'selfie-data';
+  document.getElementById('confirm-modal').hidden = false;
+}
+function acceptConfirm() {
+  if (!pendingConfirm) return;
+  saveDoc(pendingConfirm.slotKey, pendingConfirm.dataUrl);
+  document.getElementById('confirm-modal').hidden = true;
+  pendingConfirm = null;
+}
+function cancelConfirm() {
+  document.getElementById('confirm-modal').hidden = true;
+  pendingConfirm = null;
+}
+
+// ============ PAGE 2: SELFIE ============
+function renderSelfie() {
+  const s = getState();
+  const data = s["selfie-data"];
+  const empty = document.getElementById('selfie-empty');
+  const img = document.getElementById('selfie-photo');
+  if (data) {
+    empty.hidden = true;
+    img.src = data;
+    img.hidden = false;
+  } else {
+    empty.hidden = false;
+    img.hidden = true;
+    img.src = '';
+  }
+}
+
+// ============ PAGE 3: DOC CARDS ============
+function renderDocCards() {
+  const wrap = document.getElementById('doc-cards');
+  if (!wrap) return;
+  const s = getState();
+  const lang = getLang();
+  wrap.innerHTML = DOC_SLOTS.map(d => {
+    const data = s[d.key];
+    const title = lang === 'en' ? d.en : d.es;
+    const sub = lang === 'en' ? d.sub_en : d.sub_es;
+    const status = data ? '<span style="color:#16a34a;">✓</span>' : (d.required ? '<span style="color:#dc2626;">●</span>' : '<span style="color:#9ca3af;">○</span>');
+    const reqPill = d.required ? '<span class="pill pill-required">Required</span>' : '<span class="pill pill-optional">Optional</span>';
+    const camId = 'cam-' + d.key;
+    const fileId = 'file-' + d.key;
+    const accept = d.acceptPdf ? 'image/*,application/pdf' : 'image/*';
+    let body;
+    if (data) {
+      const isPdf = (data.indexOf('data:application/pdf') === 0);
+      const previewHtml = isPdf
+        ? '<div class="doc-pdf-preview">📄 <span lang="en">PDF attached</span><span lang="es">PDF adjunto</span></div>'
+        : '<img src="' + escapeAttr(data) + '" class="doc-preview" alt="" />';
+      body = previewHtml +
+        '<div class="btn-row" style="margin-top:8px;">' +
+          '<button class="btn-action secondary" onclick="document.getElementById(\'' + camId + '\').click()"><span class="ba-emoji">📷</span><span class="ba-label" lang="en">↻ Retake</span><span class="ba-label" lang="es">↻ Tomar de nuevo</span></button>' +
+          '<button class="btn-action secondary" onclick="clearDoc(\'' + d.key + '\')"><span class="ba-emoji">✕</span><span class="ba-label" lang="en">Remove</span><span class="ba-label" lang="es">Quitar</span></button>' +
+        '</div>';
+    } else {
+      body = '<div class="btn-row">' +
+        '<button class="btn-action" onclick="document.getElementById(\'' + camId + '\').click()">' +
+          '<span class="ba-emoji">📷</span>' +
+          '<span class="ba-label" lang="en">Take photo</span>' +
+          '<span class="ba-label" lang="es">Tomar foto</span>' +
+        '</button>' +
+        '<button class="btn-action secondary" onclick="document.getElementById(\'' + fileId + '\').click()">' +
+          '<span class="ba-emoji">📁</span>' +
+          '<span class="ba-label" lang="en">Pick file</span>' +
+          '<span class="ba-label" lang="es">Elegir archivo</span>' +
+        '</button>' +
+      '</div>';
+    }
+    const criticalAttr = d.critical ? 'true' : 'false';
+    return '<div class="doc-card">' +
+      '<div class="doc-card-head">' +
+        '<div class="doc-card-icon">' + d.icon + '</div>' +
+        '<div>' +
+          '<div class="doc-card-title">' + escapeHtml(title) + ' ' + reqPill + '</div>' +
+          '<div class="doc-card-sub">' + escapeHtml(sub) + '</div>' +
+        '</div>' +
+        '<div class="doc-card-status">' + status + '</div>' +
+      '</div>' +
+      body +
+      // Camera input (with capture)
+      '<input type="file" id="' + camId + '" accept="' + accept + '" capture="environment" hidden onchange="onFileSelected(\'' + d.key + '\', event, ' + criticalAttr + ')" />' +
+      // File picker input (no capture)
+      '<input type="file" id="' + fileId + '" accept="' + accept + '" hidden onchange="onFileSelected(\'' + d.key + '\', event, ' + criticalAttr + ')" />' +
+    '</div>';
+  }).join('');
+}
+
+function clearDoc(key) {
+  patchState({ [key]: null });
+  renderDocCards();
+  evaluateNext();
+}
+
+// ============ PAGE 4: HANDBOOK + SIGNATURE ============
+// Returns the wage info table data for the Wage Theft Prevention Notice card.
+function getWageInfo() {
+  const s = getState();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  const lang = getLang();
+  const role = ROLES[s["mgr_role"]];
+  const payRate = parseFloat(s["mgr_payRate"]);
+  const otRate = isFinite(payRate) ? (payRate * 1.5) : null;
+  return {
+    rows: [
+      { labelEn: "Regular pay rate", labelEs: "Salario regular", value: isFinite(payRate) ? '$' + payRate.toFixed(2) + ' / hour' : null },
+      { labelEn: "Overtime pay rate (1.5×)", labelEs: "Salario hora extra (1.5×)", value: otRate ? '$' + otRate.toFixed(2) + ' / hour' : null },
+      { labelEn: "Basis of pay", labelEs: "Base del pago", value: "Hourly" },
+      { labelEn: "Allowances (meal/lodging)", labelEs: "Deducciones (comida/alojamiento)", value: "None" },
+      { labelEn: "Payday", labelEs: "Día de pago", value: store && store.payday ? store.payday : null },
+      { labelEn: "Role", labelEs: "Rol", value: role ? (lang === 'en' ? role.en : role.es) : null },
+      { labelEn: "Employer (operating LLC)", labelEs: "Empleador (LLC operativo)", value: store ? store.legalEntity : null },
+      { labelEn: "Address", labelEs: "Dirección", value: store && store.address ? store.address : null },
+      { labelEn: "Phone", labelEs: "Teléfono", value: store && store.phone ? store.phone : null },
+      { labelEn: "Workers' Comp Carrier", labelEs: "Aseguradora de Comp. Trabaj.", value: store && store.workersCompCarrier ? store.workersCompCarrier : null }
+    ]
+  };
+}
+
+function isPlaceholder(v) {
+  return !v || (typeof v === 'string' && v.startsWith('[') && v.endsWith(']'));
+}
+
+function renderAckCardHtml(item, store, s, lang) {
+  const txt = lang === 'en' ? item.en : item.es;
+  const subtitle = txt.subtitle ? '<div class="ack-card-subtitle">' + escapeHtml(txt.subtitle) + '</div>' : '';
+  let extra = '';
+
+  // Document open button(s) for document-backed acks
+  if (item.doc) {
+    const url = storeDocUrl(store, item.doc);
+    if (url) {
+      // Arbitration (and any item with docES) gets a language-matched primary + alternate link
+      const primaryDoc = (item.docES && lang === 'es') ? item.docES : item.doc;
+      const primaryUrl = storeDocUrl(store, primaryDoc);
+      extra += '<a class="ack-card-pdf" href="' + escapeAttr(primaryUrl) + '" target="_blank" rel="noopener" onclick="recordDocOpen(\'' + item.key + '\')">'
+            + (lang === 'en' ? '📄 Open the document →' : '📄 Abrir documento →') + '</a>';
+      if (item.docES) {
+        const altDoc = (lang === 'es') ? item.doc : item.docES;
+        const altUrl = storeDocUrl(store, altDoc);
+        const altLabel = (lang === 'es') ? 'English' : 'Español';
+        extra += ' <a class="ack-card-pdf" style="background:#fff;color:#111827;border:1px solid #d1d5db;" href="' + escapeAttr(altUrl) + '" target="_blank" rel="noopener" onclick="recordDocOpen(\'' + item.key + '\')">' + altLabel + '</a>';
+      }
+    } else {
+      extra += '<a class="ack-card-pdf disabled" href="#" onclick="return false;">'
+            + (lang === 'en' ? '⚠ Document not available yet — ask your manager' : '⚠ Documento aún no disponible — pregunta al gerente') + '</a>';
+    }
+  }
+
+  // Wage Theft Prevention table
+  if (item.showWageInfo) {
+    const wi = getWageInfo();
+    extra += '<div class="wage-table">' + wi.rows.map(r => {
+      const label = lang === 'en' ? r.labelEn : r.labelEs;
+      const val = r.value;
+      const cls = isPlaceholder(val) ? ' missing' : '';
+      const display = isPlaceholder(val) ? (lang === 'en' ? '— (ask your manager)' : '— (pregunta al gerente)') : val;
+      return '<div class="wage-table-row"><div class="wt-label">' + escapeHtml(label) + '</div>'
+           + '<div class="wt-value' + cls + '">' + escapeHtml(display) + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  const checked = !!s[item.key];
+  const cardClass = (checked ? 'ack-card checked' : 'ack-card') + (item.separate ? ' ack-card-separate' : '');
+  // Document-backed items must be OPENED before they can be checked — this makes the
+  // audit trail show "opened → then agreed" for every signed document (kills the
+  // "checked 11 boxes in 56 seconds without reading anything" attack). Only enforced
+  // when the document is actually available to open (missing doc must not deadlock).
+  const mustOpenFirst = !!item.doc && !!storeDocUrl(store, item.doc) && !s['opened-' + item.key] && !checked;
+  const ackLabel = mustOpenFirst
+    ? (lang === 'en' ? '🔒 Open the document above first' : '🔒 Abre el documento de arriba primero')
+    : (lang === 'en' ? '✓ I have read & agree' : '✓ He leído y acepto');
+
+  return '<div class="' + cardClass + '" data-ack="' + item.key + '">'
+    + '<div class="ack-card-head">'
+      + '<div class="ack-card-icon">' + item.icon + '</div>'
+      + '<div style="flex:1;">'
+        + '<div class="ack-card-title">' + escapeHtml(txt.title) + '</div>'
+        + subtitle
+      + '</div>'
+    + '</div>'
+    + '<div class="ack-card-body">' + escapeHtml(txt.body) + '</div>'
+    + extra
+    + '<label class="ack-card-checkbox" for="cb-' + item.key + '"' + (mustOpenFirst ? ' style="opacity:0.55;"' : '') + '>'
+      + '<input type="checkbox" id="cb-' + item.key + '" data-ack-key="' + item.key + '"' + (checked ? ' checked' : '') + (mustOpenFirst ? ' disabled' : '') + ' />'
+      + '<span>' + ackLabel + '</span>'
+    + '</label>'
+  + '</div>';
+}
+
+function renderAckCards() {
+  const wrap = document.getElementById('ack-cards');
+  if (!wrap) return;
+  const s = getState();
+  const lang = getLang();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+
+  const docs = ACK_ITEMS.filter(i => i.group === 'documents');
+  const pols = ACK_ITEMS.filter(i => i.group !== 'documents');
+
+  const docHeader = lang === 'en'
+    ? '<div class="ack-section-header">📄 Documents to open & sign</div>'
+    : '<div class="ack-section-header">📄 Documentos para abrir y firmar</div>';
+  const polHeader = lang === 'en'
+    ? '<div class="ack-section-header">✓ Policies you acknowledge</div>'
+    : '<div class="ack-section-header">✓ Políticas que reconoces</div>';
+
+  wrap.innerHTML =
+    docHeader + docs.map(i => renderAckCardHtml(i, store, s, lang)).join('') +
+    polHeader + pols.map(i => renderAckCardHtml(i, store, s, lang)).join('');
+
+  wrap.querySelectorAll('input[type="checkbox"][data-ack-key]').forEach(cb => {
+    cb.addEventListener('change', () => onAckCheck(cb));
+  });
+
+  renderAckProgress();
+}
+
+function onAckCheck(cb) {
+  const key = cb.getAttribute('data-ack-key');
+  // Audit trail: record WHEN each item was individually checked (goes into the packet).
+  patchState({ [key]: !!cb.checked, ['ackts-' + key]: cb.checked ? new Date().toISOString() : null });
+  // toggle visual state of the card without a full re-render
+  const card = cb.closest('.ack-card');
+  if (card) card.classList.toggle('checked', cb.checked);
+  renderAckProgress();
+  evaluateNext();
+}
+
+// Audit trail: record when the employee opened a document to read it.
+// Re-render shortly after so the (previously locked) checkbox unlocks — delayed so the
+// DOM rebuild doesn't cancel the link's new-tab navigation.
+function recordDocOpen(key) {
+  patchState({ ['opened-' + key]: new Date().toISOString() });
+  setTimeout(renderAckCards, 150);
+}
+
+function renderAckProgress() {
+  const s = getState();
+  const total = ACK_ITEMS.length;
+  const done = ACK_ITEMS.filter(a => !!s[a.key]).length;
+  const fill = document.getElementById('ack-progress-fill');
+  const txt = document.getElementById('ack-progress-text');
+  if (fill) fill.style.width = (Math.round((done / total) * 100)) + '%';
+  if (txt) txt.textContent = done + ' / ' + total;
+}
+
+function initSignaturePage() {
+  renderAckCards();
+  initSig();
+  loadSignature();
+  renderSigDate();
+}
+
+function renderSigDate() {
+  const el = document.getElementById('sig-date-text');
+  if (!el) return;
+  const today = new Date().toLocaleDateString();
+  const lang = getLang();
+  el.textContent = (lang === 'en' ? 'Date: ' : 'Fecha: ') + today;
+}
+
+// ============ SIGNATURE PAD ============
+let sigCtx = null;
+let sigDrawing = false;
+let sigInited = false;
+
+function initSig() {
+  const canvas = document.getElementById('sig-canvas');
+  if (!canvas) return;
+  // Resize canvas to its DOM box for crisp drawing
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width > 0) {
+    canvas.width = Math.round(rect.width * 2);
+    canvas.height = Math.round(rect.height * 2);
+    sigCtx = canvas.getContext('2d');
+    sigCtx.scale(2, 2);
+  } else {
+    sigCtx = canvas.getContext('2d');
+  }
+  sigCtx.strokeStyle = '#111827';
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+
+  if (sigInited) return;
+  sigInited = true;
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left), y: (e.clientY - r.top) };
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    sigDrawing = true;
+    canvas.setPointerCapture(e.pointerId);
+    const p = getPos(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    document.getElementById('sig-placeholder').style.display = 'none';
+    e.preventDefault();
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!sigDrawing) return;
+    const p = getPos(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+    e.preventDefault();
+  });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!sigDrawing) return;
+    sigDrawing = false;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+    saveSignature();
+  });
+  canvas.addEventListener('pointercancel', () => { sigDrawing = false; });
+}
+
+function clearSig() {
+  const canvas = document.getElementById('sig-canvas');
+  if (!canvas || !sigCtx) return;
+  sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('sig-placeholder').style.display = '';
+  patchState({ "signature-data": null });
+  evaluateNext();
+}
+
+function saveSignature() {
+  const canvas = document.getElementById('sig-canvas');
+  if (!canvas) return;
+  patchState({ "signature-data": canvas.toDataURL('image/png'), "signature-at": new Date().toISOString() });
+  evaluateNext();
+}
+
+function loadSignature() {
+  const s = getState();
+  if (!s["signature-data"]) return;
+  const canvas = document.getElementById('sig-canvas');
+  if (!canvas || !sigCtx) return;
+  const img = new Image();
+  img.onload = () => {
+    sigCtx.drawImage(img, 0, 0, canvas.width / 2, canvas.height / 2);
+    document.getElementById('sig-placeholder').style.display = 'none';
+  };
+  img.src = s["signature-data"];
+}
+
+// ============ PAGE 5: VERIFY + SUBMIT ============
+function renderVerifyList() {
+  const s = getState();
+  const ul = document.getElementById('verify-list');
+  if (!ul) return;
+  const items = [];
+  const has = (k) => !!s[k] || !!(s['sent-manifest'] && s['sent-manifest'][k]);
+
+  items.push(has('hire-name') ? { ok: true, en: 'Name: <b>' + escapeHtml(s["hire-name"]) + '</b>', es: 'Nombre: <b>' + escapeHtml(s["hire-name"]) + '</b>' } : { ok: false, en: 'Name (missing)', es: 'Nombre (falta)' });
+  items.push(has('hire-phone') ? { ok: true, en: 'Phone: <b>' + escapeHtml(s["hire-phone"]) + '</b>', es: 'Teléfono: <b>' + escapeHtml(s["hire-phone"]) + '</b>' } : { ok: false, en: 'Phone (missing)', es: 'Teléfono (falta)' });
+  items.push(has('hire-dob') ? { ok: true, en: 'Date of birth: <b>' + escapeHtml(s["hire-dob"]) + '</b>', es: 'Fecha de nacimiento: <b>' + escapeHtml(s["hire-dob"]) + '</b>' } : { ok: false, en: 'Date of birth (missing)', es: 'Fecha de nacimiento (falta)' });
+  items.push(has('hire-startdate') ? { ok: true, en: 'Start date: <b>' + escapeHtml(s["hire-startdate"]) + '</b>', es: 'Fecha: <b>' + escapeHtml(s["hire-startdate"]) + '</b>' } : { ok: false, en: 'Start date (missing)', es: 'Fecha (falta)' });
+  items.push(has('selfie-data') ? { ok: true, en: 'Selfie captured', es: 'Selfie capturado' } : { ok: false, en: 'Selfie (missing)', es: 'Selfie (falta)' });
+
+  DOC_SLOTS.forEach(d => {
+    const ok = has(d.key);
+    if (ok) items.push({ ok: true, en: d.en + ' captured', es: d.es + ' capturado' });
+    else if (d.required) items.push({ ok: false, en: d.en + ' (missing)', es: d.es + ' (falta)' });
+  });
+
+  const allAcked = ACK_ITEMS.every(a => has(a.key));
+  if (allAcked && has('signature-data')) {
+    items.push({ ok: true, en: 'All ' + ACK_ITEMS.length + ' documents & policies signed (handbook, arbitration, offer, new-hire forms, PTO, WVPP + 5 policies)', es: 'Todos los ' + ACK_ITEMS.length + ' documentos y políticas firmados' });
+  } else {
+    items.push({ ok: false, en: 'Acknowledgments + signature (incomplete)', es: 'Acuses + firma (incompletos)' });
+  }
+
+  ul.innerHTML = items.map(it => {
+    const symbol = it.ok ? '<span class="v-check">✓</span>' : '<span class="v-fail">✗</span>';
+    return '<li>' + symbol + '<span lang="en">' + it.en + '</span><span lang="es">' + it.es + '</span></li>';
+  }).join('');
+}
+
+function renderThumbnails() {
+  const s = getState();
+  const grid = document.getElementById('thumb-grid');
+  if (!grid) return;
+  if (s['purged-at']) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:14px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;font-size:12.5px;color:#14532d;">'
+      + '<span lang="en">🔒 Sent on ' + new Date(s['purged-at']).toLocaleString() + '. All photos and your signature were erased from this device for your privacy.</span>'
+      + '<span lang="es">🔒 Enviado el ' + new Date(s['purged-at']).toLocaleString() + '. Todas las fotos y tu firma fueron borradas de este dispositivo por tu privacidad.</span>'
+      + '</div>';
+    return;
+  }
+  const items = [
+    { key: 'selfie-data', en: 'Selfie', es: 'Selfie' },
+    ...DOC_SLOTS.map(d => ({ key: d.key, en: d.en, es: d.es })),
+    { key: 'signature-data', en: 'Signature', es: 'Firma' }
+  ];
+  const lang = getLang();
+  grid.innerHTML = items.map(it => {
+    const data = s[it.key];
+    const label = lang === 'en' ? it.en : it.es;
+    if (data) {
+      const isPdf = data.indexOf('data:application/pdf') === 0;
+      const inner = isPdf
+        ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f3f4f6;font-size:30px;">📄</div>'
+        : '<img src="' + escapeAttr(data) + '" alt="" style="' + (it.key === 'signature-data' ? 'background:#fff;object-fit:contain;padding:6px;' : '') + '" />';
+      return '<div class="thumb-item">' + inner + '<div class="thumb-label">' + escapeHtml(label) + '</div></div>';
+    } else {
+      return '<div class="thumb-item empty">' + escapeHtml(label) + '</div>';
+    }
+  }).join('');
+}
+
+function renderHelpNames() {
+  const s = getState();
+  const m = s["mgr_manager"] || '—';
+  const b = s["mgr_buddy"] || '—';
+  ['help-manager', 'help-manager-es'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = m; });
+  ['help-buddy', 'help-buddy-es'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = b; });
+}
+
+// ============ SUBMIT TO MANAGER (Web3Forms) ============
+function dataUrlToBlob(dataUrl) {
+  const arr = dataUrl.split(',');
+  const m = arr[0].match(/:(.*?);/);
+  const mime = m ? m[1] : 'image/jpeg';
+  const bstr = atob(arr[1]);
+  const u8arr = new Uint8Array(bstr.length);
+  for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
+  return new Blob([u8arr], { type: mime });
+}
+
+// Where completed packets are emailed. PII never touches any third-party file host:
+// the PDF travels from the employee's phone through THEIR OWN mail account to this address.
+const COMPANY_EMAIL = 'donghyuk@omchospitality.com';
+
+function copyCompanyEmail() {
+  navigator.clipboard.writeText(COMPANY_EMAIL).then(() => {
+    showStatus('success', getLang() === 'en' ? '✓ Email address copied.' : '✓ Correo copiado.');
+  }).catch(() => {});
+}
+
+function packetFilename(s) {
+  const safe = (s["hire-name"] || "newhire").replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  return 'new-hire-' + safe + '-' + new Date().toISOString().slice(0, 10) + '.pdf';
+}
+
+async function submitToManager() {
+  const s = getState();
+  const lang = getLang();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  const btn = document.getElementById('submit-btn');
+
+  if (!store) {
+    showStatus('error', lang === 'en' ? '⚠️ Store info missing. Open the link your manager sent you.' : '⚠️ Falta info de tienda. Abre el enlace de tu gerente.');
+    return;
+  }
+  if (s['purged-at']) {
+    showStatus('success', lang === 'en' ? '✓ Already sent — data was erased from this device.' : '✓ Ya enviado — los datos fueron borrados de este dispositivo.');
+    return;
+  }
+
+  btn.disabled = true;
+  showStatus('loading', lang === 'en' ? '📦 Building your packet (this can take a few seconds)...' : '📦 Preparando tu paquete (puede tardar unos segundos)...');
+
+  try {
+    const pdfBytes = await generateConsolidatedPdf();
+    if (!pdfBytes) throw new Error('Could not assemble PDF packet');
+
+    const filename = packetFilename(s);
+    const subject = 'New Hire Intake — ' + store.name + ' — ' + (s["hire-name"] || '(unnamed)');
+    const file = new File([pdfBytes], filename, { type: 'application/pdf' });
+    patchState({ 'share-attempted-at': new Date().toISOString() });
+
+    // Preferred: native share sheet — the PDF goes out via the employee's own mail app.
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      showStatus('loading', lang === 'en'
+        ? '📤 Opening your share sheet — choose Mail/Gmail and send to ' + COMPANY_EMAIL
+        : '📤 Abriendo el menú de compartir — elige Mail/Gmail y envía a ' + COMPANY_EMAIL);
+      try {
+        await navigator.share({ files: [file], title: subject, text: 'Send to: ' + COMPANY_EMAIL });
+      } catch (shareErr) {
+        if (shareErr && shareErr.name === 'AbortError') {
+          showStatus('error', lang === 'en' ? 'Share canceled — tap Submit to try again.' : 'Compartir cancelado — toca Enviar para reintentar.');
+          btn.disabled = false;
+          return;
+        }
+        throw shareErr;
+      }
+    } else {
+      // Fallback (desktop / unsupported browsers): download + open a pre-addressed email.
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const u = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = u; a.download = filename;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(u), 4000);
+      const mail = 'mailto:' + COMPANY_EMAIL
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent('New hire intake packet attached: ' + filename + '\n(Please attach the PDF that was just downloaded.)');
+      window.location.href = mail;
+      showStatus('loading', lang === 'en'
+        ? '💾 PDF downloaded. Your email app is opening — attach the downloaded PDF and send it to ' + COMPANY_EMAIL + '.'
+        : '💾 PDF descargado. Se abre tu correo — adjunta el PDF descargado y envíalo a ' + COMPANY_EMAIL + '.');
+    }
+
+    // Ask the employee to confirm the email actually went out; confirming erases local PII.
+    document.getElementById('sent-confirm').hidden = false;
+    showStatus('loading', lang === 'en'
+      ? '✉️ After you send the email, check the box below to finish.'
+      : '✉️ Después de enviar el correo, marca la casilla de abajo para terminar.');
+    btn.disabled = false;
+  } catch (err) {
+    console.error("Submit error:", err);
+    showStatus('error', lang === 'en'
+      ? '⚠️ Couldn\'t share: ' + (err.message || err) + '. Use "Download the PDF packet" below and email it to ' + COMPANY_EMAIL + '.'
+      : '⚠️ No se pudo compartir: ' + (err.message || err) + '. Usa "Descargar el paquete PDF" y envíalo a ' + COMPANY_EMAIL + '.');
+    btn.disabled = false;
+  }
+}
+
+// Manual fallback: download the full packet so the employee can attach it themselves.
+async function downloadPacket() {
+  const s = getState();
+  const lang = getLang();
+  if (s['purged-at']) {
+    alert(lang === 'en' ? 'Already sent — data was erased from this device.' : 'Ya enviado — los datos fueron borrados.');
+    return;
+  }
+  const pdfBytes = await generateConsolidatedPdf();
+  if (!pdfBytes) { alert(lang === 'en' ? 'Could not build the packet.' : 'No se pudo crear el paquete.'); return; }
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = u; a.download = packetFilename(s);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(u), 4000);
+  document.getElementById('sent-confirm').hidden = false;
+}
+
+// Employee confirms the email went out → notify the store (text-only, no PII) → purge local PII.
+async function onSentConfirm() {
+  const cb = document.getElementById('sent-confirm-cb');
+  if (!cb.checked) return;
+  const s = getState();
+  const lang = getLang();
+  const store = STORES.find(x => x.id === s["mgr_store"]);
+  patchState({ 'sent-confirmed-at': new Date().toISOString(), 'submitted-at': new Date().toISOString() });
+
+  // Optional heads-up notification to the store (Web3Forms, TEXT ONLY — no photos, no SSN).
+  if (store && store.web3formsKey) {
+    try {
+      const role = ROLES[s["mgr_role"]];
+      const fd = new FormData();
+      fd.append('access_key', store.web3formsKey);
+      fd.append('subject', 'New hire packet sent — ' + store.name + ' — ' + (s["hire-name"] || ''));
+      fd.append('from_name', s["hire-name"] || 'New Hire');
+      fd.append('message',
+        'The employee reports they emailed their intake packet to ' + COMPANY_EMAIL + '.\n\n' +
+        'Store: ' + store.name + '\nEntity: ' + store.legalEntity + '\n' +
+        'Name: ' + (s["hire-name"] || '-') + '\nRole: ' + (role ? role.en : '-') + '\n' +
+        'Pay rate on link: ' + (s['mgr_payRate'] ? ('$' + s['mgr_payRate'] + '/hr (verified link)') : 'NOT VERIFIED — confirm in person') + '\n' +
+        'Start date: ' + (s["hire-startdate"] || '-') + '\n' +
+        ((ageAtStart(s) !== null && ageAtStart(s) < 18) ? '\n*** MINOR (under 18) — WORK PERMIT REQUIRED BEFORE FIRST SHIFT; no alcohol service; check permitted hours. ***\n' : '') + '\n' +
+        'ACTION REQUIRED:\n' +
+        '  1. Confirm the packet email arrived at ' + COMPANY_EMAIL + '.\n' +
+        '  2. PRINT the last page ("Day 1 In-Person Signatures").\n' +
+        '  3. On Day 1: employee re-signs IN INK + an officer of ' + store.legalEntity + ' countersigns IN INK.\n' +
+        '  4. Verify original documents in person — I-9 Section 2 within 3 days of hire.\n' +
+        '  5. File the signed page + packet in the entity\'s personnel records.');
+      await fetch('https://api.web3forms.com/submit', { method: 'POST', body: fd });
+    } catch (e) { /* notification is best-effort */ }
+  }
+
+  purgeSensitiveData();
+  showStatus('success', lang === 'en'
+    ? '✅ Done! Your photos and signature were erased from this device. On Day 1 you\'ll sign a printed copy in person with your manager. See you then!'
+    : '✅ ¡Listo! Tus fotos y firma fueron borradas de este dispositivo. El Día 1 firmarás una copia impresa en persona con tu gerente. ¡Te vemos!');
+  const btn = document.getElementById('submit-btn');
+  btn.classList.add('btn-success');
+  btn.innerHTML = '<span lang="en">✓ Sent</span><span lang="es">✓ Enviado</span>';
+  btn.disabled = true;
+  renderVerifyList(); renderThumbnails();
+}
+
+// Replace all captured images/PDFs with a boolean manifest — PII leaves no copy on the device.
+function purgeSensitiveData() {
+  const s = getState();
+  const heavy = ['selfie-data','doc-id-front','doc-id-back','doc-ssn','doc-food','doc-tax-forms','signature-data','handbook-signed-pdf'];
+  const manifest = {};
+  heavy.forEach(k => { if (s[k]) manifest[k] = true; delete s[k]; });
+  s['sent-manifest'] = manifest;
+  s['purged-at'] = new Date().toISOString();
+  setState(s);
+}
+
+function showStatus(level, text) {
+  const el = document.getElementById('submit-status');
+  if (!el) return;
+  el.className = 'submit-status ' + level;
+  el.textContent = text;
+  el.hidden = false;
+}
+
+function saveAllToPhone() {
+  const s = getState();
+  const safeName = (s["hire-name"] || 'newhire').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  const items = [
+    { key: 'selfie-data', label: 'selfie' },
+    { key: 'doc-id-front', label: 'id-front' },
+    { key: 'doc-id-back', label: 'id-back' },
+    { key: 'doc-ssn', label: 'ssn' },
+    { key: 'doc-food', label: 'food-handler' },
+    { key: 'doc-tax-forms', label: 'tax-forms' },
+    { key: 'signature-data', label: 'signature' }
+  ].filter(x => !!s[x.key]);
+  if (items.length === 0) {
+    alert(getLang() === 'en' ? 'Nothing captured yet.' : 'Nada capturado aún.');
+    return;
+  }
+  items.forEach((it, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = s[it.key];
+      const ext = s[it.key].indexOf('data:application/pdf') === 0 ? 'pdf' : (it.key === 'signature-data' ? 'png' : 'jpg');
+      a.download = safeName + '-' + it.label + '.' + ext;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }, i * 400);
+  });
+}
+
+// ============ HELPERS ============
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+function escapeAttr(str) { return escapeHtml(str); }
+
+function resetAll() {
+  if (!confirm(getLang() === 'en' ? 'Start over? This clears everything on this device.' : '¿Empezar de nuevo? Esto borra todo.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ============ INIT ============
+// ============ MANAGER LINK GENERATOR (open the app with ?manager-tools) ============
+// Builds the personalized employee link WITH the pay-rate checksum, so managers never
+// hand-type URLs and tampered pay rates are detectable.
+function renderManagerTools() {
+  const base = location.origin + location.pathname;
+  const storeOpts = STORES.map(st => '<option value="' + st.id + '">' + escapeHtml(st.name) + ' — ' + escapeHtml(st.legalEntity) + '</option>').join('');
+  const roleOpts = Object.keys(ROLES).map(rid => '<option value="' + rid + '">' + escapeHtml(ROLES[rid].en) + '</option>').join('');
+  document.querySelector('.container').innerHTML =
+    '<div class="topbar"><span class="brand-mark">Manager Link Generator</span></div>' +
+    '<div class="card info-card"><p style="font-size:12.5px;color:#1e40af;margin:0;">Managers only. Fill this out and text/email the generated link to the new hire. The pay rate is checksum-locked — if anyone edits it in the URL, the app rejects it.</p></div>' +
+    '<div class="card">' +
+      '<div class="field"><label>Store</label><select id="mt-store">' + storeOpts + '</select></div>' +
+      '<div class="field"><label>Role</label><select id="mt-role">' + roleOpts + '</select></div>' +
+      '<div class="field"><label>Pay rate ($/hour)</label><input id="mt-pay" type="number" step="0.25" min="16" max="99" placeholder="18.00" /></div>' +
+      '<div class="field"><label>Manager name</label><input id="mt-mgr" type="text" placeholder="—" /></div>' +
+      '<div class="field"><label>Buddy / trainer name</label><input id="mt-buddy" type="text" placeholder="—" /></div>' +
+      '<div class="field"><label>Language</label><select id="mt-lang"><option value="en">English</option><option value="es">Español</option></select></div>' +
+      '<button class="btn-big" onclick="mtGenerate()">🔗 Generate link</button>' +
+      '<div id="mt-out" style="margin-top:12px;" hidden>' +
+        '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:10px;font-size:12px;word-break:break-all;" id="mt-url"></div>' +
+        '<button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="mtCopy()">Copy link</button>' +
+      '</div>' +
+    '</div>';
+  window.mtGenerate = function() {
+    const st = document.getElementById('mt-store').value;
+    const ro = document.getElementById('mt-role').value;
+    const pay = document.getElementById('mt-pay').value;
+    if (pay && (parseFloat(pay) < 16 || parseFloat(pay) > 99)) { alert('Pay rate looks wrong (CA minimum is ~$17). Double-check.'); return; }
+    const p = new URLSearchParams();
+    p.set('store', st); p.set('role', ro);
+    const mgr = document.getElementById('mt-mgr').value.trim(); if (mgr) p.set('manager', mgr);
+    const bud = document.getElementById('mt-buddy').value.trim(); if (bud) p.set('buddy', bud);
+    if (pay) { p.set('payRate', pay); p.set('k', linkChecksum(st, ro, pay)); }
+    const lg = document.getElementById('mt-lang').value; if (lg !== 'en') p.set('lang', lg);
+    document.getElementById('mt-url').textContent = base + '?' + p.toString();
+    document.getElementById('mt-out').hidden = false;
+  };
+  window.mtCopy = function() {
+    navigator.clipboard.writeText(document.getElementById('mt-url').textContent).then(() => alert('Link copied — text it to the new hire.'));
+  };
+}
+
+function init() {
+  // Migrate old keys
+  ['omc_intake_v1', 'omc_intake_v2'].forEach(k => localStorage.removeItem(k));
+
+  // Manager mode: ?manager-tools renders the link generator instead of the wizard.
+  if (new URLSearchParams(location.search).has('manager-tools')) { renderManagerTools(); return; }
+
+  const hasManagerLink = ingestUrlParams();
+  document.getElementById('no-link-warn').hidden = hasManagerLink;
+
+  const s = getState();
+  if (s.lang) setLang(s.lang);
+
+  const ce = document.getElementById('company-email-display');
+  if (ce) ce.textContent = COMPANY_EMAIL;
+
+  // Tampered pay-rate link → tell the employee to get a fresh link (rate stays blank).
+  if (s['mgr_payRate_invalid']) {
+    const warn = document.getElementById('no-link-warn');
+    warn.hidden = false;
+    warn.innerHTML = '<h3 lang="en">⚠️ Pay rate link problem</h3><h3 lang="es">⚠️ Problema con el enlace</h3>'
+      + '<p lang="en">The pay rate in this link could not be verified, so it was not applied. Your manager needs to send you a fresh link (they can make one at this page + <b>?manager-tools</b>). Everything else still works.</p>'
+      + '<p lang="es">La tarifa de pago en este enlace no se pudo verificar y no fue aplicada. Tu gerente debe enviarte un enlace nuevo. Todo lo demás funciona.</p>';
+  }
+
+  // Restore completed/purged state (photos gone; show the sent confirmation).
+  if (s['purged-at']) {
+    const cb = document.getElementById('sent-confirm-cb');
+    if (cb) { cb.checked = true; cb.disabled = true; document.getElementById('sent-confirm').hidden = false; }
+    const btn = document.getElementById('submit-btn');
+    if (btn) { btn.classList.add('btn-success'); btn.innerHTML = '<span lang="en">✓ Sent</span><span lang="es">✓ Enviado</span>'; btn.disabled = true; }
+  }
+
+  // Start date cannot be in the past (new hires occasionally typo last week's date).
+  const sd = document.getElementById('hire-startdate');
+  if (sd) sd.min = new Date().toISOString().slice(0, 10);
+
+  loadInputs();
+  bindInputs();
+  renderReadOnly();
+  renderTopAndHero();
+  renderDocCards();
+
+  showPage(getCurrentPage());
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
