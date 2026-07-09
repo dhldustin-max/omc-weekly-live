@@ -13,6 +13,7 @@
     color: #111827;
     padding: 16px;
     line-height: 1.4;
+    font-variant-numeric: tabular-nums;
   }
   .container { max-width: 920px; margin: 0 auto; padding-bottom: 100px; }
 
@@ -121,8 +122,9 @@
     padding: 14px;
     margin-bottom: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    transition: box-shadow 0.15s;
+    transition: box-shadow 0.15s, transform 0.15s;
   }
+  .store-card:hover { transform: translateY(-1px); }
   .store-card.filled { box-shadow: 0 0 0 1.5px #34c759; }
   .store-card.over-prime { box-shadow: 0 0 0 1.5px #ff9500; }
   .store-card.danger { box-shadow: 0 0 0 1.5px #ff3b30; }
@@ -616,6 +618,9 @@
     padding: 14px 18px;
     margin-bottom: 18px;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+    position: sticky;
+    top: 10px;
+    z-index: 200;
   }
   .focus-bar-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
   .focus-bar-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; opacity: 0.9; font-weight: 700; }
@@ -813,6 +818,8 @@
   <!-- Auto-scraper health banner. Populated by checkScraperStatus() at load.
        Stays hidden when everything is fresh + green. -->
   <div id="scraper-banner" class="scraper-banner hidden"></div>
+  <!-- Toast weekly-data freshness banner. Populated by checkToastFreshness(). -->
+  <div id="toast-banner" class="scraper-banner hidden"></div>
 
   <div class="help-banner">
     <strong>📋 어떻게 사용해?</strong>
@@ -822,7 +829,7 @@
       <li>매니저가 Labor $ + Food $ 알려주면 입력 → Prime % + Grade + Action Plan 즉시 자동</li>
       <li><strong>📋 Last Week's Notes</strong> (파란 박스): 지난주 액션 아이템들 → 매니저랑 같이 ✓ 체크 (완료된거)</li>
       <li><strong>📝 This Week's Notes</strong> (노란 박스): 이번주 새 액션 아이템 입력 + Add 버튼</li>
-      <li>11개 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → ① Drive 탭 자동 오픈 ② <strong>state.json은 자동으로 Drive memory 폴더에 저장</strong> (Apps Script 자동) ③ 인쇄창 → <strong>"PDF로 저장"</strong> → PDF만 Drive로 드래그하면 끝</li>
+      <li>전 매장 다 끝나면 → "All Stores" → <strong>"📤 Upload to Drive"</strong> → ① Drive 탭 자동 오픈 ② <strong>state.json은 자동으로 Drive memory 폴더에 저장</strong> (Apps Script 자동) ③ 인쇄창 → <strong>"PDF로 저장"</strong> → PDF만 Drive로 드래그하면 끝</li>
       <li>다음주에 같은 브라우저로 열면 → 이번주 노트/Labor/Food가 "지난주" 자리에 자동으로 채워짐 (브라우저 localStorage + Drive memory 폴더 둘 다 백업됨)</li>
       <li>다음주에 다시 열면 → 이번주 노트가 "Last Week's Notes"로 자동 표시 (사이클)</li>
     </ol>
@@ -831,7 +838,7 @@
   <div class="header">
     <div>
       <div class="title">OMC Weekly Ops — Live</div>
-      <div class="subtitle">Manager meeting · 11 locations</div>
+      <div class="subtitle" id="subtitle-line">Manager meeting · 13 locations</div>
       <div class="week-tag">
         <span class="week-tag-icon">📅 Week of</span>
         <select id="week-picker" class="week-tag-select">
@@ -861,7 +868,7 @@
       <div>
         <div class="focus-bar-label">🎯 Current Meeting</div>
         <div class="focus-bar-value" id="focus-name">All Stores (Director View)</div>
-        <div class="focus-bar-status" id="focus-status">12 stores visible · Director mode</div>
+        <div class="focus-bar-status" id="focus-status">13 stores visible · Director mode</div>
       </div>
       <select id="focus-select">
         <option value="all">📊 All Stores (Director only)</option>
@@ -877,6 +884,7 @@
           <option value="hanshin-pocha-oakland">Hanshin Pocha Oakland</option>
           <option value="spoon-berkeley">Spoon Korean Bistro</option>
           <option value="bowld-albany">Bowl'd Albany</option>
+          <option value="mad-for-sushi-dublin">Mad For Sushi Dublin</option>
           <option value="jjamppong-zizon-oakland">Jjamppong Zizon Oakland</option>
         </optgroup>
       </select>
@@ -2277,7 +2285,7 @@
     });
     if (isAll) {
       document.getElementById("focus-name").textContent = "All Stores (Director View)";
-      document.getElementById("focus-status").textContent = "12 stores visible · Director mode";
+      document.getElementById("focus-status").textContent = `${STORES.length} stores visible · Director mode`;
       document.getElementById("nav-bar").classList.add("hidden");
     } else {
       const s = STORES.find(x => x.id === focusId);
@@ -2318,6 +2326,8 @@
   applyFocus("all");
   loadPrevNotes();  // Load last week's notes from notes.json
   checkScraperStatus();  // Show banner if Hanshin auto-scraper is stale or failed
+  checkToastFreshness(); // Show banner if Toast weekly numbers look missing/stale
+  document.getElementById("subtitle-line").textContent = `Manager meeting · ${STORES.length} locations`;
   loadWeeklySnapshots();  // Populate week-picker dropdown with historical weeks
 
   // Loads weekly-snapshots.json (committed each week by weekly-update.js),
@@ -2442,6 +2452,60 @@
     applyFocus(currentFocus || "all");
     // Notes need to be rerendered against existing PREV_NOTES state
     STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
+  }
+
+
+  // Detects the failure mode where the Monday Cowork Toast scrape silently
+  // didn't run: latest snapshot's Toast values are missing, or identical to
+  // the previous week (weekly-update.js copies stale STORES values into the
+  // snapshot, so a skipped Toast run leaves last week's numbers baked in).
+  async function checkToastFreshness() {
+    const banner = document.getElementById("toast-banner");
+    if (!banner) return;
+    const now = new Date();
+    // Monday before 10am: the 8:02am Cowork task may still be running.
+    if (now.getDay() === 1 && now.getHours() < 10) return;
+    let data;
+    try {
+      const res = await fetch("weekly-snapshots.json", { cache: "no-store" });
+      if (!res.ok) return;
+      data = await res.json();
+    } catch (e) { return; }
+    const weeks = (data.weeks || []).slice()
+      .sort((a, b) => (a.weekStartISO < b.weekStartISO ? -1 : 1));
+    if (weeks.length < 2) return;
+    const expectedWeekStart = (() => {
+      const day = now.getDay();
+      const daysSinceMon = (day + 6) % 7;
+      const thisMon = new Date(now);
+      thisMon.setHours(0, 0, 0, 0);
+      thisMon.setDate(thisMon.getDate() - daysSinceMon);
+      const lastMon = new Date(thisMon);
+      lastMon.setDate(thisMon.getDate() - 7);
+      return lastMon.toISOString().slice(0, 10);
+    })();
+    const latest = weeks[weeks.length - 1];
+    const prev = weeks[weeks.length - 2];
+    // If the whole snapshot is behind, the main scraper banner already fires.
+    if (latest.weekStartISO !== expectedWeekStart) return;
+    const missing = [], dup = [];
+    STORES.filter(s => s.pos === "Toast").forEach(s => {
+      const cur = latest.stores?.[s.id]?.sales;
+      const before = prev.stores?.[s.id]?.sales;
+      if (cur == null) { if (!s.isNew) missing.push(s.name); }
+      else if (before != null && cur === before) dup.push(`${s.name} ($${cur.toLocaleString()})`);
+    });
+    if (!missing.length && !dup.length) return;
+    const parts = [];
+    if (missing.length) parts.push(`값 없음: ${missing.join(", ")}`);
+    if (dup.length) parts.push(`전주와 완전 동일 → 스크랩 누락 의심: ${dup.join(", ")}`);
+    banner.className = "scraper-banner stale";
+    banner.innerHTML =
+      `<span class="scraper-banner-emoji">🍞</span>` +
+      `<span class="scraper-banner-body">Toast 주간 데이터 점검 필요 (week ${latest.weekStartISO})` +
+      `<div class="scraper-banner-detail">${parts.join(" · ")} · ` +
+      `월요일 Cowork task(omc-weekly-monday-reminder, 8:02am)가 안 돌았을 수 있음 — ` +
+      `Claude에서 "OMC Toast 매출 업데이트 실행해줘"로 수동 복구</div></span>`;
   }
 
   // Reads scraper-status.json (committed by scripts/weekly-update.js each

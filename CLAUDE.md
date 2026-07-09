@@ -2,7 +2,7 @@
 
 ## What this is
 
-A live web app at **https://dhldustin-max.github.io/omc-weekly-live/** used by Dustin (Director) to run weekly Monday manager meetings across 12 OMC Hospitality restaurants in the Bay Area.
+A live web app at **https://dhldustin-max.github.io/omc-weekly-live/** used by Dustin (Director) to run weekly Monday manager meetings across 13 OMC Hospitality restaurants in the Bay Area.
 
 The app shows Sales vs Target, Prime Cost calculation, A/B/C grade, manager meeting notes, and concept-level comparisons. Updates weekly with last week's POS data.
 
@@ -18,7 +18,7 @@ README.md           # Optional, brief
 
 That's it. Intentionally simple — no build step, no framework, no dependencies. Pure static.
 
-## The 12 stores (concepts → locations)
+## The 13 stores (concepts → locations)
 
 | Concept | Stores | POS |
 |---|---|---|
@@ -30,6 +30,7 @@ That's it. Intentionally simple — no build step, no framework, no dependencies
 | Spoon (K-Bistro) | Berkeley | Verona |
 | Bowl'd (K-Rice Bowl) | Albany | Verona |
 | Mad For Sushi (Sushi) | Dublin | Verona |
+| Jjamppong Zizon (Korean-Chinese) | Oakland (3905 Broadway) | Toast (added 07-06-2026, isNew) |
 
 The `STORES` array in `index.html` (~line 450) is the single source of truth — sales, target, ratings, channel mix.
 
@@ -40,22 +41,22 @@ Two jobs update the repo every Monday, split by what each platform can reach:
 | Source | Stores | When | How |
 |---|---|---|---|
 | **Mac launchd** (`weekly-update.js --include-verona`) | Verona 8 + Hanshin 1 | Mon 7:30am PT | Verona: Playwright + programmatic V1 login (.env creds). Hanshin: Clover REST API (permanent token in .env) |
-| **Cowork** task (`omc-weekly-monday-reminder`) | Toast 3 | Mon 8:02am PT | Claude-in-Chrome extension drives Dustin's real logged-in browser |
+| **Cowork** task (`omc-weekly-monday-reminder`) | Toast 4 | Mon 8:02am PT | Claude-in-Chrome extension drives Dustin's real logged-in browser |
 
 Why the split: Verona sessions expire fast and need programmatic .env login (only the Mac node script does that unattended); Hanshin's Clover is blocked from the Cowork sandbox; Toast needs a persistent browser session + device-trust (the Cowork Chrome extension). Both jobs `git pull --rebase --autostash` before pushing and each touches only its own stores' lines, so they merge cleanly regardless of run order.
 
-**Coming ~2026-07:** Hanshin migrates Clover → Toast. Then add Hanshin as a 4th Toast store in the Cowork task and drop it from the Mac job (Mac → Verona only).
+**Coming ~2026-07:** Hanshin migrates Clover → Toast. Then add Hanshin as a 5th Toast store in the Cowork task and drop it from the Mac job (Mac → Verona only).
 
 ## Weekly workflow (Monday 8am)
 
-1. Last week's POS sales scraped (Toast for 3 stores, Verona for 8, Hanshin via Clover API)
+1. Last week's POS sales scraped (Toast for 4 stores, Verona for 8, Hanshin via Clover API)
 2. Google + Yelp ratings refreshed (slow-changing — can skip most weeks)
 3. `STORES` array in `index.html` updated with new sales numbers
 4. `notes.json`: `weekEnding` updated, `newNotes` from last week → `prevNotes`, `consecutiveC` recomputed (reset on A/B, +1 on C)
 5. Week tag updated (e.g., "Week of Apr 20 – 26, 2026")
 6. `git commit && git push` → GitHub Pages rebuilds in ~30-60s
 
-The Cowork scheduled task (`omc-weekly-monday-reminder`) scrapes **Toast (3 stores)** Monday 8:02am via the Claude-in-Chrome extension and pushes. Verona (8) + Hanshin (1) are done by the Mac launchd job at 7:30am. See the Weekly automation table above.
+The Cowork scheduled task (`omc-weekly-monday-reminder`) scrapes **Toast (4 stores)** Monday 8:02am via the Claude-in-Chrome extension and pushes. Verona (8) + Hanshin (1) are done by the Mac launchd job at 7:30am. See the Weekly automation table above.
 
 ## Key features (what's implemented)
 
