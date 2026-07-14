@@ -794,7 +794,7 @@
           "guests": 1477
         },
         "ohgane-concord": {
-          "sales": 61209,
+          "sales": 61752,
           "orders": 642,
           "guests": 1830
         },
@@ -819,12 +819,12 @@
           "guests": 432
         },
         "oh-g-burger-berkeley": {
-          "sales": 5735,
+          "sales": 5932,
           "orders": 272,
           "guests": 272
         },
         "obento-hayward": {
-          "sales": 10370,
+          "sales": 7941,
           "orders": 201,
           "guests": 201
         },
@@ -849,7 +849,7 @@
           "guests": null
         },
         "jjamppong-zizon-oakland": {
-          "sales": 14025,
+          "sales": 13635,
           "orders": null,
           "guests": null
         }
