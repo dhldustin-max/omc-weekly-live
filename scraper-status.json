@@ -1,14 +1,20 @@
 {
-  "lastRunAt": "2026-07-13T14:30:57.205Z",
-  "lastRunStatus": "ok",
-  "lastRunScopes": [
-    "hanshin",
-    "verona"
+  "lastRunAt": "2026-07-20T14:37:44.479Z",
+  "lastRunStatus": "error",
+  "lastRunScopes": [],
+  "lastRunWeekStartISO": "2026-07-13",
+  "lastRunWeekEndISO": "2026-07-19",
+  "lastErrors": [
+    {
+      "source": "hanshin",
+      "error": "fetch failed"
+    },
+    {
+      "source": "verona",
+      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://online.veronapos.com/merchant/basis/login.php\nCall log:\n  - navigating to \"https://online.veronapos.com/merchant/basis/login.php\", waiting until \"domcontentloaded\"\n"
+    }
   ],
-  "lastRunWeekStartISO": "2026-07-06",
-  "lastRunWeekEndISO": "2026-07-12",
-  "lastErrors": [],
-  "consecutiveFailures": 0,
+  "consecutiveFailures": 1,
   "lastSuccess": {
     "ranAt": "2026-07-13T14:30:57.205Z",
     "weekStartISO": "2026-07-06",
