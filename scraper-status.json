@@ -1,24 +1,18 @@
 {
-  "lastRunAt": "2026-07-20T14:37:44.479Z",
-  "lastRunStatus": "error",
-  "lastRunScopes": [],
+  "lastRunAt": "2026-07-24T17:00:24.384Z",
+  "lastRunStatus": "ok",
+  "lastRunScopes": [
+    "hanshin",
+    "verona"
+  ],
   "lastRunWeekStartISO": "2026-07-13",
   "lastRunWeekEndISO": "2026-07-19",
-  "lastErrors": [
-    {
-      "source": "hanshin",
-      "error": "fetch failed"
-    },
-    {
-      "source": "verona",
-      "error": "page.goto: net::ERR_INTERNET_DISCONNECTED at https://online.veronapos.com/merchant/basis/login.php\nCall log:\n  - navigating to \"https://online.veronapos.com/merchant/basis/login.php\", waiting until \"domcontentloaded\"\n"
-    }
-  ],
-  "consecutiveFailures": 1,
+  "lastErrors": [],
+  "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-07-13T14:30:57.205Z",
-    "weekStartISO": "2026-07-06",
-    "weekEndISO": "2026-07-12",
+    "ranAt": "2026-07-24T17:00:24.384Z",
+    "weekStartISO": "2026-07-13",
+    "weekEndISO": "2026-07-19",
     "scopes": [
       "hanshin",
       "verona"
@@ -27,48 +21,48 @@
       {
         "source": "hanshin",
         "storeId": "hanshin-pocha-oakland",
-        "netSales": 10055,
-        "orders": 141
+        "netSales": 11676,
+        "orders": 162
       },
       {
         "source": "verona",
         "storeId": "ohgane-oakland",
-        "sales": 52040
+        "sales": 59489
       },
       {
         "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 54731
+        "sales": 59121
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 41725
+        "sales": 42328
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 34203
+        "sales": 36813
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 23672
+        "sales": 24527
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 13238
+        "sales": 13318
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 22538
+        "sales": 21490
       },
       {
         "source": "verona",
         "storeId": "mad-for-sushi-dublin",
-        "sales": 12148
+        "sales": 12782
       }
     ]
   }
