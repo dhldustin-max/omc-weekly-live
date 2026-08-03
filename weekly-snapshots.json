@@ -998,6 +998,33 @@
           "guests": null
         }
       }
+    },
+    {
+      "weekStartISO": "2026-07-27",
+      "weekEndISO": "2026-08-02",
+      "weekLabel": "Jul 27 – Aug 2, 2026",
+      "stores": {
+        "ohgane-concord": {
+          "sales": 70174,
+          "orders": 623,
+          "guests": 1804
+        },
+        "oh-g-burger-berkeley": {
+          "sales": 5875,
+          "orders": 225,
+          "guests": 225
+        },
+        "obento-hayward": {
+          "sales": 7428,
+          "orders": 236,
+          "guests": 236
+        },
+        "jjamppong-zizon-oakland": {
+          "sales": 10370,
+          "orders": 204,
+          "guests": 66
+        }
+      }
     }
   ]
 }
