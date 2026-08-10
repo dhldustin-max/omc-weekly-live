@@ -1,18 +1,24 @@
 {
-  "lastRunAt": "2026-08-03T14:30:53.332Z",
-  "lastRunStatus": "ok",
+  "lastRunAt": "2026-08-10T14:30:58.108Z",
+  "lastRunStatus": "partial",
   "lastRunScopes": [
     "hanshin",
     "verona"
   ],
-  "lastRunWeekStartISO": "2026-07-27",
-  "lastRunWeekEndISO": "2026-08-02",
-  "lastErrors": [],
+  "lastRunWeekStartISO": "2026-08-03",
+  "lastRunWeekEndISO": "2026-08-09",
+  "lastErrors": [
+    {
+      "source": "verona",
+      "storeId": "mad-for-sushi-dublin",
+      "error": "Store button not found on merchant list: \"MAD FOR SUSHI\""
+    }
+  ],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-08-03T14:30:53.332Z",
-    "weekStartISO": "2026-07-27",
-    "weekEndISO": "2026-08-02",
+    "ranAt": "2026-08-10T14:30:58.108Z",
+    "weekStartISO": "2026-08-03",
+    "weekEndISO": "2026-08-09",
     "scopes": [
       "hanshin",
       "verona"
@@ -21,48 +27,43 @@
       {
         "source": "hanshin",
         "storeId": "hanshin-pocha-oakland",
-        "netSales": 7877,
-        "orders": 98
+        "netSales": 4897,
+        "orders": 67
       },
       {
         "source": "verona",
         "storeId": "ohgane-oakland",
-        "sales": 60701
+        "sales": 52881
       },
       {
         "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 63427
+        "sales": 66675
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 40397
+        "sales": 39044
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 38975
+        "sales": 42656
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 21169
+        "sales": 22924
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 13448
+        "sales": 16364
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 22172
-      },
-      {
-        "source": "verona",
-        "storeId": "mad-for-sushi-dublin",
-        "sales": 13201
+        "sales": 26621
       }
     ]
   }
