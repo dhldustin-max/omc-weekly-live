@@ -884,7 +884,7 @@
           <option value="hanshin-pocha-oakland">Hanshin Pocha Oakland</option>
           <option value="spoon-berkeley">Spoon Korean Bistro</option>
           <option value="bowld-albany">Bowl'd Albany</option>
-          <option value="mad-for-sushi-dublin">Mad For Sushi Dublin</option>
+          <option value="golden-wang-donkatsu-dublin">Golden Wang Donkatsu Dublin</option>
           <option value="jjamppong-zizon-oakland">Jjamppong Zizon Oakland</option>
         </optgroup>
       </select>
@@ -1004,13 +1004,14 @@
       orders: 480, guests: 511,
       googleRating: 4.5, yelpRating: 4.1,
       channelDine: 64, channelTakeout: 22, channelDelivery: 0 },
-    // Mad For Sushi — added 2026-05-04. Rent $21K/mo (~23% rent ratio).
-    // Ratings updated 2026-05-06 from manual lookup (Yelp 4.1, Google 4.0).
-    { id: "mad-for-sushi-dublin", name: "Mad For Sushi Dublin", concept: "Mad For Sushi", cuisine: "Japanese Sushi",
+    // Golden Wang Donkatsu — replaced Mad For Sushi at same location (7222 Regional St) 08-10-2026.
+    // Rent $21K/mo. Targets carried over from Mad For Sushi — revisit once the new concept has a run-rate.
+    // sales: 0 = no data yet; first Verona auto-scrape lands next Monday. Ratings null (new listings).
+    { id: "golden-wang-donkatsu-dublin", name: "Golden Wang Donkatsu Dublin", concept: "Golden Wang Donkatsu", cuisine: "Korean Donkatsu",
       location: "Dublin, CA", pos: "Verona", isNew: true,
-      sales: 13201, target: 53888, floor: 48499, stretch: 60624, rent: 21000,
+      sales: 0, target: 53888, floor: 48499, stretch: 60624, rent: 21000,
       orders: null, guests: null,
-      googleRating: 4.0, yelpRating: 4.1,
+      googleRating: null, yelpRating: null,
       channelDine: null },
     // Jjamppong Zizon Oakland — added 07-06-2026. Toast POS. Rent $6.5K/mo (~10% of monthly sales target). GUID e2168fc9-5879-41e6-8cf0-a805a4885819
     { id: "jjamppong-zizon-oakland", name: "Jjamppong Zizon Oakland", concept: "Jjamppong Zizon", cuisine: "Korean-Chinese Noodle",

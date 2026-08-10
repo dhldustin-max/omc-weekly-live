@@ -29,7 +29,7 @@ That's it. Intentionally simple — no build step, no framework, no dependencies
 | Hanshin Pocha (Bar) | Oakland | Clover (→ Toast ~2026-07) |
 | Spoon (K-Bistro) | Berkeley | Verona |
 | Bowl'd (K-Rice Bowl) | Albany | Verona |
-| Mad For Sushi (Sushi) | Dublin | Verona |
+| Golden Wang Donkatsu (K-Donkatsu) | Dublin | Verona |
 | Jjamppong Zizon (Korean-Chinese) | Oakland (3905 Broadway) | Toast (added 07-06-2026, isNew) |
 
 The `STORES` array in `index.html` (~line 450) is the single source of truth — sales, target, ratings, channel mix.

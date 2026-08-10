@@ -44,7 +44,7 @@ export const OMC_VERONA_STORES = [
   { id: 'tangjip-alameda',    veronaPrefix: 'TANGJIP ALAMEDA' },
   { id: 'spoon-berkeley',     veronaPrefix: 'SPOON KOREAN BISTRO' },
   { id: 'bowld-albany',       veronaPrefix: 'BOWLD ALBANY' },
-  { id: 'mad-for-sushi-dublin', veronaPrefix: 'MAD FOR SUSHI' },
+  { id: 'golden-wang-donkatsu-dublin', veronaPrefix: 'GOLDEN WANG DONKATSU' }, // replaced Mad For Sushi 08-10-2026 — same location, 7222 Regional St
 ];
 
 // Convert a JS Date / ms-timestamp to MM/DD/YYYY (Verona's URL format).
