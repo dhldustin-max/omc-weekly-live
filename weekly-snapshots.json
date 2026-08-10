@@ -1082,9 +1082,9 @@
           "guests": 1477
         },
         "ohgane-concord": {
-          "sales": 70174,
+          "sales": 70867,
           "orders": 623,
-          "guests": 1804
+          "guests": 1744
         },
         "ohgane-alameda": {
           "sales": 66675,
@@ -1107,14 +1107,14 @@
           "guests": 432
         },
         "oh-g-burger-berkeley": {
-          "sales": 5875,
-          "orders": 225,
-          "guests": 225
+          "sales": 6588,
+          "orders": 246,
+          "guests": 246
         },
         "obento-hayward": {
-          "sales": 7428,
-          "orders": 236,
-          "guests": 236
+          "sales": 6624,
+          "orders": 232,
+          "guests": 232
         },
         "hanshin-pocha-oakland": {
           "sales": 4897,
@@ -1137,9 +1137,9 @@
           "guests": null
         },
         "jjamppong-zizon-oakland": {
-          "sales": 10370,
-          "orders": 204,
-          "guests": 66
+          "sales": 8226,
+          "orders": 170,
+          "guests": 48
         }
       }
     }
