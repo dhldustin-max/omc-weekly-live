@@ -1207,6 +1207,11 @@
           "sales": 7711,
           "orders": 166,
           "guests": 385
+        },
+        "tuum-oakland": {
+          "sales": 1041,
+          "orders": 13,
+          "guests": 32
         }
       }
     }
