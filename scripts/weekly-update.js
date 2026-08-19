@@ -6,14 +6,16 @@
 // scheduled task.
 //
 // Scope: runs via launchd with --include-verona →
-//   - Hanshin Pocha (Clover, 1 store) — Clover REST API (permanent token in .env)
-//   - Verona (8 stores) — Playwright with programmatic V1 login (.env creds)
-//   Toast (3 stores) is handled by the Cowork scheduled task, NOT here.
+//   - Verona (7 stores) — Playwright with programmatic V1 login (.env creds)
+//   Toast (6 stores) is handled by the Cowork scheduled task, NOT here.
+//   Hanshin Pocha (Clover) CLOSED 08-17-2026 — became TUUM Korean Gastro Pub at the same
+//   address (4869 Telegraph Ave), now on Toast. Clover scraping is off by default;
+//   pass --include-hanshin only to re-run a historical week.
 //
 // Steps:
 //   1. Compute last completed Mon-Sun business week
 //   2. git pull --rebase --autostash (absorb the Cowork Toast commit)
-//   3. Scrape Hanshin + Verona → patch index.html + weekly-snapshots.json
+//   3. Scrape Verona → patch index.html + weekly-snapshots.json
 //   4. Update scraper-status.json, then git commit + push
 //
 // Manual test:    node scripts/weekly-update.js --dry-run
@@ -54,11 +56,11 @@ function getArg(flag) {
 }
 const dryRun = args.includes('--dry-run');
 const skipPush = args.includes('--no-push');
-// Scope (as of 2026-06-01): this Mac launchd job scrapes Verona (8) + Hanshin (1).
-// Toast (3) is handled by the Cowork scheduled task. Verona defaults to SKIPPED
+// Scope (as of 08-17-2026): this Mac launchd job scrapes Verona (7) only.
+// Toast (6) is handled by the Cowork scheduled task. Verona defaults to SKIPPED
 // and is turned on by the plist's --include-verona flag.
-// ~2026-07 Hanshin migrates Clover→Toast; at that point Toast moves fully to Cowork.
-const skipHanshin = args.includes('--skip-hanshin');
+// Hanshin (Clover) is CLOSED — skipped unless --include-hanshin is passed.
+const skipHanshin = !args.includes('--include-hanshin'); // CLOSED 08-17-2026 (became TUUM, now on Toast)
 const skipVerona = !args.includes('--include-verona');
 const overrideStart = getArg('--start-ts');
 const overrideEnd = getArg('--end-ts');
@@ -277,7 +279,6 @@ async function main() {
   const prevStatus = await readStatus();
   const alreadyDone = prevStatus?.lastSuccess?.weekStartISO === week.weekStartISO
     && prevStatus.lastSuccess?.scopes?.includes('verona')
-    && prevStatus.lastSuccess?.scopes?.includes('hanshin')
     && (prevStatus.lastErrors || []).length === 0; // only skip a CLEAN week; re-attempt partial/errored weeks
   if (alreadyDone && !overrideStart) {
     log(`✓ Already completed both scrapers for week ${week.weekStartISO} — skipping`);

@@ -36,6 +36,10 @@ export const VERONA_DASHBOARD_URL = 'https://online.veronapos.com/merchant/';
 // resolution at discovery time. Names verified against live merchant
 // list 2026-04-28 (Note: Ohgane Concord is on Toast per task spec; not
 // included here even though Verona has an entry for it.).
+// NOTE 08-17-2026: Mad For Sushi Dublin (7222 Regional St) became Golden Wang Donkatsu and
+// moved Verona -> Toast. It is now scraped by the Cowork task. Leaving it in this list made
+// every weekly run report PARTIAL with:
+//   'Store button not found on merchant list: "MAD FOR SUSHI"'
 export const OMC_VERONA_STORES = [
   { id: 'ohgane-oakland',     veronaPrefix: 'OHGANE KOREAN BBQ' },
   { id: 'ohgane-alameda',     veronaPrefix: 'OHGANE ALAMEDA' },
@@ -44,7 +48,6 @@ export const OMC_VERONA_STORES = [
   { id: 'tangjip-alameda',    veronaPrefix: 'TANGJIP ALAMEDA' },
   { id: 'spoon-berkeley',     veronaPrefix: 'SPOON KOREAN BISTRO' },
   { id: 'bowld-albany',       veronaPrefix: 'BOWLD ALBANY' },
-  { id: 'golden-wang-donkatsu-dublin', veronaPrefix: 'GOLDEN WANG DONKATSU' }, // replaced Mad For Sushi 08-10-2026 — same location, 7222 Regional St
 ];
 
 // Convert a JS Date / ms-timestamp to MM/DD/YYYY (Verona's URL format).

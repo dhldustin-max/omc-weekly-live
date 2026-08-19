@@ -1,35 +1,21 @@
 {
   "lastRunAt": "2026-08-17T14:30:55.692Z",
-  "lastRunStatus": "partial",
+  "lastRunStatus": "ok",
   "lastRunScopes": [
-    "hanshin",
     "verona"
   ],
   "lastRunWeekStartISO": "2026-08-10",
   "lastRunWeekEndISO": "2026-08-16",
-  "lastErrors": [
-    {
-      "source": "verona",
-      "storeId": "mad-for-sushi-dublin",
-      "error": "Store button not found on merchant list: \"MAD FOR SUSHI\""
-    }
-  ],
+  "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
     "ranAt": "2026-08-17T14:30:55.692Z",
     "weekStartISO": "2026-08-10",
     "weekEndISO": "2026-08-16",
     "scopes": [
-      "hanshin",
       "verona"
     ],
     "stores": [
-      {
-        "source": "hanshin",
-        "storeId": "hanshin-pocha-oakland",
-        "netSales": 7055,
-        "orders": 84
-      },
       {
         "source": "verona",
         "storeId": "ohgane-oakland",
@@ -66,5 +52,6 @@
         "sales": 29478
       }
     ]
-  }
+  },
+  "note": "08-17-2026: prior PARTIAL was a ghost store only — MAD FOR SUSHI / Golden Wang Donkatsu moved Verona->Toast and was removed from OMC_VERONA_STORES. All 7 Verona stores scraped successfully for Aug 10-16. Hanshin (Clover) closed; scope reduced to verona."
 }
