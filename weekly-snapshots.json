@@ -1214,6 +1214,78 @@
           "guests": 32
         }
       }
+    },
+    {
+      "weekStartISO": "2026-08-17",
+      "weekEndISO": "2026-08-23",
+      "weekLabel": "Aug 17 – 23, 2026",
+      "stores": {
+        "ohgane-oakland": {
+          "sales": 62802,
+          "orders": 491,
+          "guests": 1477
+        },
+        "ohgane-concord": {
+          "sales": 77912,
+          "orders": 656,
+          "guests": 1930
+        },
+        "ohgane-alameda": {
+          "sales": 62810,
+          "orders": 583,
+          "guests": 1292
+        },
+        "tangjip-hayward": {
+          "sales": 44050,
+          "orders": 546,
+          "guests": 634
+        },
+        "tangjip-concord": {
+          "sales": 38396,
+          "orders": 458,
+          "guests": 961
+        },
+        "tangjip-alameda": {
+          "sales": 22411,
+          "orders": 358,
+          "guests": 432
+        },
+        "oh-g-burger-berkeley": {
+          "sales": 6810,
+          "orders": 260,
+          "guests": 260
+        },
+        "obento-hayward": {
+          "sales": 6480,
+          "orders": 199,
+          "guests": 199
+        },
+        "spoon-berkeley": {
+          "sales": 17046,
+          "orders": 247,
+          "guests": 319
+        },
+        "bowld-albany": {
+          "sales": 25268,
+          "orders": 480,
+          "guests": 511
+        },
+        "golden-wang-donkatsu-dublin": {
+          "sales": 40185,
+          "orders": 39,
+          "guests": 120
+        },
+        "jjamppong-zizon-oakland": {
+          "sales": 7711,
+          "orders": 166,
+          "guests": 385
+        },
+        "tuum-oakland": {
+          "sales": 1041,
+          "orders": 13,
+          "guests": 32
+        }
+      }
     }
   ]
 }

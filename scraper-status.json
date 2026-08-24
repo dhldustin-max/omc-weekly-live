@@ -1,57 +1,66 @@
 {
-  "lastRunAt": "2026-08-17T14:30:55.692Z",
-  "lastRunStatus": "ok",
+  "lastRunAt": "2026-08-24T14:38:39.537Z",
+  "lastRunStatus": "partial",
   "lastRunScopes": [
     "verona"
   ],
-  "lastRunWeekStartISO": "2026-08-10",
-  "lastRunWeekEndISO": "2026-08-16",
-  "lastErrors": [],
+  "lastRunWeekStartISO": "2026-08-17",
+  "lastRunWeekEndISO": "2026-08-23",
+  "lastErrors": [
+    {
+      "source": "hanshin",
+      "error": "Store entry not found in STORES: hanshin-pocha-oakland"
+    },
+    {
+      "source": "verona",
+      "storeId": "ohgane-oakland",
+      "error": "Store button not found on merchant list: \"OHGANE KOREAN BBQ\""
+    }
+  ],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-08-17T14:30:55.692Z",
-    "weekStartISO": "2026-08-10",
-    "weekEndISO": "2026-08-16",
+    "ranAt": "2026-08-24T14:38:39.537Z",
+    "weekStartISO": "2026-08-17",
+    "weekEndISO": "2026-08-23",
     "scopes": [
       "verona"
     ],
     "stores": [
       {
         "source": "verona",
-        "storeId": "ohgane-oakland",
-        "sales": 62802
-      },
-      {
-        "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 63280
+        "sales": 62810
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 43649
+        "sales": 44050
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 38118
+        "sales": 38396
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 24015
+        "sales": 22411
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 14196
+        "sales": 17046
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 29478
+        "sales": 25268
+      },
+      {
+        "source": "verona",
+        "storeId": "golden-wang-donkatsu-dublin",
+        "sales": 40185
       }
     ]
-  },
-  "note": "08-17-2026: prior PARTIAL was a ghost store only — MAD FOR SUSHI / Golden Wang Donkatsu moved Verona->Toast and was removed from OMC_VERONA_STORES. All 7 Verona stores scraped successfully for Aug 10-16. Hanshin (Clover) closed; scope reduced to verona."
+  }
 }
