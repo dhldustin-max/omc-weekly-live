@@ -1226,9 +1226,9 @@
           "guests": 1477
         },
         "ohgane-concord": {
-          "sales": 77912,
-          "orders": 656,
-          "guests": 1930
+          "sales": 69754,
+          "orders": 625,
+          "guests": 1735
         },
         "ohgane-alameda": {
           "sales": 62810,
@@ -1251,14 +1251,14 @@
           "guests": 432
         },
         "oh-g-burger-berkeley": {
-          "sales": 6810,
-          "orders": 260,
-          "guests": 260
+          "sales": 5413,
+          "orders": 233,
+          "guests": 233
         },
         "obento-hayward": {
-          "sales": 6480,
-          "orders": 199,
-          "guests": 199
+          "sales": 5789,
+          "orders": 210,
+          "guests": 210
         },
         "spoon-berkeley": {
           "sales": 17046,
@@ -1271,19 +1271,19 @@
           "guests": 511
         },
         "golden-wang-donkatsu-dublin": {
-          "sales": 40185,
-          "orders": 39,
+          "sales": 25569,
+          "orders": 371,
           "guests": 120
         },
         "jjamppong-zizon-oakland": {
-          "sales": 7711,
-          "orders": 166,
-          "guests": 385
+          "sales": 8603,
+          "orders": 189,
+          "guests": 393
         },
         "tuum-oakland": {
-          "sales": 1041,
-          "orders": 13,
-          "guests": 32
+          "sales": 8271,
+          "orders": 117,
+          "guests": 170
         }
       }
     }
