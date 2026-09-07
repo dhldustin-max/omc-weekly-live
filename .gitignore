@@ -20,3 +20,10 @@ playwright/.cache/
 
 # OS
 .DS_Store
+
+# Per-week retry counter written by scripts/weekly-update.js (local only)
+.weekly-attempts.json
+
+# Finder duplicate-file artefacts
+* 2
+*\ 2.*
