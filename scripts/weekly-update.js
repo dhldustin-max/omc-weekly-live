@@ -209,7 +209,12 @@ async function writeStatus(status) {
 // historical weeks. We extract sales/orders/guests directly from the
 // (now-current) index.html STORES array — same source the live page
 // uses, so no risk of drift.
-async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel }) {
+// onlyStoreIds: restrict the write to the stores THIS run actually scraped.
+// Without it, backfilling an older week copied index.html's *current* values
+// (which only ever hold one week) over every other source's numbers for that
+// week -- on 09-07-2026 the Verona backfill of Aug 24-30 overwrote all six
+// Toast stores with the Aug 31-Sep 6 figures.
+async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel, onlyStoreIds = null }) {
   // Parse current STORES out of index.html
   const html = await fs.readFile(INDEX_HTML, 'utf-8');
   const storesBlock = html.match(/const STORES = \[([\s\S]*?)\];/)?.[1];
@@ -244,9 +249,13 @@ async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel }) {
   }
   if (!Array.isArray(snapshots.weeks)) snapshots.weeks = [];
 
-  // Replace existing entry for this week, or append
+  // Merge into the existing entry for this week (never blind-replace).
   const idx = snapshots.weeks.findIndex(w => w.weekStartISO === weekStartISO);
-  const entry = { weekStartISO, weekEndISO, weekLabel, stores };
+  const prevStores = idx >= 0 ? (snapshots.weeks[idx].stores || {}) : {};
+  const merged = { ...prevStores };
+  const writable = onlyStoreIds && onlyStoreIds.length ? onlyStoreIds : Object.keys(stores);
+  for (const id of writable) if (stores[id]) merged[id] = stores[id];
+  const entry = { weekStartISO, weekEndISO, weekLabel, stores: merged };
   if (idx >= 0) snapshots.weeks[idx] = entry;
   else snapshots.weeks.push(entry);
 
@@ -518,6 +527,7 @@ async function main() {
         weekStartISO: week.weekStartISO,
         weekEndISO,
         weekLabel,
+        onlyStoreIds: [...new Set(successes.map(x => x.storeId).filter(Boolean))],
       });
       log(`🟢 Snapshot ${snapResult.justAdded ? 'added' : 'updated'} (${snapResult.totalWeeks} weeks total)`);
     } catch (e) {

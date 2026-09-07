@@ -1298,9 +1298,9 @@
           "guests": 1477
         },
         "ohgane-concord": {
-          "sales": 59699,
-          "orders": 548,
-          "guests": 1504
+          "sales": 64538,
+          "orders": 557,
+          "guests": 1621
         },
         "ohgane-alameda": {
           "sales": 67235,
@@ -1323,14 +1323,14 @@
           "guests": 432
         },
         "oh-g-burger-berkeley": {
-          "sales": 4225,
-          "orders": 168,
-          "guests": 168
+          "sales": 5849,
+          "orders": 235,
+          "guests": 235
         },
         "obento-hayward": {
-          "sales": 6353,
-          "orders": 229,
-          "guests": 229
+          "sales": 5942,
+          "orders": 210,
+          "guests": 210
         },
         "spoon-berkeley": {
           "sales": 15039,
@@ -1343,56 +1343,19 @@
           "guests": 511
         },
         "golden-wang-donkatsu-dublin": {
-          "sales": 21917,
-          "orders": 339,
-          "guests": 558
+          "sales": 26294,
+          "orders": 401,
+          "guests": 126
         },
         "jjamppong-zizon-oakland": {
-          "sales": 9034,
-          "orders": 207,
-          "guests": 82
+          "sales": 8617,
+          "orders": 180,
+          "guests": 62
         },
         "tuum-oakland": {
-          "sales": 13745,
-          "orders": 107,
-          "guests": 65
-        }
-      }
-    },
-    {
-      "weekStartISO": "2026-08-31",
-      "weekEndISO": "2026-09-06",
-      "weekLabel": "Aug 31 – Sep 6, 2026",
-      "stores": {
-        "ohgane-concord": {
-          "sales": 59699,
-          "orders": 548,
-          "guests": 1504
-        },
-        "oh-g-burger-berkeley": {
-          "sales": 4225,
-          "orders": 168,
-          "guests": 168
-        },
-        "obento-hayward": {
-          "sales": 6353,
-          "orders": 229,
-          "guests": 229
-        },
-        "jjamppong-zizon-oakland": {
-          "sales": 9034,
-          "orders": 207,
-          "guests": 82
-        },
-        "golden-wang-donkatsu-dublin": {
-          "sales": 21917,
-          "orders": 339,
-          "guests": 558
-        },
-        "tuum-oakland": {
-          "sales": 13745,
-          "orders": 107,
-          "guests": 65
+          "sales": 11779,
+          "orders": 123,
+          "guests": 96
         }
       }
     }
