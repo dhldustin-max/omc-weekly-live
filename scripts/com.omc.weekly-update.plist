@@ -4,13 +4,23 @@
   OMC weekly Verona + Hanshin auto-scrape — launchd job.
   (Toast 3 stores are handled by the Cowork scheduled task, not here.)
 
-  Runs every Monday at 7:30 AM. If the Mac was asleep at the scheduled
-  time, launchd runs the job as soon as it wakes up (catch-up). The
-  weekly-update.js script self-debounces: if it already succeeded for the
-  current week's data, subsequent runs are no-ops.
+  Runs every 2 hours (and once at load), NOT on a weekly calendar trigger.
+
+  Why: a Monday-07:30-local trigger broke twice. (1) launchd fires the
+  instant the Mac wakes, which is before Wi-Fi reassociates –– 08-31-2026
+  and 09-06-2026 both died with ERR_INTERNET_DISCONNECTED and were never
+  retried until the following week. (2) "Monday 07:30 local" is Sunday
+  afternoon in California when Dustin is in Korea, so the California week
+  is not over yet and the run is wasted.
+
+  weekly-update.js resolves the target week in America/Los_Angeles and
+  self-debounces: once every live Verona store has a value for that week it
+  exits immediately without launching Playwright, so the 2-hourly cadence
+  is cheap. A missed or half-finished week is picked up on the next tick
+  instead of waiting seven days.
 
   Install:    bash scripts/install-launchd.sh
-  Uninstall:  bash scripts/install-launchd.sh --uninstall
+  Uninstall:  bash scripts/install-launchd.sh ––uninstall
   Manual run: launchctl start com.omc.weekly-update
 
   Logs:  ~/Library/Logs/omc-weekly-update.log
@@ -23,37 +33,31 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/node</string>
-        <string>__REPO_ROOT__/scripts/weekly-update.js</string>
+        <string>/Users/dong/Documents/omc-weekly-live/scripts/weekly-update.js</string>
         <string>--include-verona</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>__REPO_ROOT__</string>
+    <string>/Users/dong/Documents/omc-weekly-live</string>
 
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
         <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
         <key>HOME</key>
-        <string>__HOME__</string>
+        <string>/Users/dong</string>
     </dict>
 
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Weekday</key>
-        <integer>1</integer>
-        <key>Hour</key>
-        <integer>7</integer>
-        <key>Minute</key>
-        <integer>30</integer>
-    </dict>
+    <!-- Every 2 hours. The script no-ops once the week is complete. -->
+    <key>StartInterval</key>
+    <integer>7200</integer>
 
     <key>StandardOutPath</key>
-    <string>__HOME__/Library/Logs/omc-weekly-update.log</string>
+    <string>/Users/dong/Library/Logs/omc-weekly-update.log</string>
     <key>StandardErrorPath</key>
-    <string>__HOME__/Library/Logs/omc-weekly-update.log</string>
+    <string>/Users/dong/Library/Logs/omc-weekly-update.log</string>
 
     <key>RunAtLoad</key>
-    <false/>
+    <true/>
 </dict>
 </plist>

@@ -25,6 +25,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { execSync } from 'child_process';
+import dns from 'dns/promises';
 import { fileURLToPath } from 'url';
 
 import {
@@ -62,6 +63,7 @@ const skipPush = args.includes('--no-push');
 // Hanshin (Clover) is CLOSED — skipped unless --include-hanshin is passed.
 const skipHanshin = !args.includes('--include-hanshin'); // CLOSED 08-17-2026 (became TUUM, now on Toast)
 const skipVerona = !args.includes('--include-verona');
+const overrideWeek = getArg('--week'); // YYYY-MM-DD Monday; manual backfill
 const overrideStart = getArg('--start-ts');
 const overrideEnd = getArg('--end-ts');
 
@@ -75,6 +77,122 @@ function sh(cmd, opts = {}) {
 }
 function shTry(cmd) {
   try { sh(cmd); return true; } catch { return false; }
+}
+
+// ---- business-week computation (America/Los_Angeles) ----------------------
+// Every store is in California, so the reporting week must resolve to the same
+// Mon-Sun window regardless of what timezone this Mac is set to. Dustin
+// travels. Before 09-07-2026 the week came from a UTC timestamp, which
+// silently shifted the window back a day whenever the Mac was on KST
+// (Mon 07:30 KST == Sun 22:30 UTC) -- Verona would have reported Aug 30-Sep 5
+// while Toast reported Aug 31-Sep 6. All math below is date-string math
+// anchored to the business timezone, so it is travel-proof.
+const BIZ_TZ = 'America/Los_Angeles';
+const MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Stores still on Verona. Golden Wang Donkatsu Dublin moved to Toast on
+// 08-17-2026 and is owned by the Cowork task now -- if Verona still returns a
+// row for it we must discard it, or it overwrites the correct Toast number.
+const VERONA_STORE_IDS = [
+  'ohgane-oakland', 'ohgane-alameda',
+  'tangjip-hayward', 'tangjip-concord', 'tangjip-alameda',
+  'spoon-berkeley', 'bowld-albany',
+];
+const VERONA_STORE_SET = new Set(VERONA_STORE_IDS);
+
+const ATTEMPTS_FILE = path.join(REPO_ROOT, '.weekly-attempts.json'); // untracked
+
+function bizTodayISO() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: BIZ_TZ, year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date());
+}
+function isoAddDays(iso, days) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return dt.toISOString().slice(0, 10);
+}
+function isoWeekday(iso) { // 1 = Mon ... 7 = Sun
+  const [y, m, d] = iso.split('-').map(Number);
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  return wd === 0 ? 7 : wd;
+}
+function weekFromMonday(mondayISO) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(mondayISO)) throw new Error(`--week expects YYYY-MM-DD, got "${mondayISO}"`);
+  if (isoWeekday(mondayISO) !== 1) throw new Error(`--week must be a Monday; ${mondayISO} is not`);
+  const weekStartISO = mondayISO;
+  const weekEndISO = isoAddDays(mondayISO, 6);
+  const [, sm, sd] = weekStartISO.split('-').map(Number);
+  const [, em, ed] = weekEndISO.split('-').map(Number);
+  const label = `${MON_SHORT[sm - 1]} ${sd}–${MON_SHORT[em - 1]} ${ed}`;
+  // startTs/endTs are consumed only by the disabled Clover/Hanshin path.
+  const startTs = new Date(`${weekStartISO}T00:00:00`).getTime();
+  const endTs = new Date(`${weekEndISO}T23:59:59`).getTime();
+  return { startTs, endTs, weekStartISO, weekEndISO, label };
+}
+function lastCompletedWeekPT() {
+  const today = bizTodayISO();
+  const thisMonday = isoAddDays(today, -(isoWeekday(today) - 1));
+  return weekFromMonday(isoAddDays(thisMonday, -7));
+}
+
+// ---- network -------------------------------------------------------------
+// launchd fires the job the moment the Mac wakes, routinely before Wi-Fi has
+// reassociated. Both 08-31-2026 and 09-06-2026 died exactly this way
+// (ERR_INTERNET_DISCONNECTED / "Could not resolve host: github.com").
+// Wait for the network instead of dying.
+async function hostReachable(host) {
+  try { await dns.lookup(host); return true; } catch { return false; }
+}
+async function waitForNetwork({ attempts = 20, delayMs = 30000 } = {}) {
+  for (let i = 1; i <= attempts; i++) {
+    const [gh, vp] = await Promise.all([
+      hostReachable('github.com'),
+      hostReachable('online.veronapos.com'),
+    ]);
+    if (gh && vp) return true;
+    log(`⏳ network not ready (${i}/${attempts}) github:${gh} verona:${vp} — retry in ${delayMs / 1000}s`);
+    if (i < attempts) await new Promise(r => setTimeout(r, delayMs));
+  }
+  return false;
+}
+
+// ---- per-week attempt counter (untracked file, never pollutes git) --------
+async function readAttempts() {
+  try { return JSON.parse(await fs.readFile(ATTEMPTS_FILE, 'utf-8')); }
+  catch { return {}; }
+}
+async function bumpAttempts(weekStartISO) {
+  const a = await readAttempts();
+  const count = (a.weekStartISO === weekStartISO ? (a.count || 0) : 0) + 1;
+  await fs.writeFile(ATTEMPTS_FILE, JSON.stringify({ weekStartISO, count }, null, 2) + '\n');
+  return count;
+}
+
+// Which Verona stores already have a recorded value for a given week?
+async function veronaCoverage(weekStartISO) {
+  try {
+    const snaps = JSON.parse(await fs.readFile(SNAPSHOTS_FILE, 'utf-8'));
+    const wk = (snaps.weeks || []).find(w => w.weekStartISO === weekStartISO);
+    if (!wk) return [];
+    return VERONA_STORE_IDS.filter(id => wk.stores?.[id]?.sales != null);
+  } catch { return []; }
+}
+
+// Surface older holes rather than letting them rot unnoticed. The Jun 15-21
+// and Aug 24-30 gaps each went undetected for weeks.
+async function reportGaps(fromWeekStartISO) {
+  const missing = [];
+  let iso = fromWeekStartISO;
+  for (let i = 0; i < 8; i++) {
+    if ((await veronaCoverage(iso)).length === 0) missing.push(iso);
+    iso = isoAddDays(iso, -7);
+  }
+  if (missing.length) {
+    log(`⚠️  Weeks with NO Verona data (last 8): ${missing.join(', ')}`);
+    log(`   Backfill oldest-first:  node scripts/weekly-update.js --include-verona --week ${missing[missing.length - 1]}`);
+  }
 }
 
 async function readStatus() {
@@ -261,28 +379,45 @@ async function main() {
   log('=== OMC weekly update ===');
 
   // Compute target week (or use overrides)
-  const week = overrideStart && overrideEnd
-    ? (() => {
-        const s = Number(overrideStart), e = Number(overrideEnd);
-        const sD = new Date(s), eD = new Date(e);
-        return {
-          startTs: s, endTs: e,
-          weekStartISO: sD.toISOString().slice(0, 10),
-          weekEndISO: eD.toISOString().slice(0, 10),
-          label: `${sD.toISOString().slice(5, 10)}–${eD.toISOString().slice(5, 10)} (override)`,
-        };
-      })()
-    : lastBusinessWeekTimestamps();
-  log(`Target week: ${week.label} [${week.weekStartISO} → ${week.weekEndISO}]`);
+  const week = overrideWeek
+    ? weekFromMonday(overrideWeek)
+    : (overrideStart && overrideEnd
+        ? (() => {
+            const a = Number(overrideStart), b = Number(overrideEnd);
+            const sD = new Date(a), eD = new Date(b);
+            return {
+              startTs: a, endTs: b,
+              weekStartISO: sD.toISOString().slice(0, 10),
+              weekEndISO: eD.toISOString().slice(0, 10),
+              label: 'manual override',
+            };
+          })()
+        : lastCompletedWeekPT());
+  log(`Target week: ${week.label} [${week.weekStartISO} -> ${week.weekEndISO}]  (biz tz ${BIZ_TZ}; today there = ${bizTodayISO()})`);
 
-  // De-dupe: skip if we already ran this week (catch-up safe)
+  // De-dupe, coverage-based. The old rule required lastErrors to be EMPTY,
+  // so one permanently-broken store (ohgane-oakland has been failing since
+  // 08-17-2026) meant the week never counted as done and the job re-scraped
+  // forever. Now: done when every live Verona store has a value for the week.
   const prevStatus = await readStatus();
-  const alreadyDone = prevStatus?.lastSuccess?.weekStartISO === week.weekStartISO
-    && prevStatus.lastSuccess?.scopes?.includes('verona')
-    && (prevStatus.lastErrors || []).length === 0; // only skip a CLEAN week; re-attempt partial/errored weeks
-  if (alreadyDone && !overrideStart) {
-    log(`✓ Already completed both scrapers for week ${week.weekStartISO} — skipping`);
+  const covered = await veronaCoverage(week.weekStartISO);
+  if (covered.length === VERONA_STORE_IDS.length && !overrideWeek && !overrideStart) {
+    log(`✓ Verona already complete for ${week.weekStartISO} (${covered.length}/${VERONA_STORE_IDS.length}) — nothing to do`);
     return;
+  }
+  const attempt = dryRun ? 0 : await bumpAttempts(week.weekStartISO);
+  if (attempt > 8 && covered.length > 0 && !overrideWeek && !overrideStart) {
+    log(`⏹  ${week.weekStartISO}: ${covered.length}/${VERONA_STORE_IDS.length} stores captured after ${attempt - 1} attempts — not retrying again. Missing: ${VERONA_STORE_IDS.filter(id => !covered.includes(id)).join(', ')}`);
+    return;
+  }
+  if (covered.length) log(`↻ Retrying ${week.weekStartISO} — have ${covered.length}/${VERONA_STORE_IDS.length}, attempt ${attempt}`);
+
+  await reportGaps(week.weekStartISO);
+
+  // Wait for the network before doing anything that needs it.
+  if (!dryRun && !(await waitForNetwork())) {
+    log('❌ No network after 10 minutes of retries — aborting cleanly. Nothing committed; the next scheduled run will retry.');
+    process.exit(3);
   }
 
   // Refresh repo so we don't push onto a stale base
@@ -323,6 +458,13 @@ async function main() {
       const results = await runVerona({ weekStartISO: week.weekStartISO });
       let okCount = 0;
       for (const r of results) {
+        if (!VERONA_STORE_SET.has(r.id)) {
+          // e.g. golden-wang-donkatsu-dublin, which moved to Toast 08-17-2026.
+          // Dropping it here also keeps it out of `errors`, so a stale row can
+          // never block the completion check above.
+          log(`  ⏭  ${r.id} — no longer a Verona store; ignoring`);
+          continue;
+        }
         if (r.error) {
           log(`  ❌ ${r.id}: ${r.error}`);
           errors.push({ source: 'verona', storeId: r.id, error: r.error });
@@ -411,6 +553,15 @@ async function main() {
     log(`  status preview: ${JSON.stringify(newStatus, null, 2)}`);
     return;
   }
+  // Never commit a run that scraped nothing. On 08-31-2026 and 09-06-2026 the
+  // job still committed a rewritten scraper-status.json after 0 successful
+  // stores, leaving junk commits that then failed to push.
+  if (successes.length === 0) {
+    log('⚠️  0 stores scraped — leaving the repo untouched (no status write, no commit). Next run retries.');
+    log(`   errors: ${JSON.stringify(errors)}`);
+    process.exit(2);
+  }
+
   await writeStatus(newStatus);
 
   // Commit + push (only if anything to commit)
@@ -422,7 +573,15 @@ async function main() {
   if (!shTry(`git commit -m ${JSON.stringify(commitMsg)}`)) {
     log('⚠️  Nothing to commit (no changes)');
   } else if (!skipPush) {
-    sh('git push origin main');
+    let pushed = false;
+    for (let i = 1; i <= 3; i++) {
+      if (shTry('git push origin main')) { pushed = true; break; }
+      log(`⚠️  push failed (${i}/3)`);
+      if (i < 3) await new Promise(r => setTimeout(r, 20000));
+    }
+    if (!pushed) {
+      log('❌ push failed — the commit is local only. The next run pulls and pushes it.');
+    }
   }
 
   log(`=== Done — overall: ${overallStatus} ===`);
