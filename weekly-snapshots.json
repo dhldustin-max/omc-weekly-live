@@ -1292,35 +1292,70 @@
       "weekEndISO": "2026-08-30",
       "weekLabel": "Aug 24 – 30, 2026",
       "stores": {
+        "ohgane-oakland": {
+          "sales": 62492,
+          "orders": 491,
+          "guests": 1477
+        },
         "ohgane-concord": {
-          "sales": 64538,
-          "orders": 557,
-          "guests": 1621
+          "sales": 59699,
+          "orders": 548,
+          "guests": 1504
+        },
+        "ohgane-alameda": {
+          "sales": 67235,
+          "orders": 583,
+          "guests": 1292
+        },
+        "tangjip-hayward": {
+          "sales": 41531,
+          "orders": 546,
+          "guests": 634
+        },
+        "tangjip-concord": {
+          "sales": 36099,
+          "orders": 458,
+          "guests": 961
+        },
+        "tangjip-alameda": {
+          "sales": 23927,
+          "orders": 358,
+          "guests": 432
         },
         "oh-g-burger-berkeley": {
-          "sales": 5849,
-          "orders": 235,
-          "guests": 235
+          "sales": 4225,
+          "orders": 168,
+          "guests": 168
         },
         "obento-hayward": {
-          "sales": 5942,
-          "orders": 210,
-          "guests": 210
+          "sales": 6353,
+          "orders": 229,
+          "guests": 229
         },
-        "jjamppong-zizon-oakland": {
-          "sales": 8617,
-          "orders": 180,
-          "guests": 62
+        "spoon-berkeley": {
+          "sales": 15039,
+          "orders": 247,
+          "guests": 319
+        },
+        "bowld-albany": {
+          "sales": 23715,
+          "orders": 480,
+          "guests": 511
         },
         "golden-wang-donkatsu-dublin": {
-          "sales": 26294,
-          "orders": 401,
-          "guests": 126
+          "sales": 21917,
+          "orders": 339,
+          "guests": 558
+        },
+        "jjamppong-zizon-oakland": {
+          "sales": 9034,
+          "orders": 207,
+          "guests": 82
         },
         "tuum-oakland": {
-          "sales": 11779,
-          "orders": 123,
-          "guests": 96
+          "sales": 13745,
+          "orders": 107,
+          "guests": 65
         }
       }
     },

@@ -1,65 +1,55 @@
 {
-  "lastRunAt": "2026-08-24T14:38:39.537Z",
-  "lastRunStatus": "partial",
+  "lastRunAt": "2026-09-07T02:22:24.638Z",
+  "lastRunStatus": "ok",
   "lastRunScopes": [
     "verona"
   ],
-  "lastRunWeekStartISO": "2026-08-17",
-  "lastRunWeekEndISO": "2026-08-23",
-  "lastErrors": [
-    {
-      "source": "hanshin",
-      "error": "Store entry not found in STORES: hanshin-pocha-oakland"
-    },
-    {
-      "source": "verona",
-      "storeId": "ohgane-oakland",
-      "error": "Store button not found on merchant list: \"OHGANE KOREAN BBQ\""
-    }
-  ],
+  "lastRunWeekStartISO": "2026-08-24",
+  "lastRunWeekEndISO": "2026-08-30",
+  "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-08-24T14:38:39.537Z",
-    "weekStartISO": "2026-08-17",
-    "weekEndISO": "2026-08-23",
+    "ranAt": "2026-09-07T02:22:24.638Z",
+    "weekStartISO": "2026-08-24",
+    "weekEndISO": "2026-08-30",
     "scopes": [
       "verona"
     ],
     "stores": [
       {
         "source": "verona",
+        "storeId": "ohgane-oakland",
+        "sales": 62492
+      },
+      {
+        "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 62810
+        "sales": 67235
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 44050
+        "sales": 41531
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 38396
+        "sales": 36099
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 22411
+        "sales": 23927
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 17046
+        "sales": 15039
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 25268
-      },
-      {
-        "source": "verona",
-        "storeId": "golden-wang-donkatsu-dublin",
-        "sales": 40185
+        "sales": 23715
       }
     ]
   }
