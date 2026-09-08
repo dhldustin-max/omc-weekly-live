@@ -1398,6 +1398,36 @@
           "sales": 22216,
           "orders": 480,
           "guests": 511
+        },
+        "ohgane-concord": {
+          "sales": 64978,
+          "orders": 583,
+          "guests": 1630
+        },
+        "oh-g-burger-berkeley": {
+          "sales": 4554,
+          "orders": 177,
+          "guests": 177
+        },
+        "obento-hayward": {
+          "sales": 6353,
+          "orders": 229,
+          "guests": 229
+        },
+        "jjamppong-zizon-oakland": {
+          "sales": 9351,
+          "orders": 214,
+          "guests": 85
+        },
+        "golden-wang-donkatsu-dublin": {
+          "sales": 23270,
+          "orders": 357,
+          "guests": 560
+        },
+        "tuum-oakland": {
+          "sales": 15398,
+          "orders": 124,
+          "guests": 67
         }
       }
     }

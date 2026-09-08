@@ -29,9 +29,6 @@ import dns from 'dns/promises';
 import { fileURLToPath } from 'url';
 
 import {
-  lastBusinessWeekTimestamps,
-} from './lib/clover-hanshin.js';
-import {
   scrapeHanshinViaApi,
 } from './lib/clover-api.js';
 import {
@@ -214,7 +211,7 @@ async function writeStatus(status) {
 // (which only ever hold one week) over every other source's numbers for that
 // week -- on 09-07-2026 the Verona backfill of Aug 24-30 overwrote all six
 // Toast stores with the Aug 31-Sep 6 figures.
-async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel, onlyStoreIds = null }) {
+async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel, onlyStoreIds = null, scrapedById = null }) {
   // Parse current STORES out of index.html
   const html = await fs.readFile(INDEX_HTML, 'utf-8');
   const storesBlock = html.match(/const STORES = \[([\s\S]*?)\];/)?.[1];
@@ -254,7 +251,16 @@ async function appendWeeklySnapshot({ weekStartISO, weekEndISO, weekLabel, onlyS
   const prevStores = idx >= 0 ? (snapshots.weeks[idx].stores || {}) : {};
   const merged = { ...prevStores };
   const writable = onlyStoreIds && onlyStoreIds.length ? onlyStoreIds : Object.keys(stores);
-  for (const id of writable) if (stores[id]) merged[id] = stores[id];
+  for (const id of writable) {
+    if (!stores[id]) continue;
+    // Prefer the value this run actually scraped. index.html only ever holds
+    // one week, so reading sales back out of it is only correct when the run
+    // targets the current week -- a backfill would record the wrong number.
+    const scraped = scrapedById?.[id];
+    merged[id] = scraped
+      ? { ...stores[id], ...scraped }
+      : stores[id];
+  }
   const entry = { weekStartISO, weekEndISO, weekLabel, stores: merged };
   if (idx >= 0) snapshots.weeks[idx] = entry;
   else snapshots.weeks.push(entry);
@@ -436,6 +442,9 @@ async function main() {
     }
   }
 
+  // Is the target week the one index.html is meant to display?
+  const isCurrentWeek = week.weekStartISO === lastCompletedWeekPT().weekStartISO;
+
   const errors = [];
   const successes = []; // { source, storeId(s), values }
   const scrapesRan = [];
@@ -479,7 +488,11 @@ async function main() {
           errors.push({ source: 'verona', storeId: r.id, error: r.error });
           continue;
         }
-        const patch = await patchStoreInIndex(r.id, { sales: Math.round(r.sales) });
+        // index.html shows ONE week -- the current one. A backfill of an older
+        // week must not overwrite it; the snapshot still gets the value.
+        const patch = isCurrentWeek
+          ? await patchStoreInIndex(r.id, { sales: Math.round(r.sales) })
+          : { changed: false };
         log(`  ${patch.changed ? '🟢' : '⚪'} ${r.id.padEnd(22)} $${Math.round(r.sales)}`);
         successes.push({ source: 'verona', storeId: r.id, sales: Math.round(r.sales) });
         okCount++;
@@ -495,8 +508,11 @@ async function main() {
   // Toast (3 stores) is handled by the Cowork scheduled task, not here.
 
   // ---- Update visible week labels (only if at least one source succeeded) ----
+  if (successes.length > 0 && !isCurrentWeek) {
+    log(`\u21bb Backfill of ${week.weekStartISO}: snapshot only, index.html left on the current week`);
+  }
   if (successes.length > 0) {
-    const labelUpdate = await patchWeekLabels({
+    const labelUpdate = isCurrentWeek ? await patchWeekLabels({
       weekStartISO: week.weekStartISO,
       weekEndISO:
         // Always Mon + 6 = Sun for label purposes
@@ -506,8 +522,8 @@ async function main() {
           dt.setDate(dt.getDate() + 6);
           return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
         })(),
-    });
-    if (labelUpdate.changed) log('🟢 Week labels updated');
+    }) : { changed: false };
+    if (labelUpdate.changed) log('Week labels updated');
 
     // Append a snapshot of this week's data so the live site can show
     // the historic-week dropdown.
@@ -528,6 +544,9 @@ async function main() {
         weekEndISO,
         weekLabel,
         onlyStoreIds: [...new Set(successes.map(x => x.storeId).filter(Boolean))],
+        scrapedById: Object.fromEntries(successes
+          .filter(x => x.storeId)
+          .map(x => [x.storeId, x.sales != null ? { sales: x.sales } : {}])),
       });
       log(`🟢 Snapshot ${snapResult.justAdded ? 'added' : 'updated'} (${snapResult.totalWeeks} weeks total)`);
     } catch (e) {
