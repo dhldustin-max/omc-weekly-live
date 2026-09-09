@@ -1987,19 +1987,34 @@
   //                                            sales, savedAt } } }
   const COMMITTED_PRIME_KEY = "omc-prime-committed";
 
+  // ---- Business-week helpers (America/Los_Angeles, travel-proof) ----------
+  // All stores are in California. Never derive the reporting week from the
+  // viewer's local clock or from toISOString() (UTC): on a KST laptop the old
+  // code produced "2026-08-30" for the Aug 31 week and the dashboard showed
+  // "이번주 데이터 아직 안 들어옴" even though the data was there (09-09-2026).
+  const BIZ_TZ = "America/Los_Angeles";
+  function bizNowParts() {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: BIZ_TZ, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "numeric", hour12: false, weekday: "short",
+    }).formatToParts(new Date()).reduce((o, p) => (o[p.type] = p.value, o), {});
+    const dow = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(parts.weekday);
+    return { iso: `${parts.year}-${parts.month}-${parts.day}`, dow, hour: Number(parts.hour) % 24 };
+  }
+  function isoAddDays(iso, n) {
+    const [y, m, d] = iso.split("-").map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d)); dt.setUTCDate(dt.getUTCDate() + n);
+    return dt.toISOString().slice(0, 10);
+  }
+  // Last COMPLETED Mon–Sun week = the Monday before this week's Monday.
+  function lastCompletedMondayISO() {
+    const { iso, dow } = bizNowParts();
+    return isoAddDays(iso, -((dow + 6) % 7) - 7);
+  }
+
   function currentWeekStartISO() {
-    // The "current view week" — last full Mon-Sun. Today (Mon) →
-    // last Mon (= today - 7). Same convention used by the launchd
-    // scraper, so the snapshot timeline aligns.
-    const now = new Date();
-    const day = now.getDay(); // 0=Sun..6=Sat
-    const daysSinceMon = (day + 6) % 7;
-    const thisMon = new Date(now);
-    thisMon.setHours(0, 0, 0, 0);
-    thisMon.setDate(thisMon.getDate() - daysSinceMon);
-    const lastMon = new Date(thisMon);
-    lastMon.setDate(thisMon.getDate() - 7);
-    return lastMon.toISOString().slice(0, 10);
+    // The "current view week" — last full Mon-Sun, in business time (PT).
+    return lastCompletedMondayISO();
   }
 
   function loadCommittedPrime() {
@@ -2469,9 +2484,8 @@
   async function checkToastFreshness() {
     const banner = document.getElementById("toast-banner");
     if (!banner) return;
-    const now = new Date();
-    // Monday before 10am: the 8:02am Cowork task may still be running.
-    if (now.getDay() === 1 && now.getHours() < 10) return;
+    // Monday (PT) before 10am: the Verona Actions run / Cowork task may still be going.
+    { const { dow, hour } = bizNowParts(); if (dow === 1 && hour < 10) return; }
     let data;
     try {
       const res = await fetch("weekly-snapshots.json", { cache: "no-store" });
@@ -2481,16 +2495,7 @@
     const weeks = (data.weeks || []).slice()
       .sort((a, b) => (a.weekStartISO < b.weekStartISO ? -1 : 1));
     if (weeks.length < 2) return;
-    const expectedWeekStart = (() => {
-      const day = now.getDay();
-      const daysSinceMon = (day + 6) % 7;
-      const thisMon = new Date(now);
-      thisMon.setHours(0, 0, 0, 0);
-      thisMon.setDate(thisMon.getDate() - daysSinceMon);
-      const lastMon = new Date(thisMon);
-      lastMon.setDate(thisMon.getDate() - 7);
-      return lastMon.toISOString().slice(0, 10);
-    })();
+    const expectedWeekStart = lastCompletedMondayISO();
     const latest = weeks[weeks.length - 1];
     const prev = weeks[weeks.length - 2];
     // If the whole snapshot is behind, the main scraper banner already fires.
@@ -2530,18 +2535,7 @@
 
     const lastRun = st.lastRunAt ? new Date(st.lastRunAt) : null;
     const hoursSinceRun = lastRun ? (Date.now() - lastRun.getTime()) / 36e5 : Infinity;
-    const expectedWeekStart = (() => {
-      // Last full Mon-Sun = Monday before today (or today if Monday)
-      const now = new Date();
-      const day = now.getDay(); // 0=Sun..6=Sat
-      const daysSinceMon = (day + 6) % 7;
-      const thisMon = new Date(now);
-      thisMon.setHours(0, 0, 0, 0);
-      thisMon.setDate(thisMon.getDate() - daysSinceMon);
-      const lastMon = new Date(thisMon);
-      lastMon.setDate(thisMon.getDate() - 7);
-      return lastMon.toISOString().slice(0, 10);
-    })();
+    const expectedWeekStart = lastCompletedMondayISO();
 
     const successWeek = st.lastSuccess?.weekStartISO;
     const isStale = successWeek !== expectedWeekStart;
