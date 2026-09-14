@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-09-14T19:42:39.769Z",
+  "lastRunAt": "2026-09-14T22:22:07.954Z",
   "lastRunStatus": "ok",
   "lastRunScopes": [
     "verona"
@@ -9,7 +9,7 @@
   "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-09-14T19:42:39.769Z",
+    "ranAt": "2026-09-14T22:22:07.954Z",
     "weekStartISO": "2026-09-07",
     "weekEndISO": "2026-09-13",
     "scopes": [
