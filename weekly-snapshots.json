@@ -1430,6 +1430,48 @@
           "guests": 67
         }
       }
+    },
+    {
+      "weekStartISO": "2026-09-07",
+      "weekEndISO": "2026-09-13",
+      "weekLabel": "Sep 7 – 13, 2026",
+      "stores": {
+        "ohgane-oakland": {
+          "sales": 55439,
+          "orders": 491,
+          "guests": 1477
+        },
+        "ohgane-alameda": {
+          "sales": 59830,
+          "orders": 583,
+          "guests": 1292
+        },
+        "tangjip-hayward": {
+          "sales": 45951,
+          "orders": 546,
+          "guests": 634
+        },
+        "tangjip-concord": {
+          "sales": 41535,
+          "orders": 458,
+          "guests": 961
+        },
+        "tangjip-alameda": {
+          "sales": 22817,
+          "orders": 358,
+          "guests": 432
+        },
+        "spoon-berkeley": {
+          "sales": 16726,
+          "orders": 247,
+          "guests": 319
+        },
+        "bowld-albany": {
+          "sales": 25202,
+          "orders": 480,
+          "guests": 511
+        }
+      }
     }
   ]
 }
