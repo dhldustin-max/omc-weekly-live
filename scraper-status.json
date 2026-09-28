@@ -1,17 +1,17 @@
 {
-  "lastRunAt": "2026-09-21T07:41:42.202Z",
+  "lastRunAt": "2026-09-28T08:21:09.514Z",
   "lastRunStatus": "ok",
   "lastRunScopes": [
     "verona"
   ],
-  "lastRunWeekStartISO": "2026-09-14",
-  "lastRunWeekEndISO": "2026-09-20",
+  "lastRunWeekStartISO": "2026-09-21",
+  "lastRunWeekEndISO": "2026-09-27",
   "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-09-21T07:41:42.202Z",
-    "weekStartISO": "2026-09-14",
-    "weekEndISO": "2026-09-20",
+    "ranAt": "2026-09-28T08:21:09.514Z",
+    "weekStartISO": "2026-09-21",
+    "weekEndISO": "2026-09-27",
     "scopes": [
       "verona"
     ],
@@ -19,37 +19,37 @@
       {
         "source": "verona",
         "storeId": "ohgane-oakland",
-        "sales": 60859
+        "sales": 48869
       },
       {
         "source": "verona",
         "storeId": "ohgane-alameda",
-        "sales": 54939
+        "sales": 54767
       },
       {
         "source": "verona",
         "storeId": "tangjip-hayward",
-        "sales": 43685
+        "sales": 37064
       },
       {
         "source": "verona",
         "storeId": "tangjip-concord",
-        "sales": 34636
+        "sales": 34759
       },
       {
         "source": "verona",
         "storeId": "tangjip-alameda",
-        "sales": 21306
+        "sales": 20327
       },
       {
         "source": "verona",
         "storeId": "spoon-berkeley",
-        "sales": 13229
+        "sales": 13580
       },
       {
         "source": "verona",
         "storeId": "bowld-albany",
-        "sales": 23830
+        "sales": 22432
       }
     ]
   }
