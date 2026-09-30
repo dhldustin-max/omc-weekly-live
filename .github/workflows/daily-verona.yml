@@ -1,0 +1,1 @@
+pbcopy < ~/Documents/omc-weekly-live/.github/workflows/daily-verona.yml
