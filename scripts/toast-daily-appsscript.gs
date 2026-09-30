@@ -1,24 +1,24 @@
 /**
- * Toast daily group email → daily.json (OMC weekly-live repo). Google Apps Script.
+ * Toast daily group email -> daily.json (OMC weekly-live repo). Google Apps Script.
  *
  * Runs inside the Gmail account that receives "OMC Hospitality - <Weekday>, <Month D>"
  * (donghyuk@chimmelierusa.com). No server, no Chrome, no Cowork.
  *
  * One-time setup (5 min):
- *   1. script.google.com (logged in as donghyuk@chimmelierusa.com) → New project → paste this file.
- *   2. Project Settings → Script properties → add GITHUB_TOKEN = a fine-grained PAT with
+ *   1. script.google.com (logged in as donghyuk@chimmelierusa.com) -> New project -> paste this file.
+ *   2. Project Settings -> Script properties -> add GITHUB_TOKEN = a fine-grained PAT with
  *      Contents: Read and write on dhldustin-max/omc-weekly-live (nothing else).
  *   3. Run `syncToastDaily` once by hand (grants Gmail + UrlFetch permission), check the log.
- *   4. Triggers → Add trigger → syncToastDaily, Time-driven, Day timer, 7am–8am (Pacific).
+ *   4. Triggers -> Add trigger -> syncToastDaily, Time-driven, Day timer, 7am-8am (Pacific).
  *      Toast sends the mail ~6:15am PT; the trigger reads the last 3 days so a miss self-heals.
  *
  * Numbers are the morning snapshot Toast puts in the mail (voids after send are not reflected).
  * Labor is overwritten from the weekly mails once they arrive (corrected clock-outs).
- * Week totals still come from weekly-snapshots.json — this only feeds Day / Month views.
+ * Week totals still come from weekly-snapshots.json - this only feeds Day / Month views.
  */
 var REPO = 'dhldustin-max/omc-weekly-live';
 var FILE = 'daily.json';
-var STORES = {                     // Location column → store id (same table as the Monday task)
+var STORES = {                     // Location column -> store id (same table as the Monday task)
   '1671 Willow Pass Road': 'ohgane-concord',
   '1823 Solano Avenue': 'oh-g-burger-berkeley',
   '22521 Main Street': 'obento-hayward',
@@ -39,7 +39,7 @@ function syncToastDaily() {
       if (Object.keys(rows).length) parsed[day] = rows;
     });
   });
-  // Weekly mails ("<store> - <address> - Week of Sep 20–26") carry corrected per-day labor %
+  // Weekly mails ("<store> - <address> - Week of Sep 20-26") carry corrected per-day labor %
   // (the daily mail goes out before managers fix auto clock-outs). They override daily labor.
   var laborFix = {};  // day -> id -> labor $
   GmailApp.search('from:no-reply@toasttab.com subject:"Week of" newer_than:10d').forEach(function (t) {
@@ -79,7 +79,7 @@ function syncToastDaily() {
   Logger.log('pushed ' + changed + ' values for ' + Object.keys(parsed).join(', '));
 }
 
-// "OMC Hospitality - Sunday, September 27" → 2026-09-27 (year from the mail's date; Jan mail about Dec 31 handled)
+// "OMC Hospitality - Sunday, September 27" -> 2026-09-27 (year from the mail's date; Jan mail about Dec 31 handled)
 function parseDay_(subject, sent) {
   var m = subject.match(/-\s*\w+,\s*(\w+)\s+(\d{1,2})\s*$/);
   if (!m) return null;
@@ -118,7 +118,7 @@ function parseStores_(text) {
   return out;
 }
 
-// "| Sun 09/20 | $14,278.50 | 345 | $126.36 | 19.4% |" → [{ day: '2026-09-20', labor: 2770 }]; closed days ("—") skipped.
+// "| Sun 09/20 | $14,278.50 | 345 | $126.36 | 19.4% |" -> [{ day: '2026-09-20', labor: 2770 }]; closed days ("-") skipped.
 function parseWeeklyLabor_(text, sent) {
   var out = [], on = false, lines = text.split('\n');
   for (var i = 0; i < lines.length; i++) {
@@ -139,7 +139,7 @@ function parseWeeklyLabor_(text, sent) {
 
 function ghHeaders_() {
   var token = PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN');
-  if (!token) throw new Error('Set GITHUB_TOKEN in Project Settings → Script properties');
+  if (!token) throw new Error('Set GITHUB_TOKEN in Project Settings -> Script properties');
   return { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' };
 }
 function getFile_() {
