@@ -1,5 +1,143 @@
 {
   "days": {
+    "2026-09-01": {
+      "ohgane-oakland": {
+        "sales": 5491
+      },
+      "ohgane-alameda": {
+        "sales": 3950
+      },
+      "tangjip-hayward": {
+        "sales": 4119
+      },
+      "tangjip-concord": {
+        "sales": 3341
+      },
+      "tangjip-alameda": {
+        "sales": 2777
+      },
+      "spoon-berkeley": {
+        "sales": 1106
+      },
+      "bowld-albany": {
+        "sales": 2448
+      }
+    },
+    "2026-09-02": {
+      "ohgane-oakland": {
+        "sales": 4829
+      },
+      "ohgane-alameda": {
+        "sales": 5227
+      },
+      "tangjip-hayward": {
+        "sales": 3881
+      },
+      "tangjip-concord": {
+        "sales": 3817
+      },
+      "tangjip-alameda": {
+        "sales": 1923
+      },
+      "spoon-berkeley": {
+        "sales": 1615
+      },
+      "bowld-albany": {
+        "sales": 2012
+      }
+    },
+    "2026-09-03": {
+      "ohgane-oakland": {
+        "sales": 7626
+      },
+      "ohgane-alameda": {
+        "sales": 5274
+      },
+      "tangjip-hayward": {
+        "sales": 4796
+      },
+      "tangjip-concord": {
+        "sales": 3101
+      },
+      "tangjip-alameda": {
+        "sales": 2276
+      },
+      "spoon-berkeley": {
+        "sales": 1307
+      },
+      "bowld-albany": {
+        "sales": 3024
+      }
+    },
+    "2026-09-04": {
+      "ohgane-oakland": {
+        "sales": 10117
+      },
+      "ohgane-alameda": {
+        "sales": 11627
+      },
+      "tangjip-hayward": {
+        "sales": 7956
+      },
+      "tangjip-concord": {
+        "sales": 6462
+      },
+      "tangjip-alameda": {
+        "sales": 4418
+      },
+      "spoon-berkeley": {
+        "sales": 2104
+      },
+      "bowld-albany": {
+        "sales": 3444
+      }
+    },
+    "2026-09-05": {
+      "ohgane-oakland": {
+        "sales": 14641
+      },
+      "ohgane-alameda": {
+        "sales": 15840
+      },
+      "tangjip-hayward": {
+        "sales": 10197
+      },
+      "tangjip-concord": {
+        "sales": 9836
+      },
+      "tangjip-alameda": {
+        "sales": 6299
+      },
+      "spoon-berkeley": {
+        "sales": 1992
+      },
+      "bowld-albany": {
+        "sales": 4427
+      }
+    },
+    "2026-09-06": {
+      "ohgane-oakland": {
+        "sales": 13689
+      },
+      "ohgane-alameda": {
+        "sales": 14397
+      },
+      "tangjip-hayward": {
+        "sales": 9095
+      },
+      "tangjip-concord": {
+        "sales": 9009
+      },
+      "tangjip-alameda": {
+        "sales": 3940
+      },
+      "spoon-berkeley": {
+        "sales": 2520
+      },
+      "bowld-albany": {
+        "sales": 4172
+      }
+    },
     "2026-09-07": {
       "golden-wang-donkatsu-dublin": {
         "sales": 3934,
@@ -30,6 +168,27 @@
         "sales": 749,
         "orders": 11,
         "guests": 6
+      },
+      "ohgane-oakland": {
+        "sales": 11836
+      },
+      "ohgane-alameda": {
+        "sales": 11492
+      },
+      "tangjip-hayward": {
+        "sales": 9078
+      },
+      "tangjip-concord": {
+        "sales": 8734
+      },
+      "tangjip-alameda": {
+        "sales": 4516
+      },
+      "spoon-berkeley": {
+        "sales": 2425
+      },
+      "bowld-albany": {
+        "sales": 4531
       }
     },
     "2026-09-08": {
@@ -62,6 +221,27 @@
         "sales": 930,
         "orders": 10,
         "guests": 7
+      },
+      "ohgane-oakland": {
+        "sales": 5095
+      },
+      "ohgane-alameda": {
+        "sales": 2541
+      },
+      "tangjip-hayward": {
+        "sales": 4007
+      },
+      "tangjip-concord": {
+        "sales": 3192
+      },
+      "tangjip-alameda": {
+        "sales": 2045
+      },
+      "spoon-berkeley": {
+        "sales": 1400
+      },
+      "bowld-albany": {
+        "sales": 2853
       }
     },
     "2026-09-09": {
@@ -94,6 +274,27 @@
         "sales": 513,
         "orders": 6,
         "guests": 1
+      },
+      "ohgane-oakland": {
+        "sales": 4841
+      },
+      "ohgane-alameda": {
+        "sales": 3267
+      },
+      "tangjip-hayward": {
+        "sales": 3174
+      },
+      "tangjip-concord": {
+        "sales": 3316
+      },
+      "tangjip-alameda": {
+        "sales": 2081
+      },
+      "spoon-berkeley": {
+        "sales": 1599
+      },
+      "bowld-albany": {
+        "sales": 1872
       }
     },
     "2026-09-10": {
@@ -126,6 +327,27 @@
         "sales": 1007,
         "orders": 10,
         "guests": 3
+      },
+      "ohgane-oakland": {
+        "sales": 4935
+      },
+      "ohgane-alameda": {
+        "sales": 4955
+      },
+      "tangjip-hayward": {
+        "sales": 4146
+      },
+      "tangjip-concord": {
+        "sales": 3065
+      },
+      "tangjip-alameda": {
+        "sales": 2367
+      },
+      "spoon-berkeley": {
+        "sales": 3559
+      },
+      "bowld-albany": {
+        "sales": 1858
       }
     },
     "2026-09-11": {
@@ -158,6 +380,27 @@
         "sales": 3006,
         "orders": 30,
         "guests": 28
+      },
+      "ohgane-oakland": {
+        "sales": 7632
+      },
+      "ohgane-alameda": {
+        "sales": 10797
+      },
+      "tangjip-hayward": {
+        "sales": 7405
+      },
+      "tangjip-concord": {
+        "sales": 6201
+      },
+      "tangjip-alameda": {
+        "sales": 4163
+      },
+      "spoon-berkeley": {
+        "sales": 2114
+      },
+      "bowld-albany": {
+        "sales": 3562
       }
     },
     "2026-09-12": {
@@ -190,6 +433,27 @@
         "sales": 2213,
         "orders": 29,
         "guests": 15
+      },
+      "ohgane-oakland": {
+        "sales": 11215
+      },
+      "ohgane-alameda": {
+        "sales": 15133
+      },
+      "tangjip-hayward": {
+        "sales": 8165
+      },
+      "tangjip-concord": {
+        "sales": 9532
+      },
+      "tangjip-alameda": {
+        "sales": 4106
+      },
+      "spoon-berkeley": {
+        "sales": 2459
+      },
+      "bowld-albany": {
+        "sales": 4329
       }
     },
     "2026-09-13": {
@@ -222,6 +486,27 @@
         "sales": 430,
         "orders": 9,
         "guests": 5
+      },
+      "ohgane-oakland": {
+        "sales": 9887
+      },
+      "ohgane-alameda": {
+        "sales": 11645
+      },
+      "tangjip-hayward": {
+        "sales": 9976
+      },
+      "tangjip-concord": {
+        "sales": 7494
+      },
+      "tangjip-alameda": {
+        "sales": 3539
+      },
+      "spoon-berkeley": {
+        "sales": 3171
+      },
+      "bowld-albany": {
+        "sales": 6198
       }
     },
     "2026-09-14": {
@@ -254,6 +539,27 @@
         "sales": 1476,
         "orders": 17,
         "guests": 29
+      },
+      "ohgane-oakland": {
+        "sales": 6407
+      },
+      "ohgane-alameda": {
+        "sales": 4374
+      },
+      "tangjip-hayward": {
+        "sales": 4565
+      },
+      "tangjip-concord": {
+        "sales": 3276
+      },
+      "tangjip-alameda": {
+        "sales": 1895
+      },
+      "spoon-berkeley": {
+        "sales": 2260
+      },
+      "bowld-albany": {
+        "sales": 2425
       }
     },
     "2026-09-15": {
@@ -286,6 +592,27 @@
         "sales": 310,
         "orders": 6,
         "guests": 12
+      },
+      "ohgane-oakland": {
+        "sales": 6182
+      },
+      "ohgane-alameda": {
+        "sales": 4225
+      },
+      "tangjip-hayward": {
+        "sales": 3921
+      },
+      "tangjip-concord": {
+        "sales": 2864
+      },
+      "tangjip-alameda": {
+        "sales": 2946
+      },
+      "spoon-berkeley": {
+        "sales": 1607
+      },
+      "bowld-albany": {
+        "sales": 2458
       }
     },
     "2026-09-16": {
@@ -318,6 +645,27 @@
         "sales": 573,
         "orders": 10,
         "guests": 10
+      },
+      "ohgane-oakland": {
+        "sales": 5848
+      },
+      "ohgane-alameda": {
+        "sales": 5092
+      },
+      "tangjip-hayward": {
+        "sales": 3774
+      },
+      "tangjip-concord": {
+        "sales": 3866
+      },
+      "tangjip-alameda": {
+        "sales": 2691
+      },
+      "spoon-berkeley": {
+        "sales": 1893
+      },
+      "bowld-albany": {
+        "sales": 3218
       }
     },
     "2026-09-17": {
@@ -350,6 +698,27 @@
         "sales": 2232,
         "orders": 21,
         "guests": 17
+      },
+      "ohgane-oakland": {
+        "sales": 5688
+      },
+      "ohgane-alameda": {
+        "sales": 5195
+      },
+      "tangjip-hayward": {
+        "sales": 5358
+      },
+      "tangjip-concord": {
+        "sales": 2953
+      },
+      "tangjip-alameda": {
+        "sales": 2350
+      },
+      "spoon-berkeley": {
+        "sales": 1720
+      },
+      "bowld-albany": {
+        "sales": 2983
       }
     },
     "2026-09-18": {
@@ -382,6 +751,27 @@
         "sales": 3985,
         "orders": 26,
         "guests": 5
+      },
+      "ohgane-oakland": {
+        "sales": 10406
+      },
+      "ohgane-alameda": {
+        "sales": 11776
+      },
+      "tangjip-hayward": {
+        "sales": 7915
+      },
+      "tangjip-concord": {
+        "sales": 5453
+      },
+      "tangjip-alameda": {
+        "sales": 3573
+      },
+      "spoon-berkeley": {
+        "sales": 2016
+      },
+      "bowld-albany": {
+        "sales": 3737
       }
     },
     "2026-09-19": {
@@ -414,6 +804,27 @@
         "sales": 3066,
         "orders": 33,
         "guests": 78
+      },
+      "ohgane-oakland": {
+        "sales": 14377
+      },
+      "ohgane-alameda": {
+        "sales": 11665
+      },
+      "tangjip-hayward": {
+        "sales": 10331
+      },
+      "tangjip-concord": {
+        "sales": 7916
+      },
+      "tangjip-alameda": {
+        "sales": 3715
+      },
+      "spoon-berkeley": {
+        "sales": 1983
+      },
+      "bowld-albany": {
+        "sales": 5074
       }
     },
     "2026-09-20": {
@@ -446,6 +857,27 @@
         "sales": 1176,
         "orders": 17,
         "guests": 9
+      },
+      "ohgane-oakland": {
+        "sales": 11952
+      },
+      "ohgane-alameda": {
+        "sales": 12611
+      },
+      "tangjip-hayward": {
+        "sales": 7821
+      },
+      "tangjip-concord": {
+        "sales": 8309
+      },
+      "tangjip-alameda": {
+        "sales": 4136
+      },
+      "spoon-berkeley": {
+        "sales": 1749
+      },
+      "bowld-albany": {
+        "sales": 3937
       }
     },
     "2026-09-21": {
@@ -478,6 +910,27 @@
         "sales": 261,
         "orders": 6,
         "guests": 5
+      },
+      "ohgane-oakland": {
+        "sales": 4969
+      },
+      "ohgane-alameda": {
+        "sales": 4470
+      },
+      "tangjip-hayward": {
+        "sales": 3292
+      },
+      "tangjip-concord": {
+        "sales": 3204
+      },
+      "tangjip-alameda": {
+        "sales": 2915
+      },
+      "spoon-berkeley": {
+        "sales": 2146
+      },
+      "bowld-albany": {
+        "sales": 2359
       }
     },
     "2026-09-22": {
@@ -510,6 +963,27 @@
         "sales": 1084,
         "orders": 7,
         "guests": 25
+      },
+      "ohgane-oakland": {
+        "sales": 6591
+      },
+      "ohgane-alameda": {
+        "sales": 4164
+      },
+      "tangjip-hayward": {
+        "sales": 3535
+      },
+      "tangjip-concord": {
+        "sales": 4116
+      },
+      "tangjip-alameda": {
+        "sales": 2028
+      },
+      "spoon-berkeley": {
+        "sales": 1448
+      },
+      "bowld-albany": {
+        "sales": 2188
       }
     },
     "2026-09-23": {
@@ -542,6 +1016,27 @@
         "sales": 272,
         "orders": 7,
         "guests": 5
+      },
+      "ohgane-oakland": {
+        "sales": 4755
+      },
+      "ohgane-alameda": {
+        "sales": 4526
+      },
+      "tangjip-hayward": {
+        "sales": 4151
+      },
+      "tangjip-concord": {
+        "sales": 2721
+      },
+      "tangjip-alameda": {
+        "sales": 2325
+      },
+      "spoon-berkeley": {
+        "sales": 1746
+      },
+      "bowld-albany": {
+        "sales": 2258
       }
     },
     "2026-09-24": {
@@ -574,6 +1069,27 @@
         "sales": 2585,
         "orders": 25,
         "guests": 3
+      },
+      "ohgane-oakland": {
+        "sales": 4473
+      },
+      "ohgane-alameda": {
+        "sales": 6213
+      },
+      "tangjip-hayward": {
+        "sales": 3604
+      },
+      "tangjip-concord": {
+        "sales": 4141
+      },
+      "tangjip-alameda": {
+        "sales": 2216
+      },
+      "spoon-berkeley": {
+        "sales": 2069
+      },
+      "bowld-albany": {
+        "sales": 2884
       }
     },
     "2026-09-25": {
@@ -606,6 +1122,27 @@
         "sales": 3335,
         "orders": 31,
         "guests": 18
+      },
+      "ohgane-oakland": {
+        "sales": 9671
+      },
+      "ohgane-alameda": {
+        "sales": 10779
+      },
+      "tangjip-hayward": {
+        "sales": 6947
+      },
+      "tangjip-concord": {
+        "sales": 5365
+      },
+      "tangjip-alameda": {
+        "sales": 3556
+      },
+      "spoon-berkeley": {
+        "sales": 1998
+      },
+      "bowld-albany": {
+        "sales": 4278
       }
     },
     "2026-09-26": {
@@ -638,6 +1175,27 @@
         "sales": 3145,
         "orders": 23,
         "guests": 3
+      },
+      "ohgane-oakland": {
+        "sales": 9142
+      },
+      "ohgane-alameda": {
+        "sales": 14081
+      },
+      "tangjip-hayward": {
+        "sales": 7573
+      },
+      "tangjip-concord": {
+        "sales": 8049
+      },
+      "tangjip-alameda": {
+        "sales": 3458
+      },
+      "spoon-berkeley": {
+        "sales": 2579
+      },
+      "bowld-albany": {
+        "sales": 4391
       }
     },
     "2026-09-27": {
@@ -670,6 +1228,27 @@
         "sales": 122,
         "orders": 4,
         "guests": 2
+      },
+      "ohgane-oakland": {
+        "sales": 9268
+      },
+      "ohgane-alameda": {
+        "sales": 10533
+      },
+      "tangjip-hayward": {
+        "sales": 7961
+      },
+      "tangjip-concord": {
+        "sales": 7164
+      },
+      "tangjip-alameda": {
+        "sales": 3829
+      },
+      "spoon-berkeley": {
+        "sales": 1595
+      },
+      "bowld-albany": {
+        "sales": 4075
       }
     },
     "2026-09-28": {
@@ -702,6 +1281,27 @@
         "sales": 209,
         "orders": 2,
         "guests": 0
+      },
+      "ohgane-oakland": {
+        "sales": 4383
+      },
+      "ohgane-alameda": {
+        "sales": 4211
+      },
+      "tangjip-hayward": {
+        "sales": 3691
+      },
+      "tangjip-concord": {
+        "sales": 3052
+      },
+      "tangjip-alameda": {
+        "sales": 2593
+      },
+      "spoon-berkeley": {
+        "sales": 2012
+      },
+      "bowld-albany": {
+        "sales": 2791
       }
     },
     "2026-09-29": {
@@ -734,7 +1334,29 @@
         "sales": 238,
         "orders": 6,
         "guests": 3
+      },
+      "ohgane-oakland": {
+        "sales": 4770
+      },
+      "ohgane-alameda": {
+        "sales": 7503
+      },
+      "tangjip-hayward": {
+        "sales": 3789
+      },
+      "tangjip-concord": {
+        "sales": 3700
+      },
+      "tangjip-alameda": {
+        "sales": 1605
+      },
+      "spoon-berkeley": {
+        "sales": 1314
+      },
+      "bowld-albany": {
+        "sales": 1941
       }
     }
-  }
+  },
+  "_comment": "Per-business-day sales by store (America/Los_Angeles). Verona: scripts/daily-update.js. Toast: scripts/toast-daily-appsscript.gs (Gmail daily group email). The dashboard builds Day and Month views from this file; weekly-snapshots.json stays the source for Week."
 }
