@@ -86,7 +86,7 @@ function parseDay_(subject, sent) {
   var year = sent.getFullYear();
   var d = new Date(m[1] + ' ' + m[2] + ', ' + year);
   if (d > sent) d.setFullYear(year - 1);
-  return Utilities.formatDate(d, 'America/Los_Angeles', 'yyyy-MM-dd');
+  return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');  // d was built in the script's own zone
 }
 
 // Three per-location tables in the mail, keyed by their header row:
