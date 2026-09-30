@@ -42,6 +42,10 @@
   .subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
   .week-tag { font-size: 11px; color: #007aff; font-weight: 600; margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .week-tag-icon { display: inline-block; }
+  .period-toggle { display: inline-flex; border: 1px solid rgba(0,122,255,0.25); border-radius: 6px; overflow: hidden; }
+  .period-toggle button { font-family: inherit; font-size: 11px; font-weight: 600; color: #007aff; background: transparent; border: 0; padding: 3px 9px; cursor: pointer; }
+  .period-toggle button + button { border-left: 1px solid rgba(0,122,255,0.25); }
+  .period-toggle button.active { background: #007aff; color: #fff; }
   .week-tag-select {
     font-family: inherit;
     font-size: 11px;
@@ -840,11 +844,17 @@
       <div class="title">OMC Weekly Ops — Live</div>
       <div class="subtitle" id="subtitle-line">Manager meeting · 13 locations</div>
       <div class="week-tag">
-        <span class="week-tag-icon">📅 Week of</span>
-        <select id="week-picker" class="week-tag-select">
+        <span class="period-toggle" id="period-toggle" role="group" aria-label="Period">
+          <button type="button" data-period="day">Day</button>
+          <button type="button" data-period="week" class="active">Week</button>
+          <button type="button" data-period="month">Month</button>
+        </span>
+        <span class="week-tag-icon" id="week-tag-icon">📅 Week of</span>
+        <select id="week-picker" class="week-tag-select" aria-label="Period picker">
           <option value="">Apr 27 – May 3, 2026</option>
         </select>
         <span id="week-tag-pill"></span>
+        <a href="dashboard.html" class="week-tag-select" style="text-decoration:none;padding-right:8px;background-image:none">📊 Dashboard</a>
       </div>
     </div>
     <div id="overall-grade" class="grade-badge grade-NA">—</div>
@@ -1479,7 +1489,7 @@
             const diff = s.sales - prev;
             const cls = diff > 0 ? 'wow-up' : diff < 0 ? 'wow-down' : 'wow-flat';
             const sign = diff > 0 ? '+' : diff < 0 ? '−' : '±';
-            return `<div class="stat-sub">지난주 ${fmtMoney(prev)} <span class="wow-delta ${cls}">${sign}${fmtMoney(Math.abs(diff))}</span></div>`;
+            return `<div class="stat-sub">${PREV_LABEL[PERIOD]} ${fmtMoney(prev)} <span class="wow-delta ${cls}">${sign}${fmtMoney(Math.abs(diff))}</span></div>`;
           })()}
         </div>
         <div class="stat-cell">
@@ -2351,6 +2361,7 @@
   checkToastFreshness(); // Show banner if Toast weekly numbers look missing/stale
   document.getElementById("subtitle-line").textContent = `Manager meeting · ${STORES.length} locations`;
   loadWeeklySnapshots();  // Populate week-picker dropdown with historical weeks
+  loadDaily();            // daily.json → Day / Month views
 
   // Loads weekly-snapshots.json (committed each week by weekly-update.js),
   // builds the week-picker dropdown, and wires it up to swap in the
@@ -2378,6 +2389,7 @@
           sales: s.sales,
           orders: s.orders,
           guests: s.guests,
+          target: s.target, floor: s.floor, stretch: s.stretch,
         };
       });
 
@@ -2407,6 +2419,7 @@
 
       picker.addEventListener("change", e => {
         const wkISO = e.target.value;
+        if (PERIOD !== "week") { applyDailyPeriod(wkISO); return; }
         const isCurrent = wkISO === latest.weekStartISO;
         applyWeekSnapshot(wkISO, isCurrent);
       });
@@ -2439,6 +2452,8 @@
 
   function applyWeekSnapshot(weekStartISO, isCurrent) {
     let snap;
+    // Day/Month views scale target/floor/stretch; put the weekly ones back.
+    STORES.forEach(s => { const b = CURRENT_WEEK_BACKUP && CURRENT_WEEK_BACKUP[s.id]; if (b) { s.target = b.target; s.floor = b.floor; s.stretch = b.stretch; } });
     if (isCurrent && CURRENT_WEEK_BACKUP) {
       // Restore in-memory baseline (avoids any drift from snapshot file)
       STORES.forEach(s => {
@@ -2462,6 +2477,9 @@
     updateWeekTagPill(isCurrent);
     // Refresh prev-week deltas relative to the now-selected week
     applyWoWDeltas(weekStartISO);
+    rerenderAll();
+  }
+  function rerenderAll() {
     // Rebuild concept averages with the new values + redraw all cards
     if (typeof CONCEPT_AVGS === "object") {
       const fresh = computeConceptAvgs();
@@ -2474,6 +2492,95 @@
     applyFocus(currentFocus || "all");
     // Notes need to be rerendered against existing PREV_NOTES state
     STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
+  }
+
+  // ---- Day / Week / Month views ------------------------------------------
+  // Week = weekly-snapshots.json (unchanged). Day and Month = daily.json
+  // ({ days: { "YYYY-MM-DD": { storeId: { sales, orders, guests } } } }),
+  // written daily by scripts/daily-update.js (Verona) and the Toast Gmail
+  // Apps Script. Targets are weekly (rent-based) so they get scaled: day = 1/7,
+  // month = days-in-month / 7. Everything else (grades, bands, prime cost)
+  // reads STORES as usual and just works on the scaled numbers.
+  let DAILY = {};
+  let PERIOD = "week";
+  const PERIOD_LABEL = { day: "📅 Day", week: "📅 Week of", month: "📅 Month" };
+  const PREV_LABEL = { day: "전일", week: "지난주", month: "전월" };
+  async function loadDaily() {
+    try {
+      const res = await fetch("daily.json", { cache: "no-store" });
+      if (res.ok) DAILY = (await res.json()).days || {};
+    } catch (e) { console.log("daily.json unavailable:", e && e.message); }
+    document.querySelectorAll("#period-toggle button").forEach(b =>
+      b.addEventListener("click", () => setPeriod(b.dataset.period)));
+  }
+  const daysInMonth = ym => { const [y, m] = ym.split("-").map(Number); return new Date(y, m, 0).getDate(); };
+  const fmtDay = iso => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }); };
+  const fmtMonth = ym => { const [y, m] = ym.split("-").map(Number); return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" }); };
+  function periodKeys(p) {
+    const days = Object.keys(DAILY).sort();
+    return p === "day" ? days : [...new Set(days.map(d => d.slice(0, 7)))];
+  }
+  // Sum daily rows for every date starting with prefix (a full date, or "YYYY-MM").
+  function sumDaily(prefix) {
+    const days = Object.keys(DAILY).filter(d => d.startsWith(prefix)).sort();
+    const out = { _days: days.length };
+    STORES.forEach(s => {
+      let sales = null, orders = null, guests = null;
+      days.forEach(d => {
+        const v = DAILY[d][s.id];
+        if (!v || v.sales == null) return;
+        sales = (sales ?? 0) + v.sales;
+        if (v.orders != null) orders = (orders ?? 0) + v.orders;
+        if (v.guests != null) guests = (guests ?? 0) + v.guests;
+      });
+      out[s.id] = { sales, orders, guests };
+    });
+    return out;
+  }
+  function setPeriod(p) {
+    if (!CURRENT_WEEK_BACKUP) return;   // snapshots not loaded yet
+    PERIOD = p;
+    document.querySelectorAll("#period-toggle button").forEach(b => b.classList.toggle("active", b.dataset.period === p));
+    document.getElementById("week-tag-icon").textContent = PERIOD_LABEL[p];
+    const picker = document.getElementById("week-picker");
+    picker.innerHTML = "";
+    const add = (value, text) => { const o = document.createElement("option"); o.value = value; o.textContent = text; picker.appendChild(o); };
+    if (p === "week") {
+      [...WEEKLY_SNAPSHOTS].reverse().forEach(wk => add(wk.weekStartISO, wk.weekLabel || wk.weekStartISO));
+      const latest = WEEKLY_SNAPSHOTS[WEEKLY_SNAPSHOTS.length - 1];
+      picker.value = latest.weekStartISO;
+      applyWeekSnapshot(latest.weekStartISO, true);
+      return;
+    }
+    const keys = periodKeys(p).reverse();
+    keys.forEach(k => add(k, p === "day" ? fmtDay(k) : fmtMonth(k)));
+    if (!keys.length) { add("", "no daily data yet"); updateWeekTagPill(false); return; }
+    picker.value = keys[0];
+    applyDailyPeriod(keys[0]);
+  }
+  function applyDailyPeriod(key) {
+    const isDay = PERIOD === "day";
+    const cur = sumDaily(key);
+    const keys = periodKeys(PERIOD);
+    const i = keys.indexOf(key);
+    const prev = i > 0 ? sumDaily(keys[i - 1]) : null;
+    const scale = isDay ? 1 / 7 : (cur._days || daysInMonth(key)) / 7;   // month target prorated to days present
+    STORES.forEach(s => {
+      const b = CURRENT_WEEK_BACKUP[s.id], v = cur[s.id];
+      s.sales = v.sales; s.orders = v.orders; s.guests = v.guests;
+      s.target = Math.round(b.target * scale); s.floor = Math.round(b.floor * scale); s.stretch = Math.round(b.stretch * scale);
+      s.prevWeekSales = prev ? prev[s.id].sales : null;
+    });
+    const pill = document.getElementById("week-tag-pill");
+    if (isDay) {
+      pill.className = i === keys.length - 1 ? "week-tag-current-pill" : "week-tag-historic-pill";
+      pill.textContent = i === keys.length - 1 ? "Latest" : "Historic";
+    } else {
+      const n = cur._days, tot = daysInMonth(key);
+      pill.className = n >= tot ? "week-tag-current-pill" : "week-tag-historic-pill";
+      pill.textContent = `${n}/${tot} days`;
+    }
+    rerenderAll();
   }
 
 

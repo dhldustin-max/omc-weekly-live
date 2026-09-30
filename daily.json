@@ -1,0 +1,740 @@
+{
+  "days": {
+    "2026-09-07": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 3934,
+        "orders": 58,
+        "guests": 7
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1588,
+        "orders": 31,
+        "guests": 8
+      },
+      "obento-hayward": {
+        "sales": 1466,
+        "orders": 51,
+        "guests": 51
+      },
+      "ohgane-concord": {
+        "sales": 12874,
+        "orders": 106,
+        "guests": 320
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "tuum-oakland": {
+        "sales": 749,
+        "orders": 11,
+        "guests": 6
+      }
+    },
+    "2026-09-08": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1173,
+        "orders": 18,
+        "guests": 2
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 572,
+        "orders": 19,
+        "guests": 14
+      },
+      "obento-hayward": {
+        "sales": 814,
+        "orders": 26,
+        "guests": 26
+      },
+      "ohgane-concord": {
+        "sales": 4788,
+        "orders": 53,
+        "guests": 127
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 719,
+        "orders": 22,
+        "guests": 22
+      },
+      "tuum-oakland": {
+        "sales": 930,
+        "orders": 10,
+        "guests": 7
+      }
+    },
+    "2026-09-09": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1424,
+        "orders": 23,
+        "guests": 5
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 570,
+        "orders": 16,
+        "guests": 5
+      },
+      "obento-hayward": {
+        "sales": 845,
+        "orders": 31,
+        "guests": 31
+      },
+      "ohgane-concord": {
+        "sales": 4928,
+        "orders": 56,
+        "guests": 131
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 649,
+        "orders": 29,
+        "guests": 29
+      },
+      "tuum-oakland": {
+        "sales": 513,
+        "orders": 6,
+        "guests": 1
+      }
+    },
+    "2026-09-10": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1775,
+        "orders": 27,
+        "guests": 2
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1064,
+        "orders": 23,
+        "guests": 7
+      },
+      "obento-hayward": {
+        "sales": 657,
+        "orders": 29,
+        "guests": 29
+      },
+      "ohgane-concord": {
+        "sales": 4181,
+        "orders": 51,
+        "guests": 113
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1183,
+        "orders": 47,
+        "guests": 47
+      },
+      "tuum-oakland": {
+        "sales": 1007,
+        "orders": 10,
+        "guests": 3
+      }
+    },
+    "2026-09-11": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 3355,
+        "orders": 52,
+        "guests": 8
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1237,
+        "orders": 28,
+        "guests": 14
+      },
+      "obento-hayward": {
+        "sales": 1477,
+        "orders": 50,
+        "guests": 50
+      },
+      "ohgane-concord": {
+        "sales": 10347,
+        "orders": 99,
+        "guests": 263
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1321,
+        "orders": 51,
+        "guests": 51
+      },
+      "tuum-oakland": {
+        "sales": 3006,
+        "orders": 30,
+        "guests": 28
+      }
+    },
+    "2026-09-12": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 4649,
+        "orders": 60,
+        "guests": 1
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1441,
+        "orders": 30,
+        "guests": 18
+      },
+      "obento-hayward": {
+        "sales": 1542,
+        "orders": 49,
+        "guests": 49
+      },
+      "ohgane-concord": {
+        "sales": 19168,
+        "orders": 148,
+        "guests": 464
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1191,
+        "orders": 45,
+        "guests": 45
+      },
+      "tuum-oakland": {
+        "sales": 2213,
+        "orders": 29,
+        "guests": 15
+      }
+    },
+    "2026-09-13": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 5954,
+        "orders": 80,
+        "guests": 13
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1520,
+        "orders": 30,
+        "guests": 13
+      },
+      "obento-hayward": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "ohgane-concord": {
+        "sales": 15705,
+        "orders": 133,
+        "guests": 382
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 2151,
+        "orders": 98,
+        "guests": 98
+      },
+      "tuum-oakland": {
+        "sales": 430,
+        "orders": 9,
+        "guests": 5
+      }
+    },
+    "2026-09-14": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 2027,
+        "orders": 31,
+        "guests": 5
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1062,
+        "orders": 27,
+        "guests": 11
+      },
+      "obento-hayward": {
+        "sales": 883,
+        "orders": 27,
+        "guests": 27
+      },
+      "ohgane-concord": {
+        "sales": 4136,
+        "orders": 44,
+        "guests": 107
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "tuum-oakland": {
+        "sales": 1476,
+        "orders": 17,
+        "guests": 29
+      }
+    },
+    "2026-09-15": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 2975,
+        "orders": 45,
+        "guests": 10
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 723,
+        "orders": 14,
+        "guests": 5
+      },
+      "obento-hayward": {
+        "sales": 696,
+        "orders": 27,
+        "guests": 27
+      },
+      "ohgane-concord": {
+        "sales": 4724,
+        "orders": 54,
+        "guests": 131
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 650,
+        "orders": 28,
+        "guests": 28
+      },
+      "tuum-oakland": {
+        "sales": 310,
+        "orders": 6,
+        "guests": 12
+      }
+    },
+    "2026-09-16": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 2260,
+        "orders": 39,
+        "guests": 5
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 692,
+        "orders": 20,
+        "guests": 12
+      },
+      "obento-hayward": {
+        "sales": 972,
+        "orders": 31,
+        "guests": 31
+      },
+      "ohgane-concord": {
+        "sales": 7052,
+        "orders": 67,
+        "guests": 183
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 611,
+        "orders": 28,
+        "guests": 28
+      },
+      "tuum-oakland": {
+        "sales": 573,
+        "orders": 10,
+        "guests": 10
+      }
+    },
+    "2026-09-17": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 2300,
+        "orders": 40,
+        "guests": 6
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 785,
+        "orders": 17,
+        "guests": 8
+      },
+      "obento-hayward": {
+        "sales": 732,
+        "orders": 32,
+        "guests": 32
+      },
+      "ohgane-concord": {
+        "sales": 7184,
+        "orders": 73,
+        "guests": 179
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 906,
+        "orders": 32,
+        "guests": 32
+      },
+      "tuum-oakland": {
+        "sales": 2232,
+        "orders": 21,
+        "guests": 17
+      }
+    },
+    "2026-09-18": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 4254,
+        "orders": 61,
+        "guests": 3
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1127,
+        "orders": 28,
+        "guests": 16
+      },
+      "obento-hayward": {
+        "sales": 898,
+        "orders": 35,
+        "guests": 35
+      },
+      "ohgane-concord": {
+        "sales": 10102,
+        "orders": 100,
+        "guests": 272
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1327,
+        "orders": 54,
+        "guests": 54
+      },
+      "tuum-oakland": {
+        "sales": 3985,
+        "orders": 26,
+        "guests": 5
+      }
+    },
+    "2026-09-19": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 5649,
+        "orders": 85,
+        "guests": 8
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 974,
+        "orders": 25,
+        "guests": 3
+      },
+      "obento-hayward": {
+        "sales": 1472,
+        "orders": 50,
+        "guests": 50
+      },
+      "ohgane-concord": {
+        "sales": 15605,
+        "orders": 122,
+        "guests": 383
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1162,
+        "orders": 45,
+        "guests": 45
+      },
+      "tuum-oakland": {
+        "sales": 3066,
+        "orders": 33,
+        "guests": 78
+      }
+    },
+    "2026-09-20": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 5104,
+        "orders": 63,
+        "guests": 8
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 760,
+        "orders": 19,
+        "guests": 7
+      },
+      "obento-hayward": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "ohgane-concord": {
+        "sales": 14279,
+        "orders": 113,
+        "guests": 345
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 812,
+        "orders": 32,
+        "guests": 32
+      },
+      "tuum-oakland": {
+        "sales": 1176,
+        "orders": 17,
+        "guests": 9
+      }
+    },
+    "2026-09-21": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1795,
+        "orders": 29,
+        "guests": 6
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 604,
+        "orders": 14,
+        "guests": 7
+      },
+      "obento-hayward": {
+        "sales": 773,
+        "orders": 26,
+        "guests": 26
+      },
+      "ohgane-concord": {
+        "sales": 5794,
+        "orders": 60,
+        "guests": 160
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "tuum-oakland": {
+        "sales": 261,
+        "orders": 6,
+        "guests": 5
+      }
+    },
+    "2026-09-22": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1246,
+        "orders": 21,
+        "guests": 10
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 808,
+        "orders": 25,
+        "guests": 16
+      },
+      "obento-hayward": {
+        "sales": 875,
+        "orders": 30,
+        "guests": 30
+      },
+      "ohgane-concord": {
+        "sales": 6016,
+        "orders": 62,
+        "guests": 156
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 675,
+        "orders": 26,
+        "guests": 26
+      },
+      "tuum-oakland": {
+        "sales": 1084,
+        "orders": 7,
+        "guests": 25
+      }
+    },
+    "2026-09-23": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1531,
+        "orders": 28,
+        "guests": 6
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 776,
+        "orders": 20,
+        "guests": 7
+      },
+      "obento-hayward": {
+        "sales": 791,
+        "orders": 28,
+        "guests": 28
+      },
+      "ohgane-concord": {
+        "sales": 5861,
+        "orders": 60,
+        "guests": 154
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 744,
+        "orders": 29,
+        "guests": 29
+      },
+      "tuum-oakland": {
+        "sales": 272,
+        "orders": 7,
+        "guests": 5
+      }
+    },
+    "2026-09-24": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1692,
+        "orders": 27,
+        "guests": 1
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 812,
+        "orders": 22,
+        "guests": 10
+      },
+      "obento-hayward": {
+        "sales": 732,
+        "orders": 31,
+        "guests": 31
+      },
+      "ohgane-concord": {
+        "sales": 6985,
+        "orders": 70,
+        "guests": 183
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 937,
+        "orders": 38,
+        "guests": 38
+      },
+      "tuum-oakland": {
+        "sales": 2585,
+        "orders": 25,
+        "guests": 3
+      }
+    },
+    "2026-09-25": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 3298,
+        "orders": 49,
+        "guests": 3
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 839,
+        "orders": 22,
+        "guests": 9
+      },
+      "obento-hayward": {
+        "sales": 1201,
+        "orders": 38,
+        "guests": 38
+      },
+      "ohgane-concord": {
+        "sales": 10890,
+        "orders": 102,
+        "guests": 262
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1248,
+        "orders": 48,
+        "guests": 48
+      },
+      "tuum-oakland": {
+        "sales": 3335,
+        "orders": 31,
+        "guests": 18
+      }
+    },
+    "2026-09-26": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 4689,
+        "orders": 68,
+        "guests": 14
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1195,
+        "orders": 30,
+        "guests": 18
+      },
+      "obento-hayward": {
+        "sales": 1220,
+        "orders": 38,
+        "guests": 38
+      },
+      "ohgane-concord": {
+        "sales": 16741,
+        "orders": 131,
+        "guests": 399
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1230,
+        "orders": 47,
+        "guests": 47
+      },
+      "tuum-oakland": {
+        "sales": 3145,
+        "orders": 23,
+        "guests": 3
+      }
+    },
+    "2026-09-27": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 4334,
+        "orders": 65,
+        "guests": 13
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1271,
+        "orders": 32,
+        "guests": 12
+      },
+      "obento-hayward": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "ohgane-concord": {
+        "sales": 11170,
+        "orders": 99,
+        "guests": 278
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1302,
+        "orders": 44,
+        "guests": 44
+      },
+      "tuum-oakland": {
+        "sales": 122,
+        "orders": 4,
+        "guests": 2
+      }
+    },
+    "2026-09-28": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1861,
+        "orders": 32,
+        "guests": 9
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 531,
+        "orders": 17,
+        "guests": 10
+      },
+      "obento-hayward": {
+        "sales": 652,
+        "orders": 18,
+        "guests": 18
+      },
+      "ohgane-concord": {
+        "sales": 6129,
+        "orders": 73,
+        "guests": 173
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
+      },
+      "tuum-oakland": {
+        "sales": 209,
+        "orders": 2,
+        "guests": 0
+      }
+    },
+    "2026-09-29": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1211,
+        "orders": 21,
+        "guests": 3
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 572,
+        "orders": 19,
+        "guests": 9
+      },
+      "obento-hayward": {
+        "sales": 1014,
+        "orders": 37,
+        "guests": 37
+      },
+      "ohgane-concord": {
+        "sales": 5579,
+        "orders": 63,
+        "guests": 150
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 339,
+        "orders": 20,
+        "guests": 20
+      },
+      "tuum-oakland": {
+        "sales": 238,
+        "orders": 6,
+        "guests": 3
+      }
+    }
+  }
+}

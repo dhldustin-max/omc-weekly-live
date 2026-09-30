@@ -11,9 +11,12 @@ The app shows Sales vs Target, Prime Cost calculation, A/B/C grade, manager meet
 ## File structure
 
 ```
-index.html          # Single-file web app (HTML + CSS + JS in one file)
-notes.json          # Meeting notes state (prevNotes, consecutiveC tracker)
-README.md           # Optional, brief
+index.html             # Meeting tool (HTML + CSS + JS in one file); STORES array = targets source of truth
+dashboard.html         # At-a-glance overview page (reads STORES from index.html + the two JSON files)
+weekly-snapshots.json  # One entry per Mon–Sun week, 13 stores (Week view + WoW)
+daily.json             # One entry per business day, 13 stores (Day + Month views)
+notes.json             # Meeting notes state (prevNotes, consecutiveC tracker)
+scripts/               # Scrapers (not deployed): weekly-update.js, daily-update.js, lib/verona.js, toast-daily-appsscript.gs
 ```
 
 That's it. Intentionally simple — no build step, no framework, no dependencies. Pure static.
@@ -46,6 +49,31 @@ Two jobs update the repo every Monday, split by what each platform can reach:
 Why the split: Verona sessions expire fast and need programmatic .env login (only the Mac node script does that unattended); Hanshin's Clover is blocked from the Cowork sandbox; Toast needs a persistent browser session + device-trust (the Cowork Chrome extension). Both jobs `git pull --rebase --autostash` before pushing and each touches only its own stores' lines, so they merge cleanly regardless of run order.
 
 **Coming ~2026-07:** Hanshin migrates Clover → Toast. Then add Hanshin as a 5th Toast store in the Cowork task and drop it from the Mac job (Mac → Verona only).
+
+## dashboard.html — the at-a-glance page (added 09-30-2026)
+
+`index.html` is the Monday **meeting tool** (notes, prime cost, PDF). `dashboard.html` is the **read-only overview**: 4 KPI tiles + one 13-row table (sales, % of target with meter, vs previous period, avg check, grade, 8-period sparkline), sortable, same Day/Week/Month toggle. Same GitHub Pages site: https://dhldustin-max.github.io/omc-weekly-live/dashboard.html. The two pages link to each other.
+
+It has no data of its own: it fetches `index.html` and evals the `const STORES = [...]` block for names/targets (so targets live in one place), plus `weekly-snapshots.json` and `daily.json`. Grade = same formula as `calcGrade` minus the manager-entered prime-cost adjustment. Day target = weekly ÷ 7 (no weekday weighting — a Tuesday always looks weak); month target = daily × days that have data.
+
+## Day / Week / Month views (added 09-30-2026)
+
+Header toggle `Day | Week | Month` next to the picker. **Week** is unchanged (`weekly-snapshots.json`). **Day** and **Month** read `daily.json`:
+
+```json
+{ "days": { "2026-09-29": { "ohgane-concord": { "sales": 5579, "orders": 63, "guests": 150 }, "ohgane-oakland": { "sales": 4770 } } } }
+```
+
+Month = sum of that month's days (pill shows `23/30 days` while partial). Targets/floor/stretch are weekly (rent-based) so the view scales them: day = ÷7, month = ×days-in-month÷7. Nothing else in the app changed — grades, bands, prime cost all read the scaled `STORES` values.
+
+Who writes `daily.json`:
+
+| Source | Stores | How | When |
+|---|---|---|---|
+| `scripts/daily-update.js` | Verona 7 | same `lib/verona.js`, one day per scrape (`--from/--to` to backfill, `--no-push`, `--dry-run`) | GitHub Actions `daily-verona.yml`, 13:00 UTC daily |
+| `scripts/toast-daily-appsscript.gs` | Toast 6 | Google Apps Script in donghyuk@chimmelierusa.com reads the "OMC Hospitality - <day>" group email and PUTs `daily.json` via the GitHub contents API | daily trigger 7–8am PT (setup steps in the file header) |
+
+Toast daily numbers are Toast's morning snapshot (voids after send not reflected) — fine for Day/Month, but **Week still comes from the Monday task's weekly-mail method**. Verona daily rows are sales only (no orders/guests), so Verona cards show `—` for orders in Day/Month.
 
 ## Weekly workflow (Monday 8am)
 

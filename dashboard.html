@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OMC Dashboard</title>
+<meta name="description" content="OMC Hospitality — 13 stores at a glance. Day / Week / Month sales vs target.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10); --accent: #2a78d6; --accent-soft: #cde2fb;
+    --good: #006300; --good-bg: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+  h1 { font-size: 18px; margin: 0; }
+  h1 small { font-weight: 400; color: var(--ink-2); margin-left: 6px; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-weight: 600; padding: 6px 12px; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  select { font: inherit; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+  a.meeting { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 12px; color: var(--ink-2); }
+  .kpi .v { font-size: 26px; font-weight: 700; margin: 2px 0; white-space: nowrap; }
+  .kpi .v .grade { font-size: 15px; padding: 2px 7px; }
+  .kpi .d { font-size: 12px; color: var(--ink-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--ink-2); font-weight: 600; border-top: 0; cursor: pointer; user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th[aria-sort="descending"]::after { content: " ▼"; } th[aria-sort="ascending"]::after { content: " ▲"; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.store b { display: block; } td.store span { font-size: 12px; color: var(--muted); }
+  .meter { display: inline-grid; grid-template-columns: 72px 42px; align-items: center; gap: 8px; }
+  .track { position: relative; height: 8px; background: var(--grid); border-radius: 4px; overflow: visible; }
+  .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); left: calc(100% / 1.3); }
+  .up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+  .grade { display: inline-block; min-width: 26px; text-align: center; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; }
+  .grade.A { background: var(--good-bg); } .grade.B { background: var(--warn); color: #0b0b0b; } .grade.C { background: var(--bad); } .grade.NA { background: var(--muted); }
+  .spark { width: 84px; height: 22px; display: block; }
+  .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--accent); }
+  .empty { color: var(--muted); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>OMC Hospitality <small id="subtitle">13 stores</small></h1>
+    <span class="seg" id="period" role="group" aria-label="Period">
+      <button type="button" data-p="day">Day</button>
+      <button type="button" data-p="week" class="active">Week</button>
+      <button type="button" data-p="month">Month</button>
+    </span>
+    <select id="picker" aria-label="Period picker"></select>
+    <span class="spacer"></span>
+    <a class="meeting" href="index.html">Meeting tool →</a>
+  </header>
+
+  <section class="kpis" id="kpis" aria-label="Totals"></section>
+
+  <div class="card">
+    <table id="table">
+      <thead><tr>
+        <th data-k="name">Store</th>
+        <th data-k="sales" class="num">Net sales</th>
+        <th data-k="pct" class="num">vs target</th>
+        <th data-k="target" class="num">Target</th>
+        <th data-k="delta" class="num" id="th-delta">vs prev</th>
+        <th data-k="check" class="num">Avg check</th>
+        <th data-k="grade">Grade</th>
+        <th>Trend</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <footer id="foot"></footer>
+</main>
+
+<script>
+// One page, three files: index.html (STORES metadata — targets, names; single source of truth),
+// weekly-snapshots.json (Week), daily.json (Day + Month). Same grade formula as the meeting tool.
+const $ = s => document.querySelector(s);
+const money = n => n == null ? "—" : "$" + Math.round(n).toLocaleString();
+const PREV = { day: "vs prev day", week: "vs last week", month: "vs prev month" };
+let STORES = [], WEEKS = [], DAILY = {}, period = "week", sortKey = "sales", sortDir = -1;
+
+async function load() {
+  const [html, wk, dl] = await Promise.all([
+    fetch("index.html", { cache: "no-store" }).then(r => r.text()),
+    fetch("weekly-snapshots.json", { cache: "no-store" }).then(r => r.json()),
+    fetch("daily.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { days: {} }).catch(() => ({ days: {} })),
+  ]);
+  const m = html.match(/const STORES = (\[[\s\S]*?\n  \]);/);
+  STORES = new Function("return " + m[1])().map(s => ({ id: s.id, name: s.name, concept: s.concept, pos: s.pos, target: s.target, floor: s.floor, stretch: s.stretch }));
+  WEEKS = (wk.weeks || []).slice().sort((a, b) => a.weekStartISO.localeCompare(b.weekStartISO));
+  DAILY = dl.days || {};
+  $("#subtitle").textContent = `${STORES.length} stores · Toast ${STORES.filter(s => s.pos === "Toast").length} · Verona ${STORES.filter(s => s.pos === "Verona").length}`;
+  document.querySelectorAll("#period button").forEach(b => b.addEventListener("click", () => setPeriod(b.dataset.p)));
+  $("#picker").addEventListener("change", render);
+  document.querySelectorAll("th[data-k]").forEach(th => th.addEventListener("click", () => {
+    sortDir = sortKey === th.dataset.k ? -sortDir : -1; sortKey = th.dataset.k; render();
+  }));
+  setPeriod("week");
+}
+
+// ---- periods ---------------------------------------------------------------
+const dim = ym => { const [y, m] = ym.split("-").map(Number); return new Date(y, m, 0).getDate(); };
+const fmtDay = iso => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }); };
+const fmtMonth = ym => { const [y, m] = ym.split("-").map(Number); return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" }); };
+function keys() {
+  if (period === "week") return WEEKS.map(w => w.weekStartISO);
+  const days = Object.keys(DAILY).sort();
+  return period === "day" ? days : [...new Set(days.map(d => d.slice(0, 7)))];
+}
+function label(k) { return period === "week" ? (WEEKS.find(w => w.weekStartISO === k) || {}).weekLabel || k : period === "day" ? fmtDay(k) : fmtMonth(k); }
+// { storeId: {sales, orders, guests} } for one key, plus _days (how many daily rows fed a month)
+function values(k) {
+  if (period === "week") return (WEEKS.find(w => w.weekStartISO === k) || {}).stores || {};
+  const days = Object.keys(DAILY).filter(d => d.startsWith(k)).sort();
+  const out = { _days: days.length };
+  STORES.forEach(s => {
+    let sales = null, orders = null, guests = null;
+    days.forEach(d => { const v = DAILY[d][s.id]; if (!v || v.sales == null) return;
+      sales = (sales ?? 0) + v.sales; if (v.orders != null) orders = (orders ?? 0) + v.orders; if (v.guests != null) guests = (guests ?? 0) + v.guests; });
+    out[s.id] = { sales, orders, guests };
+  });
+  return out;
+}
+function scale(k) { return period === "week" ? 1 : period === "day" ? 1 / 7 : (values(k)._days || dim(k)) / 7; }  // month: prorated to days present
+function setPeriod(p) {
+  period = p;
+  document.querySelectorAll("#period button").forEach(b => b.classList.toggle("active", b.dataset.p === p));
+  const ks = keys().reverse(), picker = $("#picker");
+  picker.innerHTML = ks.map(k => `<option value="${k}">${label(k)}</option>`).join("") || `<option value="">no data</option>`;
+  $("#th-delta").textContent = PREV[p];
+  render();
+}
+// Same as calcGrade in index.html without the prime-cost input (manager-entered, meeting only).
+function grade(sales, target) {
+  if (!sales || !target) return "NA";
+  const w = 0.8 * (sales / target) + 0.2;
+  return w >= 1 ? "A" : w >= 0.85 ? "B" : "C";
+}
+function spark(id, k) {
+  const ks = keys(), i = ks.indexOf(k), win = ks.slice(Math.max(0, i - 7), i + 1);
+  const pts = win.map(x => values(x)[id]?.sales ?? null);
+  if (pts.filter(v => v != null).length < 2) return "";
+  const max = Math.max(...pts.filter(v => v != null)), min = Math.min(...pts.filter(v => v != null));
+  const X = j => 4 + j * (76 / Math.max(1, win.length - 1)), Y = v => 19 - (max === min ? 8 : (v - min) / (max - min) * 16);
+  const line = pts.map((v, j) => v == null ? null : `${X(j).toFixed(1)},${Y(v).toFixed(1)}`).filter(Boolean).join(" ");
+  const last = pts.length - 1;
+  return `<svg class="spark" viewBox="0 0 84 22" aria-label="last ${win.length} ${period}s"><polyline points="${line}"/>${pts[last] != null ? `<circle cx="${X(last).toFixed(1)}" cy="${Y(pts[last]).toFixed(1)}" r="2.5"/>` : ""}</svg>`;
+}
+
+// ---- render ----------------------------------------------------------------
+function render() {
+  const k = $("#picker").value; if (!k) { $("#table tbody").innerHTML = ""; $("#kpis").innerHTML = ""; return; }
+  const ks = keys(), i = ks.indexOf(k), cur = values(k), prev = i > 0 ? values(ks[i - 1]) : {}, sc = scale(k);
+  const rows = STORES.map(s => {
+    const v = cur[s.id] || {}, p = prev[s.id] || {}, target = Math.round(s.target * sc);
+    const sales = v.sales ?? null;
+    return { ...s, target, sales, pct: sales != null ? sales / target : null,
+      delta: sales != null && p.sales != null ? sales - p.sales : null, prevSales: p.sales ?? null,
+      check: sales && v.orders ? sales / v.orders : null, grade: grade(sales, target) };
+  });
+  // KPIs
+  const rep = rows.filter(r => r.sales != null);
+  const tot = rep.reduce((a, r) => a + r.sales, 0), totT = rep.reduce((a, r) => a + r.target, 0);
+  const prevTot = rep.every(r => r.prevSales != null) && rep.length ? rep.reduce((a, r) => a + r.prevSales, 0) : null;
+  const g = { A: 0, B: 0, C: 0 }; rep.forEach(r => g[r.grade] = (g[r.grade] || 0) + 1);
+  const dl = (d, base) => d == null ? `<span class="flat">no prior period</span>` : `<span class="${d > 0 ? "up" : d < 0 ? "down" : "flat"}">${d > 0 ? "▲" : d < 0 ? "▼" : "•"} ${money(Math.abs(d))}${base ? ` (${(d / base * 100).toFixed(1)}%)` : ""}</span>`;
+  $("#kpis").innerHTML = `
+    <div class="kpi"><div class="l">Net sales · ${rep.length}/${rows.length} reporting</div><div class="v">${money(tot)}</div><div class="d">${dl(prevTot == null ? null : tot - prevTot, prevTot)}</div></div>
+    <div class="kpi"><div class="l">vs target</div><div class="v ${tot >= totT ? "up" : "down"}">${totT ? (tot / totT * 100).toFixed(0) + "%" : "—"}</div><div class="d">target ${money(totT)}</div></div>
+    <div class="kpi"><div class="l">Stores on target</div><div class="v">${rep.filter(r => r.pct >= 1).length}<span class="d"> / ${rep.length}</span></div><div class="d">${rep.filter(r => r.pct < 1 && r.pct >= 0.8125).length} within 20% · ${rep.filter(r => r.pct < 0.8125).length} below</div></div>
+    <div class="kpi"><div class="l">Grades</div><div class="v"><span class="grade A">A ${g.A}</span> <span class="grade B">B ${g.B}</span> <span class="grade C">C ${g.C}</span></div><div class="d">A ≥100% · B ≥81% of target</div></div>`;
+  // table
+  const dir = sortDir, key = sortKey;
+  rows.sort((a, b) => { const x = a[key], y = b[key]; if (x == null) return 1; if (y == null) return -1; return (typeof x === "string" ? x.localeCompare(y) : x - y) * dir; });
+  document.querySelectorAll("th[data-k]").forEach(th => th.setAttribute("aria-sort", th.dataset.k === key ? (dir < 0 ? "descending" : "ascending") : "none"));
+  $("#table tbody").innerHTML = rows.map(r => `<tr>
+    <td class="store"><b>${r.name}</b><span>${r.concept} · ${r.pos}</span></td>
+    <td class="num">${r.sales == null ? `<span class="empty">no data</span>` : `<b>${money(r.sales)}</b>`}</td>
+    <td class="num">${r.pct == null ? "—" : `<span class="meter"><span class="track"><span class="fill" style="width:${Math.min(130, r.pct * 100) / 1.3}%"></span><span class="tick"></span></span><span>${(r.pct * 100).toFixed(0)}%</span></span>`}</td>
+    <td class="num">${money(r.target)}</td>
+    <td class="num">${r.delta == null ? "—" : dl(r.delta)}</td>
+    <td class="num">${r.check == null ? "—" : money(r.check)}</td>
+    <td><span class="grade ${r.grade}">${r.grade === "NA" ? "—" : r.grade}</span></td>
+    <td>${spark(r.id, k)}</td>
+  </tr>`).join("");
+  const lastWeek = WEEKS.at(-1), lastDay = Object.keys(DAILY).sort().at(-1);
+  $("#foot").textContent = `${label(k)}${cur._days ? ` · ${cur._days}/${dim(k)} days in` : ""} · Week data through ${lastWeek ? lastWeek.weekEndISO : "—"} · daily through ${lastDay || "—"} · targets = rent ÷ 9% ÷ 4.33 (weekly), ÷7 per day; month target = days present × daily · grade ignores prime cost (meeting tool has it)`;
+}
+load().catch(e => { $("#foot").textContent = "Failed to load data: " + e.message; });
+</script>
+</body>
+</html>
