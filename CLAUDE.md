@@ -64,6 +64,8 @@ Header toggle `Day | Week | Month` next to the picker. **Week** is unchanged (`w
 { "days": { "2026-09-29": { "ohgane-concord": { "sales": 5579, "orders": 63, "guests": 150 }, "ohgane-oakland": { "sales": 4770 } } } }
 ```
 
+Row fields (all optional except `sales`): `orders`, `guests`, `dineIn`/`takeout`/`delivery` ($ by channel), `labor` ($, Toast only — Toast's labor % × net), `discount` and `alcohol` ($, Verona only; alcohol = departments matching `ALCOHOL_RE` in `lib/verona.js` — dept names differ per store, extend the regex if a store's liquor dept is missed). `scripts/verona-parse.test.mjs` checks the parser against a saved page.
+
 Month = sum of that month's days (pill shows `23/30 days` while partial). Targets/floor/stretch are weekly (rent-based) so the view scales them: day = ÷7, month = ×days-in-month÷7. Nothing else in the app changed — grades, bands, prime cost all read the scaled `STORES` values.
 
 Who writes `daily.json`:
@@ -72,6 +74,8 @@ Who writes `daily.json`:
 |---|---|---|---|
 | `scripts/daily-update.js` | Verona 7 | same `lib/verona.js`, one day per scrape (`--from/--to` to backfill, `--no-push`, `--dry-run`) | GitHub Actions `daily-verona.yml`, 13:00 UTC daily |
 | `scripts/toast-daily-appsscript.gs` | Toast 6 | Google Apps Script in donghyuk@chimmelierusa.com reads the "OMC Hospitality - <day>" group email and PUTs `daily.json` via the GitHub contents API | daily trigger 7–8am PT (setup steps in the file header) |
+
+dashboard.html shows Labor % and Delivery % for every period by summing the daily rows the period covers (so Week works too). Weekday heatmap = avg sales per weekday over the 28 days ending at the selected period.
 
 Toast daily numbers are Toast's morning snapshot (voids after send not reflected) — fine for Day/Month, but **Week still comes from the Monday task's weekly-mail method**. Verona daily rows are sales only (no orders/guests), so Verona cards show `—` for orders in Day/Month.
 

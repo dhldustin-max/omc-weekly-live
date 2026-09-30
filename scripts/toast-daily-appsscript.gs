@@ -13,6 +13,7 @@
  *      Toast sends the mail ~6:15am PT; the trigger reads the last 3 days so a miss self-heals.
  *
  * Numbers are the morning snapshot Toast puts in the mail (voids after send are not reflected).
+ * Labor is overwritten from the weekly mails once they arrive (corrected clock-outs).
  * Week totals still come from weekly-snapshots.json — this only feeds Day / Month views.
  */
 var REPO = 'dhldustin-max/omc-weekly-live';
@@ -38,7 +39,21 @@ function syncToastDaily() {
       if (Object.keys(rows).length) parsed[day] = rows;
     });
   });
-  if (!Object.keys(parsed).length) { Logger.log('no Toast daily mails found'); return; }
+  // Weekly mails ("<store> - <address> - Week of Sep 20–26") carry corrected per-day labor %
+  // (the daily mail goes out before managers fix auto clock-outs). They override daily labor.
+  var laborFix = {};  // day -> id -> labor $
+  GmailApp.search('from:no-reply@toasttab.com subject:"Week of" newer_than:10d').forEach(function (t) {
+    t.getMessages().forEach(function (m) {
+      var id = null;
+      Object.keys(STORES).forEach(function (addr) { if (m.getSubject().indexOf(addr) >= 0) id = STORES[addr]; });
+      if (!id) return;
+      parseWeeklyLabor_(m.getPlainBody(), m.getDate()).forEach(function (r) {
+        (laborFix[r.day] = laborFix[r.day] || {})[id] = r.labor;
+        (parsed[r.day] = parsed[r.day] || {});
+      });
+    });
+  });
+  if (!Object.keys(parsed).length) { Logger.log('no Toast mails found'); return; }
 
   var gh = getFile_();
   var db = JSON.parse(gh.content);
@@ -46,10 +61,14 @@ function syncToastDaily() {
   var changed = 0;
   Object.keys(parsed).forEach(function (day) {
     db.days[day] = db.days[day] || {};
+    Object.keys(laborFix[day] || {}).forEach(function (id) {
+      if (!parsed[day][id] && !db.days[day][id]) return;          // no sales row yet for that day
+      parsed[day][id] = Object.assign({}, parsed[day][id] || {}, { labor: laborFix[day][id] });
+    });
     Object.keys(parsed[day]).forEach(function (id) {
       var v = parsed[day][id], old = db.days[day][id];
-      if (old && old.sales === v.sales && old.orders === v.orders && old.guests === v.guests) return;
-      db.days[day][id] = v; changed++;
+      if (old && JSON.stringify(old) === JSON.stringify(Object.assign({}, old, v))) return;
+      db.days[day][id] = Object.assign(old || {}, v); changed++;
     });
   });
   if (!changed) { Logger.log('daily.json already up to date for ' + Object.keys(parsed).join(', ')); return; }
@@ -70,20 +89,50 @@ function parseDay_(subject, sent) {
   return Utilities.formatDate(d, 'America/Los_Angeles', 'yyyy-MM-dd');
 }
 
-// The "| Location | Total Sales | # of Orders | Avg Sales/Order | # of Guests | ..." table
+// Three per-location tables in the mail, keyed by their header row:
+//   Order Type  | Location | # of Takeout Orders | Total Takeout Sales | # of Delivery Orders | Total Delivery Sales | # of Dine-In Orders | Total Dine-In Sales |
+//   Breakdown   | Location | Total (Gross) Sales | Labor (% of Net) | Discount (% of Gross) | Refund Total |
+//   Totals      | Location | Total Sales | # of Orders | Avg Sales/Order | # of Guests | Avg Sales/Guest | Qty Void Items |
 function parseStores_(text) {
-  var out = {};
-  var lines = text.split('\n');
-  var inTable = false;
+  var money = function (s) { return Number(String(s).replace(/[$,%]/g, '')); };
+  var tables = [];
+  var lines = text.split('\n'), cur = null;
   for (var i = 0; i < lines.length; i++) {
     var l = lines[i];
-    if (/^\|\s*Location\s*\|\s*Total Sales\s*\|/.test(l)) { inTable = true; continue; }
-    if (!inTable) continue;
+    if (/^\|\s*Location\s*\|/.test(l)) { cur = { head: l, rows: {} }; tables.push(cur); continue; }
+    if (!cur) continue;
+    if (!/^\|/.test(l)) { cur = null; continue; }
+    var c = l.split('|').map(function (s) { return s.trim(); });
+    if (STORES[c[1]]) cur.rows[STORES[c[1]]] = c;
+  }
+  var find = function (re) { for (var t = 0; t < tables.length; t++) if (re.test(tables[t].head)) return tables[t].rows; return {}; };
+  var tot = find(/Total Sales\s*\|\s*# of Orders/), typ = find(/Total Takeout Sales/), brk = find(/Labor \(% of Net\)/);
+  var out = {};
+  Object.keys(tot).forEach(function (id) {
+    var c = tot[id], sales = Math.round(money(c[2]));
+    var v = { sales: sales, orders: Number(c[3]), guests: Number(c[5]) };
+    if (typ[id]) { v.takeout = Math.round(money(typ[id][3])); v.delivery = Math.round(money(typ[id][5])); v.dineIn = Math.round(money(typ[id][7])); }
+    if (brk[id]) v.labor = Math.round(sales * money(brk[id][3]) / 100);
+    out[id] = v;
+  });
+  return out;
+}
+
+// "| Sun 09/20 | $14,278.50 | 345 | $126.36 | 19.4% |" → [{ day: '2026-09-20', labor: 2770 }]; closed days ("—") skipped.
+function parseWeeklyLabor_(text, sent) {
+  var out = [], on = false, lines = text.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i];
+    if (/^\|\s*Day\s*\|\s*Net sales\s*\|.*Hourly labor cost %/.test(l)) { on = true; continue; }
+    if (!on) continue;
+    if (/^\|---/.test(l)) continue;
     if (!/^\|/.test(l)) break;
     var c = l.split('|').map(function (s) { return s.trim(); });
-    var id = STORES[c[1]];
-    if (!id) continue;
-    out[id] = { sales: Math.round(Number(c[2].replace(/[$,]/g, ''))), orders: Number(c[3]), guests: Number(c[5]) };
+    var md = c[1].match(/(\d{2})\/(\d{2})/), pct = parseFloat(c[5]);
+    if (!md || isNaN(pct)) continue;
+    var y = sent.getFullYear(); if (Number(md[1]) > sent.getMonth() + 1) y--;   // Dec week mailed in Jan
+    var net = Number(c[2].replace(/[$,]/g, ''));
+    out.push({ day: y + '-' + md[1] + '-' + md[2], labor: Math.round(net * pct / 100) });
   }
   return out;
 }

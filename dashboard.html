@@ -62,6 +62,13 @@
   .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
   .spark circle { fill: var(--accent); }
   .empty { color: var(--muted); }
+  .warn { color: var(--bad); font-weight: 600; }
+  h2 { font-size: 14px; margin: 18px 0 8px; } h2 small { font-weight: 400; color: var(--muted); }
+  .heat { min-width: 560px; }
+  .heat td.cell { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; border: 2px solid var(--surface); border-radius: 6px; }
+  .heat th { cursor: default; text-align: right; } .heat th:first-child { text-align: left; }
+  .legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
   footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
   @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
 </style>
@@ -88,15 +95,19 @@
         <th data-k="name">Store</th>
         <th data-k="sales" class="num">Net sales</th>
         <th data-k="pct" class="num">vs target</th>
-        <th data-k="target" class="num">Target</th>
         <th data-k="delta" class="num" id="th-delta">vs prev</th>
         <th data-k="check" class="num">Avg check</th>
+        <th data-k="labor" class="num" title="Hourly labor ÷ net sales (Toast only; Verona has no labor data)">Labor %</th>
+        <th data-k="deliv" class="num" title="Delivery share of sales (dine-in / take-out / delivery)">Delivery %</th>
         <th data-k="grade">Grade</th>
         <th>Trend</th>
       </tr></thead>
       <tbody></tbody>
     </table>
   </div>
+  <h2>Weekday pattern <small id="heat-sub"></small></h2>
+  <div class="card"><table class="heat" id="heat"></table></div>
+  <div class="legend" id="heat-legend"></div>
   <footer id="foot"></footer>
 </main>
 
@@ -150,6 +161,25 @@ function values(k) {
   });
   return out;
 }
+const addDays = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+function daysOf(k) {
+  if (period === "day") return [k];
+  if (period === "week") return [0, 1, 2, 3, 4, 5, 6].map(i => addDays(k, i));
+  return Object.keys(DAILY).filter(d => d.startsWith(k));
+}
+// Labor / channel / alcohol live only in daily.json; for any period, sum the days it covers.
+function extras(k) {
+  const out = {};
+  STORES.forEach(s => {
+    const e = { labor: 0, laborSales: 0, dineIn: 0, takeout: 0, delivery: 0, ch: false, lab: false };
+    daysOf(k).forEach(d => { const v = DAILY[d]?.[s.id]; if (!v) return;
+      if (v.labor != null) { e.labor += v.labor; e.laborSales += v.sales || 0; e.lab = true; }
+      if (v.dineIn != null) { e.dineIn += v.dineIn; e.takeout += v.takeout || 0; e.delivery += v.delivery || 0; e.ch = true; } });
+    const chTot = e.dineIn + e.takeout + e.delivery;
+    out[s.id] = { labor: e.lab && e.laborSales ? e.labor / e.laborSales : null, deliv: e.ch && chTot ? e.delivery / chTot : null };
+  });
+  return out;
+}
 function scale(k) { return period === "week" ? 1 : period === "day" ? 1 / 7 : (values(k)._days || dim(k)) / 7; }  // month: prorated to days present
 function setPeriod(p) {
   period = p;
@@ -180,12 +210,14 @@ function spark(id, k) {
 function render() {
   const k = $("#picker").value; if (!k) { $("#table tbody").innerHTML = ""; $("#kpis").innerHTML = ""; return; }
   const ks = keys(), i = ks.indexOf(k), cur = values(k), prev = i > 0 ? values(ks[i - 1]) : {}, sc = scale(k);
+  const ex = extras(k);
   const rows = STORES.map(s => {
     const v = cur[s.id] || {}, p = prev[s.id] || {}, target = Math.round(s.target * sc);
     const sales = v.sales ?? null;
     return { ...s, target, sales, pct: sales != null ? sales / target : null,
       delta: sales != null && p.sales != null ? sales - p.sales : null, prevSales: p.sales ?? null,
-      check: sales && v.orders ? sales / v.orders : null, grade: grade(sales, target) };
+      check: sales && v.orders ? sales / v.orders : null, grade: grade(sales, target),
+      labor: ex[s.id].labor, deliv: ex[s.id].deliv };
   });
   // KPIs
   const rep = rows.filter(r => r.sales != null);
@@ -197,6 +229,8 @@ function render() {
     <div class="kpi"><div class="l">Net sales · ${rep.length}/${rows.length} reporting</div><div class="v">${money(tot)}</div><div class="d">${dl(prevTot == null ? null : tot - prevTot, prevTot)}</div></div>
     <div class="kpi"><div class="l">vs target</div><div class="v ${tot >= totT ? "up" : "down"}">${totT ? (tot / totT * 100).toFixed(0) + "%" : "—"}</div><div class="d">target ${money(totT)}</div></div>
     <div class="kpi"><div class="l">Stores on target</div><div class="v">${rep.filter(r => r.pct >= 1).length}<span class="d"> / ${rep.length}</span></div><div class="d">${rep.filter(r => r.pct < 1 && r.pct >= 0.8125).length} within 20% · ${rep.filter(r => r.pct < 0.8125).length} below</div></div>
+    ${(() => { const L = rows.filter(r => r.labor != null && r.sales); const lab = L.reduce((a, r) => a + r.labor * r.sales, 0), ls = L.reduce((a, r) => a + r.sales, 0);
+      return `<div class="kpi"><div class="l">Labor % · ${L.length ? L.length + " Toast stores" : "no labor data"}</div><div class="v ${ls && lab / ls > 0.35 ? "warn" : ""}">${ls ? (lab / ls * 100).toFixed(1) + "%" : "—"}</div><div class="d">${L.filter(r => r.labor > 0.35).length} stores above 35%</div></div>`; })()}
     <div class="kpi"><div class="l">Grades</div><div class="v"><span class="grade A">A ${g.A}</span> <span class="grade B">B ${g.B}</span> <span class="grade C">C ${g.C}</span></div><div class="d">A ≥100% · B ≥81% of target</div></div>`;
   // table
   const dir = sortDir, key = sortKey;
@@ -205,15 +239,45 @@ function render() {
   $("#table tbody").innerHTML = rows.map(r => `<tr>
     <td class="store"><b>${r.name}</b><span>${r.concept} · ${r.pos}</span></td>
     <td class="num">${r.sales == null ? `<span class="empty">no data</span>` : `<b>${money(r.sales)}</b>`}</td>
-    <td class="num">${r.pct == null ? "—" : `<span class="meter"><span class="track"><span class="fill" style="width:${Math.min(130, r.pct * 100) / 1.3}%"></span><span class="tick"></span></span><span>${(r.pct * 100).toFixed(0)}%</span></span>`}</td>
-    <td class="num">${money(r.target)}</td>
+    <td class="num">${r.pct == null ? "—" : `<span class="meter" title="target ${money(r.target)}"><span class="track"><span class="fill" style="width:${Math.min(130, r.pct * 100) / 1.3}%"></span><span class="tick"></span></span><span>${(r.pct * 100).toFixed(0)}%</span></span>`}</td>
     <td class="num">${r.delta == null ? "—" : dl(r.delta)}</td>
     <td class="num">${r.check == null ? "—" : money(r.check)}</td>
+    <td class="num">${r.labor == null ? "—" : `<span class="${r.labor > 0.35 ? "warn" : ""}">${r.labor > 0.35 ? "▲ " : ""}${(r.labor * 100).toFixed(0)}%</span>`}</td>
+    <td class="num">${r.deliv == null ? "—" : (r.deliv * 100).toFixed(0) + "%"}</td>
     <td><span class="grade ${r.grade}">${r.grade === "NA" ? "—" : r.grade}</span></td>
     <td>${spark(r.id, k)}</td>
   </tr>`).join("");
+  heatmap(daysOf(k).sort().at(-1));
   const lastWeek = WEEKS.at(-1), lastDay = Object.keys(DAILY).sort().at(-1);
   $("#foot").textContent = `${label(k)}${cur._days ? ` · ${cur._days}/${dim(k)} days in` : ""} · Week data through ${lastWeek ? lastWeek.weekEndISO : "—"} · daily through ${lastDay || "—"} · targets = rent ÷ 9% ÷ 4.33 (weekly), ÷7 per day; month target = days present × daily · grade ignores prime cost (meeting tool has it)`;
+}
+// Store × weekday average sales over the 28 days ending at `end`. Each row is shaded against
+// that store's own best weekday (one blue ramp), so a $2k store's pattern reads as clearly as a $60k one.
+const RAMP = ["#cde2fb", "#b7d3f6", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95"];
+const RAMP_DARK = ["#16263b", "#184f95", "#1c5cab", "#256abf", "#2a78d6", "#3987e5", "#6da7ec"];
+const WD = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+function heatmap(end) {
+  const t = $("#heat");
+  if (!end || !Object.keys(DAILY).length) { t.innerHTML = ""; $("#heat-sub").textContent = "no daily data"; return; }
+  const days = Array.from({ length: 28 }, (_, i) => addDays(end, -i)).filter(d => DAILY[d]);
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light" || document.documentElement.dataset.theme === "dark";
+  const ramp = dark ? RAMP_DARK : RAMP;
+  const rows = STORES.map(s => {
+    const sum = Array(7).fill(0), n = Array(7).fill(0);
+    days.forEach(d => { const v = DAILY[d][s.id]; if (v?.sales == null) return; const w = (new Date(d + "T00:00:00Z").getUTCDay() + 6) % 7; sum[w] += v.sales; n[w]++; });
+    const avg = sum.map((x, i) => n[i] ? x / n[i] : null), max = Math.max(...avg.filter(v => v != null), 0);
+    return { s, avg, max, tot: avg.reduce((a, v) => a + (v || 0), 0) };
+  }).sort((a, b) => b.tot - a.tot);
+  const cell = (v, max) => {  // text: white on the deep steps, near-black on the pale ones
+    if (v == null) return `<td class="cell empty">—</td>`;
+    if (v < 1) return `<td class="cell empty">closed</td>`;
+    const i = max ? Math.min(6, Math.floor(v / max * 6.999)) : 0;
+    return `<td class="cell" style="background:${ramp[i]};color:${(dark ? i <= 4 : i >= 5) ? "#fff" : "#0b0b0b"}" title="${money(v)} avg">${v >= 10000 ? "$" + (v / 1000).toFixed(0) + "k" : v >= 1000 ? "$" + (v / 1000).toFixed(1) + "k" : money(v)}</td>`;
+  };
+  t.innerHTML = `<thead><tr><th>Store</th>${WD.map(w => `<th>${w}</th>`).join("")}</tr></thead><tbody>` +
+    rows.map(r => `<tr><td class="store"><b>${r.s.name}</b></td>${r.avg.map(v => cell(v, r.max)).join("")}</tr>`).join("") + "</tbody>";
+  $("#heat-sub").textContent = `avg net sales per weekday · ${days.length} days ending ${fmtDay(end)} · shaded within each store`;
+  $("#heat-legend").innerHTML = `slow day ${ramp.map(c => `<i style="background:${c}"></i>`).join("")} store's best day`;
 }
 load().catch(e => { $("#foot").textContent = "Failed to load data: " + e.message; });
 </script>

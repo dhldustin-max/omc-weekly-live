@@ -35,7 +35,7 @@ const db = JSON.parse(await fs.readFile(DAILY, 'utf8').catch(() => '{"days":{}}'
 db.days ||= {};
 let touched = 0, failed = 0;
 for (let day = from; day <= to; day = addDays(day, 1)) {
-  const have = Object.keys(db.days[day] || {}).filter(id => VERONA.has(id) && db.days[day][id].sales != null).length;
+  const have = Object.keys(db.days[day] || {}).filter(id => VERONA.has(id) && db.days[day][id].orders != null).length;
   if (have === VERONA.size && !args.includes('--force')) { log(`⏭  ${day} already 7/7`); continue; }
   log(`▶ ${day}`);
   let results;
@@ -45,9 +45,13 @@ for (let day = from; day <= to; day = addDays(day, 1)) {
   for (const r of results) {
     if (!VERONA.has(r.id)) continue;
     if (r.error) { log(`  ❌ ${r.id}: ${r.error}`); failed++; continue; }
-    db.days[day][r.id] = { ...(db.days[day][r.id] || {}), sales: Math.round(r.sales) };
+    const R = v => v == null ? null : Math.round(v);
+    const row = { sales: R(r.sales), orders: r.orders, guests: r.guests, discount: R(r.discount), alcohol: R(r.alcohol) };
+    if (r.channel) Object.assign(row, { dineIn: R(r.channel.dineIn), takeout: R(r.channel.takeout), delivery: R(r.channel.delivery) });
+    for (const k of Object.keys(row)) if (row[k] == null) delete row[k];
+    db.days[day][r.id] = { ...(db.days[day][r.id] || {}), ...row };
     touched++;
-    log(`  🟢 ${r.id.padEnd(18)} $${Math.round(r.sales)}`);
+    log(`  🟢 ${r.id.padEnd(18)} $${row.sales}  orders ${row.orders ?? '—'}  guests ${row.guests ?? '—'}  depts: ${(r.departments || []).join(', ')}`);
   }
 }
 if (dryRun) { log(`dry-run: ${touched} values, ${failed} failures — nothing written`); process.exit(0); }

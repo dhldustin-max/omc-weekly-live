@@ -188,11 +188,61 @@ export function parseSummaryText(bodyText) {
   }
   if (sales === null) return null;
 
-  // Try to also pick up order count from elsewhere on the page if available.
-  // Verona shows "GUEST COUNT" / order counts in CHECKS section (above TOTALS).
-  // We'll skip orders/guests for the v1 — sales alone is enough.
+  // Secondary fields (09-30-2026). All optional: a missing section leaves the
+  // field null and never fails the scrape — sales above is the only must-have.
+  const num = s => { const v = parseFloat(String(s).replace(/[$,]/g, '')); return isNaN(v) ? null : v; };
+  // Rows of an indented section under a top-level header ("DESTINATIONS", ...):
+  // "\t     DINE-IN\t414\t37,446.70" → { name, count, amount }. Stops at the next header.
+  const section = header => {
+    const i = lines.findIndex(l => l.trim() === header && !/^\s/.test(l));
+    if (i < 0) return null;
+    const rows = [];
+    for (let j = i + 1; j < lines.length; j++) {
+      const l = lines[j];
+      if (l.trim() && !/^\s/.test(l)) break;
+      const t = l.trim().split(/\t+/);
+      if (t.length >= 3 && moneyRe.test(t[t.length - 1])) rows.push({ name: t[0].trim(), count: num(t[1]), amount: num(t[t.length - 1]) });
+    }
+    return rows;
+  };
+  const field = (header, key) => {           // "GUESTS" → "\tCOUNT\t\t655"
+    const i = lines.findIndex(l => l.trim() === header && !/^\s/.test(l));
+    if (i < 0) return null;
+    for (let j = i + 1; j < Math.min(lines.length, i + 8); j++) {
+      const t = lines[j].trim().split(/\s{2,}|\t+/);
+      if (t[0] === key) return num(t[t.length - 1]);
+    }
+    return null;
+  };
+  let discount = null;
+  for (let i = totalsIdx + 1; i < Math.min(lines.length, totalsIdx + 20); i++) {
+    const t = lines[i].trim().split(/\s+/);
+    if (t[0] === 'DISCOUNT') { discount = Math.abs(num(t[t.length - 1]) ?? 0); break; }
+  }
+  // Channel: dine-in from DESTINATIONS; delivery = third-party apps from ORIGINATIONS
+  // ("3RD PARTY" / "DELIVERY APP"). Stores tag app orders inconsistently in DESTINATIONS
+  // (Bowl'd and Ohgane Alameda use "DRIVE-THRU"), but the origin is always the app.
+  // Take-out = everything else.
+  const dest = section('DESTINATIONS'), orig = section('ORIGINATIONS');
+  let channel = null;
+  if (dest && dest.length) {
+    const total = dest.reduce((a, r) => a + r.amount, 0);
+    const dineIn = dest.filter(r => r.name === 'DINE-IN').reduce((a, r) => a + r.amount, 0);
+    const delivery = (orig || []).filter(r => /3RD PARTY|DELIVERY/.test(r.name)).reduce((a, r) => a + r.amount, 0);
+    channel = { dineIn, delivery, takeout: Math.max(0, total - dineIn - delivery) };
+  }
+  const depts = section('DEPARTMENTS');
+  // ponytail: alcohol = department-name match; add names here if a store's liquor dept is missed (check `departments` in daily-update logs)
+  const ALCOHOL_RE = /ALCOHOL|LIQUOR|BEER|SOJU|WINE|SAKE|MAKGEOLLI|COCKTAIL|SPIRIT|TEQUILA|WHISK|VODKA|HIGHBALL/;
+  const alcohol = depts && depts.length ? depts.filter(r => ALCOHOL_RE.test(r.name)).reduce((a, r) => a + r.amount, 0) : null;
 
-  return { sales, anchorLine: totalsIdx, valueLine: salesLine };
+  return {
+    sales, anchorLine: totalsIdx, valueLine: salesLine,
+    orders: field('TRANSACTIONS', 'COUNT'),
+    guests: field('GUESTS', 'COUNT'),
+    discount, channel, alcohol,
+    departments: depts ? depts.map(r => r.name) : null,
+  };
 }
 
 // Extract the merchant access token from a Verona report URL.
@@ -345,6 +395,7 @@ export async function scrapeStoreByName(page, storePrefix, startDate, endDate) {
   await page.waitForTimeout(1500);
 
   const text = await page.evaluate(() => document.body.innerText);
+  if (process.env.VERONA_DUMP) await (await import('fs/promises')).writeFile(`tmp/verona-${storePrefix.replace(/\W+/g, '_')}.txt`, text); // debug: VERONA_DUMP=1
   if (/sign in|forgot password/i.test(text.slice(0, 2000))) {
     throw new Error('SESSION_EXPIRED during scrape');
   }
@@ -352,7 +403,8 @@ export async function scrapeStoreByName(page, storePrefix, startDate, endDate) {
   if (!parsed) {
     throw new Error(`SUMMARY_PARSE_FAILED for ${storePrefix} — page layout may have changed`);
   }
-  return { sales: parsed.sales };
+  const { anchorLine, valueLine, ...rest } = parsed;
+  return rest;
 }
 
 // Navigate back to the merchant list ("Group List" link in the side menu).
@@ -430,7 +482,7 @@ export async function scrapeAllVerona({ email, password, startDate, endDate, hea
         }
       }
       if (data) {
-        results.push({ id: store.id, sales: data.sales, scrapedAt: new Date().toISOString() });
+        results.push({ id: store.id, ...data, scrapedAt: new Date().toISOString() });
       } else {
         results.push({ id: store.id, error: lastErr ? lastErr.message : 'unknown', scrapedAt: new Date().toISOString() });
       }
