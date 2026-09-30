@@ -16,8 +16,8 @@
         "guests": 103,
         "alcohol": 48,
         "dineIn": 3739,
-        "takeout": 211,
-        "delivery": 0
+        "takeout": 199,
+        "delivery": 12
       },
       "tangjip-hayward": {
         "sales": 4119,
@@ -25,8 +25,8 @@
         "guests": 44,
         "alcohol": 36,
         "dineIn": 2977,
-        "takeout": 306,
-        "delivery": 837
+        "takeout": 222,
+        "delivery": 921
       },
       "tangjip-concord": {
         "sales": 3341,
@@ -34,8 +34,8 @@
         "guests": 58,
         "alcohol": 46,
         "dineIn": 2678,
-        "takeout": 170,
-        "delivery": 493
+        "takeout": 78,
+        "delivery": 585
       },
       "tangjip-alameda": {
         "sales": 2777,
@@ -43,8 +43,8 @@
         "guests": 51,
         "alcohol": 146,
         "dineIn": 2460,
-        "takeout": 239,
-        "delivery": 79
+        "takeout": 219,
+        "delivery": 99
       },
       "spoon-berkeley": {
         "sales": 1106,
@@ -52,8 +52,8 @@
         "guests": 14,
         "alcohol": 9,
         "dineIn": 717,
-        "takeout": 148,
-        "delivery": 241
+        "takeout": 50,
+        "delivery": 339
       },
       "bowld-albany": {
         "sales": 2448,
@@ -61,8 +61,8 @@
         "guests": 50,
         "alcohol": 0,
         "dineIn": 1327,
-        "takeout": 1121,
-        "delivery": 0
+        "takeout": 549,
+        "delivery": 572
       }
     },
     "2026-09-02": {
@@ -72,8 +72,8 @@
         "guests": 112,
         "alcohol": 290,
         "dineIn": 4299,
-        "takeout": 229,
-        "delivery": 300
+        "takeout": 482,
+        "delivery": 47
       },
       "ohgane-alameda": {
         "sales": 5227,
@@ -81,8 +81,8 @@
         "guests": 134,
         "alcohol": 187,
         "dineIn": 4883,
-        "takeout": 344,
-        "delivery": 0
+        "takeout": 254,
+        "delivery": 90
       },
       "tangjip-hayward": {
         "sales": 3881,
@@ -91,8 +91,8 @@
         "discount": 8,
         "alcohol": 48,
         "dineIn": 3090,
-        "takeout": 270,
-        "delivery": 513
+        "takeout": 195,
+        "delivery": 588
       },
       "tangjip-concord": {
         "sales": 3817,
@@ -100,8 +100,8 @@
         "guests": 61,
         "alcohol": 51,
         "dineIn": 3149,
-        "takeout": 421,
-        "delivery": 247
+        "takeout": 362,
+        "delivery": 306
       },
       "tangjip-alameda": {
         "sales": 1923,
@@ -118,8 +118,8 @@
         "guests": 22,
         "alcohol": 36,
         "dineIn": 713,
-        "takeout": 615,
-        "delivery": 287
+        "takeout": 580,
+        "delivery": 322
       },
       "bowld-albany": {
         "sales": 2012,
@@ -127,8 +127,8 @@
         "guests": 41,
         "alcohol": 0,
         "dineIn": 1090,
-        "takeout": 922,
-        "delivery": 0
+        "takeout": 298,
+        "delivery": 624
       }
     },
     "2026-09-03": {
@@ -147,8 +147,8 @@
         "guests": 126,
         "alcohol": 322,
         "dineIn": 4879,
-        "takeout": 395,
-        "delivery": 0
+        "takeout": 183,
+        "delivery": 212
       },
       "tangjip-hayward": {
         "sales": 4796,
@@ -156,8 +156,8 @@
         "guests": 59,
         "alcohol": 109,
         "dineIn": 3731,
-        "takeout": 499,
-        "delivery": 566
+        "takeout": 253,
+        "delivery": 812
       },
       "tangjip-concord": {
         "sales": 3101,
@@ -165,8 +165,8 @@
         "guests": 59,
         "alcohol": 39,
         "dineIn": 2229,
-        "takeout": 366,
-        "delivery": 506
+        "takeout": 319,
+        "delivery": 553
       },
       "tangjip-alameda": {
         "sales": 2276,
@@ -174,8 +174,8 @@
         "guests": 45,
         "alcohol": 68,
         "dineIn": 1694,
-        "takeout": 395,
-        "delivery": 187
+        "takeout": 215,
+        "delivery": 367
       },
       "spoon-berkeley": {
         "sales": 1307,
@@ -192,8 +192,8 @@
         "guests": 50,
         "alcohol": 9,
         "dineIn": 1845,
-        "takeout": 1179,
-        "delivery": 0
+        "takeout": 583,
+        "delivery": 596
       }
     },
     "2026-09-04": {
@@ -212,8 +212,8 @@
         "guests": 254,
         "alcohol": 842,
         "dineIn": 11188,
-        "takeout": 439,
-        "delivery": 0
+        "takeout": 243,
+        "delivery": 196
       },
       "tangjip-hayward": {
         "sales": 7956,
@@ -221,8 +221,8 @@
         "guests": 105,
         "alcohol": 170,
         "dineIn": 7117,
-        "takeout": 517,
-        "delivery": 322
+        "takeout": 352,
+        "delivery": 487
       },
       "tangjip-concord": {
         "sales": 6462,
@@ -249,8 +249,8 @@
         "guests": 27,
         "alcohol": 21,
         "dineIn": 1244,
-        "takeout": 369,
-        "delivery": 491
+        "takeout": 316,
+        "delivery": 544
       },
       "bowld-albany": {
         "sales": 3444,
@@ -258,8 +258,8 @@
         "guests": 98,
         "alcohol": 0,
         "dineIn": 2368,
-        "takeout": 1076,
-        "delivery": 0
+        "takeout": 346,
+        "delivery": 730
       }
     },
     "2026-09-05": {
@@ -278,8 +278,8 @@
         "guests": 357,
         "alcohol": 1009,
         "dineIn": 15137,
-        "takeout": 703,
-        "delivery": 0
+        "takeout": 396,
+        "delivery": 307
       },
       "tangjip-hayward": {
         "sales": 10197,
@@ -288,8 +288,8 @@
         "discount": 15,
         "alcohol": 128,
         "dineIn": 8841,
-        "takeout": 448,
-        "delivery": 894
+        "takeout": 368,
+        "delivery": 974
       },
       "tangjip-concord": {
         "sales": 9836,
@@ -297,8 +297,8 @@
         "guests": 204,
         "alcohol": 161,
         "dineIn": 8649,
-        "takeout": 243,
-        "delivery": 944
+        "takeout": 188,
+        "delivery": 999
       },
       "tangjip-alameda": {
         "sales": 6299,
@@ -324,8 +324,8 @@
         "guests": 80,
         "alcohol": 0,
         "dineIn": 3036,
-        "takeout": 1391,
-        "delivery": 0
+        "takeout": 630,
+        "delivery": 761
       }
     },
     "2026-09-06": {
@@ -344,8 +344,8 @@
         "guests": 329,
         "alcohol": 604,
         "dineIn": 13956,
-        "takeout": 441,
-        "delivery": 0
+        "takeout": 149,
+        "delivery": 292
       },
       "tangjip-hayward": {
         "sales": 9095,
@@ -353,8 +353,8 @@
         "guests": 146,
         "alcohol": 355,
         "dineIn": 7364,
-        "takeout": 359,
-        "delivery": 1373
+        "takeout": 270,
+        "delivery": 1461
       },
       "tangjip-concord": {
         "sales": 9009,
@@ -362,8 +362,8 @@
         "guests": 137,
         "alcohol": 217,
         "dineIn": 8038,
-        "takeout": 477,
-        "delivery": 494
+        "takeout": 414,
+        "delivery": 557
       },
       "tangjip-alameda": {
         "sales": 3940,
@@ -380,8 +380,8 @@
         "guests": 41,
         "alcohol": 51,
         "dineIn": 1934,
-        "takeout": 189,
-        "delivery": 398
+        "takeout": 146,
+        "delivery": 441
       },
       "bowld-albany": {
         "sales": 4172,
@@ -389,8 +389,8 @@
         "guests": 77,
         "alcohol": 8,
         "dineIn": 3024,
-        "takeout": 1149,
-        "delivery": 0
+        "takeout": 654,
+        "delivery": 495
       }
     },
     "2026-09-07": {
@@ -465,8 +465,8 @@
         "discount": 15,
         "alcohol": 547,
         "dineIn": 10947,
-        "takeout": 529,
-        "delivery": 0
+        "takeout": 389,
+        "delivery": 140
       },
       "tangjip-hayward": {
         "sales": 9078,
@@ -475,8 +475,8 @@
         "discount": 8,
         "alcohol": 139,
         "dineIn": 8125,
-        "takeout": 392,
-        "delivery": 554
+        "takeout": 241,
+        "delivery": 705
       },
       "tangjip-concord": {
         "sales": 8734,
@@ -484,8 +484,8 @@
         "guests": 148,
         "alcohol": 105,
         "dineIn": 7679,
-        "takeout": 589,
-        "delivery": 467
+        "takeout": 372,
+        "delivery": 684
       },
       "tangjip-alameda": {
         "sales": 4516,
@@ -502,8 +502,8 @@
         "guests": 43,
         "alcohol": 106,
         "dineIn": 1828,
-        "takeout": 109,
-        "delivery": 488
+        "takeout": 88,
+        "delivery": 509
       },
       "bowld-albany": {
         "sales": 4531,
@@ -511,8 +511,8 @@
         "guests": 79,
         "alcohol": 46,
         "dineIn": 2921,
-        "takeout": 1610,
-        "delivery": 0
+        "takeout": 695,
+        "delivery": 915
       }
     },
     "2026-09-08": {
@@ -585,8 +585,8 @@
         "guests": 68,
         "alcohol": 28,
         "dineIn": 2416,
-        "takeout": 125,
-        "delivery": 0
+        "takeout": 24,
+        "delivery": 101
       },
       "tangjip-hayward": {
         "sales": 4007,
@@ -622,8 +622,8 @@
         "guests": 20,
         "alcohol": 36,
         "dineIn": 1020,
-        "takeout": 293,
-        "delivery": 87
+        "takeout": 37,
+        "delivery": 343
       },
       "bowld-albany": {
         "sales": 2853,
@@ -631,8 +631,8 @@
         "guests": 50,
         "alcohol": 0,
         "dineIn": 1267,
-        "takeout": 1586,
-        "delivery": 0
+        "takeout": 519,
+        "delivery": 1067
       }
     },
     "2026-09-09": {
@@ -705,8 +705,8 @@
         "guests": 78,
         "alcohol": 68,
         "dineIn": 2599,
-        "takeout": 668,
-        "delivery": 0
+        "takeout": 159,
+        "delivery": 509
       },
       "tangjip-hayward": {
         "sales": 3174,
@@ -741,8 +741,8 @@
         "guests": 31,
         "alcohol": 61,
         "dineIn": 1114,
-        "takeout": 178,
-        "delivery": 307
+        "takeout": 52,
+        "delivery": 433
       },
       "bowld-albany": {
         "sales": 1872,
@@ -750,8 +750,8 @@
         "guests": 20,
         "alcohol": 0,
         "dineIn": 897,
-        "takeout": 975,
-        "delivery": 0
+        "takeout": 387,
+        "delivery": 588
       }
     },
     "2026-09-10": {
@@ -824,8 +824,8 @@
         "guests": 114,
         "alcohol": 326,
         "dineIn": 4525,
-        "takeout": 430,
-        "delivery": 0
+        "takeout": 175,
+        "delivery": 255
       },
       "tangjip-hayward": {
         "sales": 4146,
@@ -833,8 +833,8 @@
         "guests": 43,
         "alcohol": 79,
         "dineIn": 3206,
-        "takeout": 353,
-        "delivery": 587
+        "takeout": 266,
+        "delivery": 674
       },
       "tangjip-concord": {
         "sales": 3065,
@@ -861,8 +861,8 @@
         "guests": 19,
         "alcohol": 44,
         "dineIn": 952,
-        "takeout": 2258,
-        "delivery": 348
+        "takeout": 2185,
+        "delivery": 421
       },
       "bowld-albany": {
         "sales": 1858,
@@ -870,8 +870,8 @@
         "guests": 27,
         "alcohol": 0,
         "dineIn": 1083,
-        "takeout": 775,
-        "delivery": 0
+        "takeout": 221,
+        "delivery": 554
       }
     },
     "2026-09-11": {
@@ -935,8 +935,8 @@
         "guests": 153,
         "alcohol": 651,
         "dineIn": 7033,
-        "takeout": 117,
-        "delivery": 482
+        "takeout": 517,
+        "delivery": 82
       },
       "ohgane-alameda": {
         "sales": 10797,
@@ -944,8 +944,8 @@
         "guests": 238,
         "alcohol": 766,
         "dineIn": 10301,
-        "takeout": 496,
-        "delivery": 0
+        "takeout": 259,
+        "delivery": 237
       },
       "tangjip-hayward": {
         "sales": 7405,
@@ -953,8 +953,8 @@
         "guests": 86,
         "alcohol": 248,
         "dineIn": 5698,
-        "takeout": 469,
-        "delivery": 1238
+        "takeout": 348,
+        "delivery": 1359
       },
       "tangjip-concord": {
         "sales": 6201,
@@ -962,8 +962,8 @@
         "guests": 84,
         "alcohol": 213,
         "dineIn": 5236,
-        "takeout": 193,
-        "delivery": 772
+        "takeout": 0,
+        "delivery": 986
       },
       "tangjip-alameda": {
         "sales": 4163,
@@ -971,8 +971,8 @@
         "guests": 68,
         "alcohol": 179,
         "dineIn": 3812,
-        "takeout": 213,
-        "delivery": 138
+        "takeout": 259,
+        "delivery": 92
       },
       "spoon-berkeley": {
         "sales": 2114,
@@ -989,8 +989,8 @@
         "guests": 98,
         "alcohol": 9,
         "dineIn": 2432,
-        "takeout": 1130,
-        "delivery": 0
+        "takeout": 375,
+        "delivery": 755
       }
     },
     "2026-09-12": {
@@ -1064,8 +1064,8 @@
         "discount": 1,
         "alcohol": 869,
         "dineIn": 14682,
-        "takeout": 450,
-        "delivery": 0
+        "takeout": 224,
+        "delivery": 226
       },
       "tangjip-hayward": {
         "sales": 8165,
@@ -1074,8 +1074,8 @@
         "discount": 20,
         "alcohol": 240,
         "dineIn": 6774,
-        "takeout": 582,
-        "delivery": 789
+        "takeout": 323,
+        "delivery": 1048
       },
       "tangjip-concord": {
         "sales": 9532,
@@ -1084,8 +1084,8 @@
         "discount": 20,
         "alcohol": 342,
         "dineIn": 8109,
-        "takeout": 717,
-        "delivery": 687
+        "takeout": 616,
+        "delivery": 788
       },
       "tangjip-alameda": {
         "sales": 4106,
@@ -1093,8 +1093,8 @@
         "guests": 74,
         "alcohol": 135,
         "dineIn": 3407,
-        "takeout": 202,
-        "delivery": 497
+        "takeout": 157,
+        "delivery": 542
       },
       "spoon-berkeley": {
         "sales": 2459,
@@ -1111,8 +1111,8 @@
         "guests": 89,
         "alcohol": 0,
         "dineIn": 2754,
-        "takeout": 1575,
-        "delivery": 0
+        "takeout": 675,
+        "delivery": 900
       }
     },
     "2026-09-13": {
@@ -1185,8 +1185,8 @@
         "guests": 258,
         "alcohol": 335,
         "dineIn": 11019,
-        "takeout": 626,
-        "delivery": 0
+        "takeout": 381,
+        "delivery": 245
       },
       "tangjip-hayward": {
         "sales": 9976,
@@ -1194,8 +1194,8 @@
         "guests": 144,
         "alcohol": 147,
         "dineIn": 8374,
-        "takeout": 838,
-        "delivery": 765
+        "takeout": 699,
+        "delivery": 904
       },
       "tangjip-concord": {
         "sales": 7494,
@@ -1203,8 +1203,8 @@
         "guests": 141,
         "alcohol": 93,
         "dineIn": 6580,
-        "takeout": 511,
-        "delivery": 403
+        "takeout": 355,
+        "delivery": 559
       },
       "tangjip-alameda": {
         "sales": 3539,
@@ -1222,8 +1222,8 @@
         "guests": 53,
         "alcohol": 25,
         "dineIn": 2286,
-        "takeout": 126,
-        "delivery": 759
+        "takeout": 50,
+        "delivery": 835
       },
       "bowld-albany": {
         "sales": 6198,
@@ -1231,8 +1231,8 @@
         "guests": 122,
         "alcohol": 22,
         "dineIn": 4914,
-        "takeout": 1284,
-        "delivery": 0
+        "takeout": 583,
+        "delivery": 701
       }
     },
     "2026-09-14": {
@@ -1305,8 +1305,8 @@
         "guests": 101,
         "alcohol": 134,
         "dineIn": 4091,
-        "takeout": 283,
-        "delivery": 0
+        "takeout": 200,
+        "delivery": 83
       },
       "tangjip-hayward": {
         "sales": 4565,
@@ -1314,8 +1314,8 @@
         "guests": 52,
         "alcohol": 79,
         "dineIn": 3583,
-        "takeout": 384,
-        "delivery": 599
+        "takeout": 341,
+        "delivery": 642
       },
       "tangjip-concord": {
         "sales": 3276,
@@ -1323,8 +1323,8 @@
         "guests": 38,
         "alcohol": 70,
         "dineIn": 2420,
-        "takeout": 431,
-        "delivery": 425
+        "takeout": 403,
+        "delivery": 453
       },
       "tangjip-alameda": {
         "sales": 1895,
@@ -1332,8 +1332,8 @@
         "guests": 38,
         "alcohol": 9,
         "dineIn": 1497,
-        "takeout": 132,
-        "delivery": 266
+        "takeout": 112,
+        "delivery": 286
       },
       "spoon-berkeley": {
         "sales": 2260,
@@ -1350,8 +1350,8 @@
         "guests": 60,
         "alcohol": 0,
         "dineIn": 1642,
-        "takeout": 783,
-        "delivery": 0
+        "takeout": 132,
+        "delivery": 651
       }
     },
     "2026-09-15": {
@@ -1424,8 +1424,8 @@
         "guests": 96,
         "alcohol": 284,
         "dineIn": 3871,
-        "takeout": 354,
-        "delivery": 0
+        "takeout": 249,
+        "delivery": 105
       },
       "tangjip-hayward": {
         "sales": 3921,
@@ -1433,8 +1433,8 @@
         "guests": 68,
         "alcohol": 134,
         "dineIn": 3139,
-        "takeout": 388,
-        "delivery": 394
+        "takeout": 173,
+        "delivery": 609
       },
       "tangjip-concord": {
         "sales": 2864,
@@ -1442,8 +1442,8 @@
         "guests": 35,
         "alcohol": 37,
         "dineIn": 2019,
-        "takeout": 207,
-        "delivery": 638
+        "takeout": 132,
+        "delivery": 713
       },
       "tangjip-alameda": {
         "sales": 2946,
@@ -1460,8 +1460,8 @@
         "guests": 30,
         "alcohol": 53,
         "dineIn": 1371,
-        "takeout": 140,
-        "delivery": 97
+        "takeout": 117,
+        "delivery": 120
       },
       "bowld-albany": {
         "sales": 2458,
@@ -1469,8 +1469,8 @@
         "guests": 59,
         "alcohol": 0,
         "dineIn": 1561,
-        "takeout": 897,
-        "delivery": 0
+        "takeout": 307,
+        "delivery": 590
       }
     },
     "2026-09-16": {
@@ -1543,8 +1543,8 @@
         "guests": 122,
         "alcohol": 330,
         "dineIn": 4833,
-        "takeout": 259,
-        "delivery": 0
+        "takeout": 158,
+        "delivery": 101
       },
       "tangjip-hayward": {
         "sales": 3774,
@@ -1552,8 +1552,8 @@
         "guests": 58,
         "alcohol": 140,
         "dineIn": 2965,
-        "takeout": 324,
-        "delivery": 486
+        "takeout": 19,
+        "delivery": 791
       },
       "tangjip-concord": {
         "sales": 3866,
@@ -1561,8 +1561,8 @@
         "guests": 99,
         "alcohol": 73,
         "dineIn": 2951,
-        "takeout": 310,
-        "delivery": 606
+        "takeout": 97,
+        "delivery": 819
       },
       "tangjip-alameda": {
         "sales": 2691,
@@ -1589,8 +1589,8 @@
         "guests": 98,
         "alcohol": 0,
         "dineIn": 2468,
-        "takeout": 750,
-        "delivery": 0
+        "takeout": 289,
+        "delivery": 461
       }
     },
     "2026-09-17": {
@@ -1663,8 +1663,8 @@
         "guests": 115,
         "alcohol": 243,
         "dineIn": 4609,
-        "takeout": 586,
-        "delivery": 0
+        "takeout": 338,
+        "delivery": 248
       },
       "tangjip-hayward": {
         "sales": 5358,
@@ -1673,8 +1673,8 @@
         "discount": 13,
         "alcohol": 166,
         "dineIn": 4196,
-        "takeout": 454,
-        "delivery": 695
+        "takeout": 108,
+        "delivery": 1041
       },
       "tangjip-concord": {
         "sales": 2953,
@@ -1682,8 +1682,8 @@
         "guests": 43,
         "alcohol": 37,
         "dineIn": 2363,
-        "takeout": 212,
-        "delivery": 378
+        "takeout": 161,
+        "delivery": 429
       },
       "tangjip-alameda": {
         "sales": 2350,
@@ -1709,8 +1709,8 @@
         "guests": 47,
         "alcohol": 29,
         "dineIn": 2042,
-        "takeout": 941,
-        "delivery": 0
+        "takeout": 369,
+        "delivery": 572
       }
     },
     "2026-09-18": {
@@ -1783,8 +1783,8 @@
         "guests": 253,
         "alcohol": 916,
         "dineIn": 11294,
-        "takeout": 482,
-        "delivery": 0
+        "takeout": 361,
+        "delivery": 121
       },
       "tangjip-hayward": {
         "sales": 7915,
@@ -1801,8 +1801,8 @@
         "guests": 92,
         "alcohol": 116,
         "dineIn": 4607,
-        "takeout": 286,
-        "delivery": 560
+        "takeout": 242,
+        "delivery": 604
       },
       "tangjip-alameda": {
         "sales": 3573,
@@ -1829,8 +1829,8 @@
         "guests": 80,
         "alcohol": 9,
         "dineIn": 2104,
-        "takeout": 1633,
-        "delivery": 0
+        "takeout": 817,
+        "delivery": 816
       }
     },
     "2026-09-19": {
@@ -1904,8 +1904,8 @@
         "discount": 1,
         "alcohol": 840,
         "dineIn": 11183,
-        "takeout": 481,
-        "delivery": 0
+        "takeout": 385,
+        "delivery": 96
       },
       "tangjip-hayward": {
         "sales": 10331,
@@ -1913,8 +1913,8 @@
         "guests": 156,
         "alcohol": 204,
         "dineIn": 8905,
-        "takeout": 341,
-        "delivery": 1085
+        "takeout": 259,
+        "delivery": 1167
       },
       "tangjip-concord": {
         "sales": 7916,
@@ -1923,8 +1923,8 @@
         "discount": 4,
         "alcohol": 139,
         "dineIn": 6854,
-        "takeout": 491,
-        "delivery": 567
+        "takeout": 422,
+        "delivery": 636
       },
       "tangjip-alameda": {
         "sales": 3715,
@@ -1932,8 +1932,8 @@
         "guests": 72,
         "alcohol": 27,
         "dineIn": 3251,
-        "takeout": 202,
-        "delivery": 262
+        "takeout": 243,
+        "delivery": 221
       },
       "spoon-berkeley": {
         "sales": 1983,
@@ -1941,8 +1941,8 @@
         "guests": 33,
         "alcohol": 51,
         "dineIn": 1406,
-        "takeout": 181,
-        "delivery": 397
+        "takeout": 51,
+        "delivery": 527
       },
       "bowld-albany": {
         "sales": 5074,
@@ -1950,8 +1950,8 @@
         "guests": 51,
         "alcohol": 65,
         "dineIn": 3262,
-        "takeout": 1812,
-        "delivery": 0
+        "takeout": 776,
+        "delivery": 1036
       }
     },
     "2026-09-20": {
@@ -2015,7 +2015,7 @@
         "guests": 248,
         "alcohol": 524,
         "dineIn": 11125,
-        "takeout": 240,
+        "takeout": 239,
         "delivery": 588
       },
       "ohgane-alameda": {
@@ -2025,8 +2025,8 @@
         "discount": 138,
         "alcohol": 460,
         "dineIn": 11856,
-        "takeout": 618,
-        "delivery": 0
+        "takeout": 542,
+        "delivery": 76
       },
       "tangjip-hayward": {
         "sales": 7821,
@@ -2034,8 +2034,8 @@
         "guests": 98,
         "alcohol": 246,
         "dineIn": 6221,
-        "takeout": 570,
-        "delivery": 1031
+        "takeout": 364,
+        "delivery": 1236
       },
       "tangjip-concord": {
         "sales": 8309,
@@ -2043,8 +2043,8 @@
         "guests": 115,
         "alcohol": 238,
         "dineIn": 6628,
-        "takeout": 923,
-        "delivery": 758
+        "takeout": 749,
+        "delivery": 932
       },
       "tangjip-alameda": {
         "sales": 4136,
@@ -2052,8 +2052,8 @@
         "guests": 82,
         "alcohol": 44,
         "dineIn": 3844,
-        "takeout": 173,
-        "delivery": 120
+        "takeout": 127,
+        "delivery": 166
       },
       "spoon-berkeley": {
         "sales": 1749,
@@ -2061,8 +2061,8 @@
         "guests": 26,
         "alcohol": 21,
         "dineIn": 1174,
-        "takeout": 162,
-        "delivery": 413
+        "takeout": 113,
+        "delivery": 462
       },
       "bowld-albany": {
         "sales": 3937,
@@ -2070,8 +2070,8 @@
         "guests": 71,
         "alcohol": 9,
         "dineIn": 3025,
-        "takeout": 912,
-        "delivery": 0
+        "takeout": 209,
+        "delivery": 703
       }
     },
     "2026-09-21": {
@@ -2144,8 +2144,8 @@
         "guests": 95,
         "alcohol": 148,
         "dineIn": 4152,
-        "takeout": 318,
-        "delivery": 0
+        "takeout": 216,
+        "delivery": 102
       },
       "tangjip-hayward": {
         "sales": 3292,
@@ -2153,8 +2153,8 @@
         "guests": 46,
         "alcohol": 22,
         "dineIn": 2333,
-        "takeout": 228,
-        "delivery": 732
+        "takeout": 107,
+        "delivery": 853
       },
       "tangjip-concord": {
         "sales": 3204,
@@ -2180,8 +2180,8 @@
         "guests": 21,
         "alcohol": 62,
         "dineIn": 1010,
-        "takeout": 1017,
-        "delivery": 119
+        "takeout": 981,
+        "delivery": 155
       },
       "bowld-albany": {
         "sales": 2359,
@@ -2189,8 +2189,8 @@
         "guests": 28,
         "alcohol": 0,
         "dineIn": 1130,
-        "takeout": 1229,
-        "delivery": 0
+        "takeout": 590,
+        "delivery": 639
       }
     },
     "2026-09-22": {
@@ -2263,8 +2263,8 @@
         "guests": 94,
         "alcohol": 60,
         "dineIn": 3777,
-        "takeout": 387,
-        "delivery": 0
+        "takeout": 375,
+        "delivery": 12
       },
       "tangjip-hayward": {
         "sales": 3535,
@@ -2272,8 +2272,8 @@
         "guests": 51,
         "alcohol": 121,
         "dineIn": 2834,
-        "takeout": 356,
-        "delivery": 346
+        "takeout": 176,
+        "delivery": 526
       },
       "tangjip-concord": {
         "sales": 4116,
@@ -2281,8 +2281,8 @@
         "guests": 72,
         "alcohol": 62,
         "dineIn": 3127,
-        "takeout": 722,
-        "delivery": 267
+        "takeout": 463,
+        "delivery": 526
       },
       "tangjip-alameda": {
         "sales": 2028,
@@ -2299,8 +2299,8 @@
         "guests": 28,
         "alcohol": 58,
         "dineIn": 1081,
-        "takeout": 44,
-        "delivery": 323
+        "takeout": 22,
+        "delivery": 345
       },
       "bowld-albany": {
         "sales": 2188,
@@ -2308,8 +2308,8 @@
         "guests": 49,
         "alcohol": 0,
         "dineIn": 1339,
-        "takeout": 849,
-        "delivery": 0
+        "takeout": 350,
+        "delivery": 499
       }
     },
     "2026-09-23": {
@@ -2383,8 +2383,8 @@
         "discount": 1,
         "alcohol": 260,
         "dineIn": 3909,
-        "takeout": 616,
-        "delivery": 0
+        "takeout": 347,
+        "delivery": 269
       },
       "tangjip-hayward": {
         "sales": 4151,
@@ -2392,8 +2392,8 @@
         "guests": 54,
         "alcohol": 195,
         "dineIn": 2984,
-        "takeout": 528,
-        "delivery": 640
+        "takeout": 476,
+        "delivery": 692
       },
       "tangjip-concord": {
         "sales": 2721,
@@ -2401,8 +2401,8 @@
         "guests": 51,
         "alcohol": 100,
         "dineIn": 2284,
-        "takeout": 185,
-        "delivery": 252
+        "takeout": 145,
+        "delivery": 292
       },
       "tangjip-alameda": {
         "sales": 2325,
@@ -2428,8 +2428,8 @@
         "guests": 36,
         "alcohol": 10,
         "dineIn": 1189,
-        "takeout": 1069,
-        "delivery": 0
+        "takeout": 645,
+        "delivery": 424
       }
     },
     "2026-09-24": {
@@ -2502,8 +2502,8 @@
         "guests": 120,
         "alcohol": 408,
         "dineIn": 5773,
-        "takeout": 440,
-        "delivery": 0
+        "takeout": 155,
+        "delivery": 285
       },
       "tangjip-hayward": {
         "sales": 3604,
@@ -2511,8 +2511,8 @@
         "guests": 48,
         "alcohol": 84,
         "dineIn": 2326,
-        "takeout": 475,
-        "delivery": 804
+        "takeout": 254,
+        "delivery": 1025
       },
       "tangjip-concord": {
         "sales": 4141,
@@ -2520,8 +2520,8 @@
         "guests": 70,
         "alcohol": 53,
         "dineIn": 3475,
-        "takeout": 405,
-        "delivery": 262
+        "takeout": 346,
+        "delivery": 321
       },
       "tangjip-alameda": {
         "sales": 2216,
@@ -2538,8 +2538,8 @@
         "guests": 34,
         "alcohol": 51,
         "dineIn": 990,
-        "takeout": 636,
-        "delivery": 444
+        "takeout": 588,
+        "delivery": 492
       },
       "bowld-albany": {
         "sales": 2884,
@@ -2547,8 +2547,8 @@
         "guests": 39,
         "alcohol": 0,
         "dineIn": 1694,
-        "takeout": 1190,
-        "delivery": 0
+        "takeout": 100,
+        "delivery": 1090
       }
     },
     "2026-09-25": {
@@ -2622,8 +2622,8 @@
         "discount": 194,
         "alcohol": 714,
         "dineIn": 10072,
-        "takeout": 513,
-        "delivery": 0
+        "takeout": 301,
+        "delivery": 212
       },
       "tangjip-hayward": {
         "sales": 6947,
@@ -2631,8 +2631,8 @@
         "guests": 87,
         "alcohol": 226,
         "dineIn": 5575,
-        "takeout": 455,
-        "delivery": 918
+        "takeout": 398,
+        "delivery": 975
       },
       "tangjip-concord": {
         "sales": 5365,
@@ -2640,8 +2640,8 @@
         "guests": 95,
         "alcohol": 99,
         "dineIn": 4727,
-        "takeout": 264,
-        "delivery": 374
+        "takeout": 140,
+        "delivery": 498
       },
       "tangjip-alameda": {
         "sales": 3556,
@@ -2650,8 +2650,8 @@
         "discount": 16,
         "alcohol": 54,
         "dineIn": 2931,
-        "takeout": 388,
-        "delivery": 222
+        "takeout": 279,
+        "delivery": 331
       },
       "spoon-berkeley": {
         "sales": 1998,
@@ -2668,8 +2668,8 @@
         "guests": 111,
         "alcohol": 48,
         "dineIn": 2969,
-        "takeout": 1309,
-        "delivery": 0
+        "takeout": 805,
+        "delivery": 504
       }
     },
     "2026-09-26": {
@@ -2743,8 +2743,8 @@
         "discount": 23,
         "alcohol": 867,
         "dineIn": 13323,
-        "takeout": 735,
-        "delivery": 0
+        "takeout": 324,
+        "delivery": 411
       },
       "tangjip-hayward": {
         "sales": 7573,
@@ -2753,8 +2753,8 @@
         "discount": 14,
         "alcohol": 130,
         "dineIn": 6261,
-        "takeout": 487,
-        "delivery": 811
+        "takeout": 250,
+        "delivery": 1048
       },
       "tangjip-concord": {
         "sales": 8049,
@@ -2762,8 +2762,8 @@
         "guests": 117,
         "alcohol": 125,
         "dineIn": 7376,
-        "takeout": 45,
-        "delivery": 628
+        "takeout": 0,
+        "delivery": 815
       },
       "tangjip-alameda": {
         "sales": 3458,
@@ -2771,8 +2771,8 @@
         "guests": 72,
         "alcohol": 100,
         "dineIn": 2818,
-        "takeout": 216,
-        "delivery": 424
+        "takeout": 200,
+        "delivery": 440
       },
       "spoon-berkeley": {
         "sales": 2579,
@@ -2780,8 +2780,8 @@
         "guests": 41,
         "alcohol": 60,
         "dineIn": 2122,
-        "takeout": 134,
-        "delivery": 323
+        "takeout": 22,
+        "delivery": 435
       },
       "bowld-albany": {
         "sales": 4391,
@@ -2789,8 +2789,8 @@
         "guests": 73,
         "alcohol": 0,
         "dineIn": 2504,
-        "takeout": 1887,
-        "delivery": 0
+        "takeout": 584,
+        "delivery": 1303
       }
     },
     "2026-09-27": {
@@ -2863,8 +2863,8 @@
         "guests": 231,
         "alcohol": 476,
         "dineIn": 10047,
-        "takeout": 486,
-        "delivery": 0
+        "takeout": 187,
+        "delivery": 299
       },
       "tangjip-hayward": {
         "sales": 7961,
@@ -2872,8 +2872,8 @@
         "guests": 130,
         "alcohol": 184,
         "dineIn": 6392,
-        "takeout": 468,
-        "delivery": 1102
+        "takeout": 277,
+        "delivery": 1292
       },
       "tangjip-concord": {
         "sales": 7164,
@@ -2882,8 +2882,8 @@
         "discount": 16,
         "alcohol": 190,
         "dineIn": 5929,
-        "takeout": 914,
-        "delivery": 306
+        "takeout": 853,
+        "delivery": 367
       },
       "tangjip-alameda": {
         "sales": 3829,
@@ -2909,8 +2909,8 @@
         "guests": 90,
         "alcohol": 9,
         "dineIn": 3192,
-        "takeout": 883,
-        "delivery": 0
+        "takeout": 419,
+        "delivery": 464
       }
     },
     "2026-09-28": {
@@ -2983,8 +2983,8 @@
         "guests": 96,
         "alcohol": 200,
         "dineIn": 3965,
-        "takeout": 246,
-        "delivery": 0
+        "takeout": 90,
+        "delivery": 156
       },
       "tangjip-hayward": {
         "sales": 3691,
@@ -2992,8 +2992,8 @@
         "guests": 49,
         "alcohol": 284,
         "dineIn": 2780,
-        "takeout": 235,
-        "delivery": 676
+        "takeout": 73,
+        "delivery": 838
       },
       "tangjip-concord": {
         "sales": 3052,
@@ -3002,8 +3002,8 @@
         "discount": 15,
         "alcohol": 58,
         "dineIn": 2448,
-        "takeout": 135,
-        "delivery": 454
+        "takeout": 113,
+        "delivery": 476
       },
       "tangjip-alameda": {
         "sales": 2593,
@@ -3030,8 +3030,8 @@
         "guests": 39,
         "alcohol": 18,
         "dineIn": 1782,
-        "takeout": 1009,
-        "delivery": 0
+        "takeout": 338,
+        "delivery": 671
       }
     },
     "2026-09-29": {
@@ -3104,8 +3104,8 @@
         "guests": 184,
         "alcohol": 466,
         "dineIn": 6978,
-        "takeout": 525,
-        "delivery": 0
+        "takeout": 421,
+        "delivery": 104
       },
       "tangjip-hayward": {
         "sales": 3789,
@@ -3113,8 +3113,8 @@
         "guests": 51,
         "alcohol": 72,
         "dineIn": 2781,
-        "takeout": 306,
-        "delivery": 703
+        "takeout": 205,
+        "delivery": 804
       },
       "tangjip-concord": {
         "sales": 3700,
@@ -3122,8 +3122,8 @@
         "guests": 57,
         "alcohol": 50,
         "dineIn": 2964,
-        "takeout": 165,
-        "delivery": 571
+        "takeout": 83,
+        "delivery": 653
       },
       "tangjip-alameda": {
         "sales": 1605,
@@ -3141,8 +3141,8 @@
         "guests": 21,
         "alcohol": 0,
         "dineIn": 837,
-        "takeout": 145,
-        "delivery": 332
+        "takeout": 42,
+        "delivery": 435
       },
       "bowld-albany": {
         "sales": 1941,
@@ -3150,8 +3150,8 @@
         "guests": 42,
         "alcohol": 18,
         "dineIn": 1165,
-        "takeout": 776,
-        "delivery": 0
+        "takeout": 256,
+        "delivery": 520
       }
     }
   },
