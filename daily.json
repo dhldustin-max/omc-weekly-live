@@ -63,6 +63,31 @@
         "dineIn": 1327,
         "takeout": 549,
         "delivery": 572
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 790,
+        "orders": 19,
+        "guests": 8,
+        "dineIn": 439,
+        "takeout": 351,
+        "delivery": 0
+      },
+      "ohgane-concord": {
+        "sales": 5635,
+        "orders": 60,
+        "guests": 140,
+        "dineIn": 4804,
+        "takeout": 832,
+        "delivery": 0
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 535,
+        "orders": 29,
+        "guests": 29,
+        "dineIn": 262,
+        "takeout": 228,
+        "delivery": 45,
+        "labor": 396
       }
     },
     "2026-09-02": {
@@ -129,6 +154,31 @@
         "dineIn": 1090,
         "takeout": 298,
         "delivery": 624
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1126,
+        "orders": 26,
+        "guests": 23,
+        "dineIn": 698,
+        "takeout": 258,
+        "delivery": 171
+      },
+      "ohgane-concord": {
+        "sales": 5269,
+        "orders": 60,
+        "guests": 145,
+        "dineIn": 4807,
+        "takeout": 462,
+        "delivery": 0
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 942,
+        "orders": 38,
+        "guests": 38,
+        "dineIn": 355,
+        "takeout": 381,
+        "delivery": 206,
+        "labor": 396
       }
     },
     "2026-09-03": {
@@ -194,6 +244,31 @@
         "dineIn": 1845,
         "takeout": 583,
         "delivery": 596
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 757,
+        "orders": 21,
+        "guests": 15,
+        "dineIn": 398,
+        "takeout": 112,
+        "delivery": 211
+      },
+      "ohgane-concord": {
+        "sales": 5216,
+        "orders": 59,
+        "guests": 138,
+        "dineIn": 4749,
+        "takeout": 467,
+        "delivery": 0
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 626,
+        "orders": 27,
+        "guests": 27,
+        "dineIn": 238,
+        "takeout": 388,
+        "delivery": 0,
+        "labor": 408
       }
     },
     "2026-09-04": {
@@ -260,6 +335,31 @@
         "dineIn": 2368,
         "takeout": 346,
         "delivery": 730
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1654,
+        "orders": 42,
+        "guests": 11,
+        "dineIn": 1317,
+        "takeout": 258,
+        "delivery": 78
+      },
+      "ohgane-concord": {
+        "sales": 10541,
+        "orders": 101,
+        "guests": 271,
+        "dineIn": 10074,
+        "takeout": 467,
+        "delivery": 0
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 101,
+        "orders": 3,
+        "guests": 3,
+        "dineIn": 0,
+        "takeout": 47,
+        "delivery": 54,
+        "labor": 54
       }
     },
     "2026-09-05": {
@@ -326,6 +426,31 @@
         "dineIn": 3036,
         "takeout": 630,
         "delivery": 761
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 2362,
+        "orders": 43,
+        "guests": 5,
+        "dineIn": 2184,
+        "takeout": 19,
+        "delivery": 159
+      },
+      "ohgane-concord": {
+        "sales": 15954,
+        "orders": 114,
+        "guests": 376,
+        "dineIn": 15659,
+        "takeout": 295,
+        "delivery": 0
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1050,
+        "orders": 38,
+        "guests": 38,
+        "dineIn": 348,
+        "takeout": 441,
+        "delivery": 261,
+        "labor": 469
       }
     },
     "2026-09-06": {
@@ -391,6 +516,31 @@
         "dineIn": 3024,
         "takeout": 654,
         "delivery": 495
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 2174,
+        "orders": 45,
+        "guests": 15,
+        "dineIn": 1722,
+        "takeout": 321,
+        "delivery": 131
+      },
+      "ohgane-concord": {
+        "sales": 16152,
+        "orders": 128,
+        "guests": 401,
+        "dineIn": 15940,
+        "takeout": 212,
+        "delivery": 0
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 1300,
+        "orders": 42,
+        "guests": 42,
+        "dineIn": 485,
+        "takeout": 760,
+        "delivery": 55,
+        "labor": 395
       }
     },
     "2026-09-07": {

@@ -2525,15 +2525,15 @@
     const days = Object.keys(DAILY).filter(d => d.startsWith(prefix)).sort();
     const out = { _days: days.length };
     STORES.forEach(s => {
-      let sales = null, orders = null, guests = null;
+      let sales = null, orders = null, guests = null, n = 0;
       days.forEach(d => {
         const v = DAILY[d][s.id];
         if (!v || v.sales == null) return;
-        sales = (sales ?? 0) + v.sales;
+        n++; sales = (sales ?? 0) + v.sales;
         if (v.orders != null) orders = (orders ?? 0) + v.orders;
         if (v.guests != null) guests = (guests ?? 0) + v.guests;
       });
-      out[s.id] = { sales, orders, guests };
+      out[s.id] = { sales, orders, guests, n };
     });
     return out;
   }
@@ -2564,11 +2564,12 @@
     const keys = periodKeys(PERIOD);
     const i = keys.indexOf(key);
     const prev = i > 0 ? sumDaily(keys[i - 1]) : null;
-    const scale = isDay ? 1 / 7 : (cur._days || daysInMonth(key)) / 7;   // month target prorated to days present
+    const scale = isDay ? 1 / 7 : (cur._days || daysInMonth(key)) / 7;   // fallback; month uses each store's own day count below
     STORES.forEach(s => {
       const b = CURRENT_WEEK_BACKUP[s.id], v = cur[s.id];
       s.sales = v.sales; s.orders = v.orders; s.guests = v.guests;
-      s.target = Math.round(b.target * scale); s.floor = Math.round(b.floor * scale); s.stretch = Math.round(b.stretch * scale);
+      const sc = isDay ? scale : (v.n || 0) / 7;   // month: prorate by this store's days with data
+      s.target = Math.round(b.target * sc); s.floor = Math.round(b.floor * sc); s.stretch = Math.round(b.stretch * sc);
       s.prevWeekSales = prev ? prev[s.id].sales : null;
     });
     const pill = document.getElementById("week-tag-pill");
