@@ -13,7 +13,8 @@
  *      Toast sends the mail ~6:15am PT; the trigger reads the last 3 days so a miss self-heals.
  *
  * Numbers are the morning snapshot Toast puts in the mail (voids after send are not reflected).
- * Labor is overwritten from the weekly mails once they arrive (corrected clock-outs).
+ * Sales, guests and labor are overwritten from the weekly mails once they arrive (voids and
+ * clock-outs corrected), so week totals built from these daily rows match the weekly mail.
  * Week totals still come from weekly-snapshots.json - this only feeds Day / Month views.
  */
 var REPO = 'dhldustin-max/omc-weekly-live';
@@ -48,7 +49,7 @@ function syncToastDaily() {
       Object.keys(STORES).forEach(function (addr) { if (m.getSubject().indexOf(addr) >= 0) id = STORES[addr]; });
       if (!id) return;
       parseWeeklyLabor_(m.getPlainBody(), m.getDate()).forEach(function (r) {
-        (laborFix[r.day] = laborFix[r.day] || {})[id] = r.labor;
+        (laborFix[r.day] = laborFix[r.day] || {})[id] = { sales: r.sales, guests: r.guests, labor: r.labor };
         (parsed[r.day] = parsed[r.day] || {});
       });
     });
@@ -63,7 +64,9 @@ function syncToastDaily() {
     db.days[day] = db.days[day] || {};
     Object.keys(laborFix[day] || {}).forEach(function (id) {
       if (!parsed[day][id] && !db.days[day][id]) return;          // no sales row yet for that day
-      parsed[day][id] = Object.assign({}, parsed[day][id] || {}, { labor: laborFix[day][id] });
+      var fix = laborFix[day][id], v = { sales: fix.sales, guests: fix.guests };
+      if (fix.labor != null) v.labor = fix.labor;
+      parsed[day][id] = Object.assign({}, parsed[day][id] || {}, v);
     });
     Object.keys(parsed[day]).forEach(function (id) {
       var v = parsed[day][id], old = db.days[day][id];
@@ -129,10 +132,11 @@ function parseWeeklyLabor_(text, sent) {
     if (!/^\|/.test(l)) break;
     var c = l.split('|').map(function (s) { return s.trim(); });
     var md = c[1].match(/(\d{2})\/(\d{2})/), pct = parseFloat(c[5]);
-    if (!md || isNaN(pct)) continue;
+    if (!md) continue;
     var y = sent.getFullYear(); if (Number(md[1]) > sent.getMonth() + 1) y--;   // Dec week mailed in Jan
     var net = Number(c[2].replace(/[$,]/g, ''));
-    out.push({ day: y + '-' + md[1] + '-' + md[2], labor: Math.round(net * pct / 100) });
+    out.push({ day: y + '-' + md[1] + '-' + md[2], sales: Math.round(net), guests: Number(c[3]) || 0,
+               labor: isNaN(pct) ? null : Math.round(net * pct / 100) });   // closed day: '-' labor -> null
   }
   return out;
 }

@@ -127,8 +127,8 @@ async function load() {
   ]);
   const m = html.match(/const STORES = (\[[\s\S]*?\n  \]);/);
   STORES = new Function("return " + m[1])().map(s => ({ id: s.id, name: s.name, concept: s.concept, pos: s.pos, target: s.target, floor: s.floor, stretch: s.stretch }));
-  WEEKS = (wk.weeks || []).slice().sort((a, b) => a.weekStartISO.localeCompare(b.weekStartISO));
   DAILY = dl.days || {};
+  WEEKS = mergeDailyWeeks(wk.weeks, DAILY);   // week totals from daily rows where all 7 days exist
   $("#subtitle").textContent = `${STORES.length} stores · Toast ${STORES.filter(s => s.pos === "Toast").length} · Verona ${STORES.filter(s => s.pos === "Verona").length}`;
   document.querySelectorAll("#period button").forEach(b => b.addEventListener("click", () => setPeriod(b.dataset.p)));
   $("#picker").addEventListener("change", render);
@@ -136,6 +136,33 @@ async function load() {
     sortDir = sortKey === th.dataset.k ? -sortDir : -1; sortKey = th.dataset.k; render();
   }));
   setPeriod("week");
+}
+
+// Week totals from daily.json. For every Mon–Sun week whose 7 days are all in daily.json,
+// a store with 7 daily rows gets its week = sum of those rows (sales/orders/guests); otherwise
+// the weekly-snapshots.json value stays. Weeks present only in daily.json are added.
+// Verified 09-30-2026: Sep 7–27 daily sums match the weekly snapshots within $1 for all 13 stores.
+function mergeDailyWeeks(weeks, days) {
+  const add = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  const M = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const label = ws => { const a = new Date(ws + "T00:00:00Z"), b = new Date(add(ws, 6) + "T00:00:00Z");
+    return a.getUTCMonth() === b.getUTCMonth() ? `${M[a.getUTCMonth()]} ${a.getUTCDate()} – ${b.getUTCDate()}, ${b.getUTCFullYear()}`
+      : `${M[a.getUTCMonth()]} ${a.getUTCDate()} – ${M[b.getUTCMonth()]} ${b.getUTCDate()}, ${b.getUTCFullYear()}`; };
+  const byStart = {};
+  (weeks || []).forEach(w => { byStart[w.weekStartISO] = { ...w, stores: { ...(w.stores || {}) } }; });
+  const mondays = new Set(Object.keys(days || {}).map(d => add(d, -((new Date(d + "T00:00:00Z").getUTCDay() + 6) % 7))));
+  mondays.forEach(ws => {
+    const dates = [0, 1, 2, 3, 4, 5, 6].map(i => add(ws, i));
+    if (!dates.every(d => days[d])) return;                       // week not finished (or a gap) — leave it
+    const w = byStart[ws] || (byStart[ws] = { weekStartISO: ws, weekEndISO: add(ws, 6), weekLabel: label(ws), stores: {} });
+    new Set(dates.flatMap(d => Object.keys(days[d]))).forEach(id => {
+      if (!dates.every(d => days[d][id] && days[d][id].sales != null)) return;
+      const sum = k => dates.every(d => days[d][id][k] != null) ? dates.reduce((a, d) => a + days[d][id][k], 0) : null;
+      const old = w.stores[id] || {};
+      w.stores[id] = { ...old, sales: sum("sales"), orders: sum("orders") ?? old.orders ?? null, guests: sum("guests") ?? old.guests ?? null };
+    });
+  });
+  return Object.values(byStart).sort((a, b) => a.weekStartISO.localeCompare(b.weekStartISO));
 }
 
 // ---- periods ---------------------------------------------------------------

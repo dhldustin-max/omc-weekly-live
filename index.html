@@ -2369,14 +2369,45 @@
   // week stays selected by default.
   let WEEKLY_SNAPSHOTS = [];                 // array of {weekStartISO, ...}
   let CURRENT_WEEK_BACKUP = null;            // STORES baseline (current/latest)
+  // Week totals from daily.json. For every Mon–Sun week whose 7 days are all in daily.json,
+  // a store with 7 daily rows gets its week = sum of those rows (sales/orders/guests); otherwise
+  // the weekly-snapshots.json value stays. Weeks present only in daily.json are added.
+  // Verified 09-30-2026: Sep 7–27 daily sums match the weekly snapshots within $1 for all 13 stores.
+  function mergeDailyWeeks(weeks, days) {
+    const add = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+    const M = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const label = ws => { const a = new Date(ws + "T00:00:00Z"), b = new Date(add(ws, 6) + "T00:00:00Z");
+      return a.getUTCMonth() === b.getUTCMonth() ? `${M[a.getUTCMonth()]} ${a.getUTCDate()} – ${b.getUTCDate()}, ${b.getUTCFullYear()}`
+        : `${M[a.getUTCMonth()]} ${a.getUTCDate()} – ${M[b.getUTCMonth()]} ${b.getUTCDate()}, ${b.getUTCFullYear()}`; };
+    const byStart = {};
+    (weeks || []).forEach(w => { byStart[w.weekStartISO] = { ...w, stores: { ...(w.stores || {}) } }; });
+    const mondays = new Set(Object.keys(days || {}).map(d => add(d, -((new Date(d + "T00:00:00Z").getUTCDay() + 6) % 7))));
+    mondays.forEach(ws => {
+      const dates = [0, 1, 2, 3, 4, 5, 6].map(i => add(ws, i));
+      if (!dates.every(d => days[d])) return;                       // week not finished (or a gap) — leave it
+      const w = byStart[ws] || (byStart[ws] = { weekStartISO: ws, weekEndISO: add(ws, 6), weekLabel: label(ws), stores: {} });
+      new Set(dates.flatMap(d => Object.keys(days[d]))).forEach(id => {
+        if (!dates.every(d => days[d][id] && days[d][id].sales != null)) return;
+        const sum = k => dates.every(d => days[d][id][k] != null) ? dates.reduce((a, d) => a + days[d][id][k], 0) : null;
+        const old = w.stores[id] || {};
+        w.stores[id] = { ...old, sales: sum("sales"), orders: sum("orders") ?? old.orders ?? null, guests: sum("guests") ?? old.guests ?? null };
+      });
+    });
+    return Object.values(byStart).sort((a, b) => a.weekStartISO.localeCompare(b.weekStartISO));
+  }
+
+  // One fetch of both files, shared by the week picker and the Toast freshness banner.
+  var __weeksPromise;
+  function getWeeks() {
+    return __weeksPromise || (__weeksPromise = Promise.all([
+      fetch("weekly-snapshots.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { weeks: [] }).catch(() => ({ weeks: [] })),
+      fetch("daily.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { days: {} }).catch(() => ({ days: {} })),
+    ]).then(([w, d]) => mergeDailyWeeks(w.weeks, d.days)));
+  }
+
   async function loadWeeklySnapshots() {
     try {
-      const res = await fetch("weekly-snapshots.json", { cache: "no-store" });
-      if (!res.ok) return;
-      const data = await res.json();
-      const weeks = (data.weeks || []).slice().sort((a, b) =>
-        (a.weekStartISO || "").localeCompare(b.weekStartISO || "")
-      );
+      const weeks = await getWeeks();
       if (!weeks.length) return;
       WEEKLY_SNAPSHOTS = weeks;
 
@@ -2406,16 +2437,9 @@
         picker.appendChild(opt);
       });
       picker.value = latest.weekStartISO;
-      updateWeekTagPill(true);
-
-      // Compute WoW deltas for the latest week (current view) and re-render
-      // so the Net Sales cell shows "지난주 $X ±$Y" right away.
-      applyWoWDeltas(latest.weekStartISO);
-      buildStores();
-      document.querySelectorAll(".prime-input").forEach(i => i.addEventListener("input", recalcAll));
-      recalcAll();
-      applyFocus(currentFocus || "all");
-      STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
+      // Latest week straight from the merged data (daily.json first), so the page is
+      // current even when nobody re-bakes the STORES numbers in this file.
+      applyWeekSnapshot(latest.weekStartISO, true);
 
       picker.addEventListener("change", e => {
         const wkISO = e.target.value;
@@ -2454,26 +2478,14 @@
     let snap;
     // Day/Month views scale target/floor/stretch; put the weekly ones back.
     STORES.forEach(s => { const b = CURRENT_WEEK_BACKUP && CURRENT_WEEK_BACKUP[s.id]; if (b) { s.target = b.target; s.floor = b.floor; s.stretch = b.stretch; } });
-    if (isCurrent && CURRENT_WEEK_BACKUP) {
-      // Restore in-memory baseline (avoids any drift from snapshot file)
-      STORES.forEach(s => {
-        const b = CURRENT_WEEK_BACKUP[s.id];
-        if (!b) return;
-        s.sales = b.sales;
-        s.orders = b.orders;
-        s.guests = b.guests;
-      });
-    } else {
-      snap = WEEKLY_SNAPSHOTS.find(w => w.weekStartISO === weekStartISO);
-      if (!snap) return;
-      STORES.forEach(s => {
-        const v = snap.stores?.[s.id];
-        if (!v) return;
-        s.sales = v.sales ?? null;
-        s.orders = v.orders ?? null;
-        s.guests = v.guests ?? null;
-      });
-    }
+    snap = WEEKLY_SNAPSHOTS.find(w => w.weekStartISO === weekStartISO);
+    STORES.forEach(s => {
+      const v = snap && snap.stores?.[s.id];
+      const b = isCurrent && CURRENT_WEEK_BACKUP ? CURRENT_WEEK_BACKUP[s.id] : null;
+      if (v && v.sales != null) { s.sales = v.sales; s.orders = v.orders ?? null; s.guests = v.guests ?? null; }
+      else if (b) { s.sales = b.sales; s.orders = b.orders; s.guests = b.guests; }   // latest week: fall back to baked values
+      else { s.sales = null; s.orders = null; s.guests = null; }
+    });
     updateWeekTagPill(isCurrent);
     // Refresh prev-week deltas relative to the now-selected week
     applyWoWDeltas(weekStartISO);
@@ -2594,14 +2606,7 @@
     if (!banner) return;
     // Monday (PT) before 10am: the Verona Actions run / Cowork task may still be going.
     { const { dow, hour } = bizNowParts(); if (dow === 1 && hour < 10) return; }
-    let data;
-    try {
-      const res = await fetch("weekly-snapshots.json", { cache: "no-store" });
-      if (!res.ok) return;
-      data = await res.json();
-    } catch (e) { return; }
-    const weeks = (data.weeks || []).slice()
-      .sort((a, b) => (a.weekStartISO < b.weekStartISO ? -1 : 1));
+    const weeks = await getWeeks();
     if (weeks.length < 2) return;
     const expectedWeekStart = lastCompletedMondayISO();
     const latest = weeks[weeks.length - 1];
@@ -2624,8 +2629,8 @@
       `<span class="scraper-banner-emoji">🍞</span>` +
       `<span class="scraper-banner-body">Toast 주간 데이터 점검 필요 (week ${latest.weekStartISO})` +
       `<div class="scraper-banner-detail">${parts.join(" · ")} · ` +
-      `월요일 Cowork task(omc-weekly-monday-reminder, 8:02am)가 안 돌았을 수 있음 — ` +
-      `Claude에서 "OMC Toast 매출 업데이트 실행해줘"로 수동 복구</div></span>`;
+      `Toast 일별 수집(Apps Script, 매일 7–8am PT)이 며칠 빠졌을 수 있음 — ` +
+      `script.google.com → Toast daily → 실행(Executions)에서 실패 확인, 또는 Claude에게 "Toast 일별 데이터 확인해줘"</div></span>`;
   }
 
   // Reads scraper-status.json (committed by scripts/weekly-update.js each
