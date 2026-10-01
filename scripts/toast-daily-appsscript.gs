@@ -31,12 +31,13 @@ var LOOKBACK_DAYS = 3;
 
 function syncToastDaily() {
   var threads = GmailApp.search('from:no-reply@toasttab.com subject:"OMC Hospitality" newer_than:' + (LOOKBACK_DAYS + 1) + 'd');
-  var parsed = {};
+  var parsed = {}, seen = 0;
   threads.forEach(function (t) {
     t.getMessages().forEach(function (m) {
       var day = parseDay_(m.getSubject(), m.getDate());
       if (!day) return;
-      var rows = parseStores_(m.getPlainBody());
+      seen++;
+      var rows = parseStores_(htmlToPipeText_(m.getBody()));   // Toast mails are HTML-only
       if (Object.keys(rows).length) parsed[day] = rows;
     });
   });
@@ -48,13 +49,18 @@ function syncToastDaily() {
       var id = null;
       Object.keys(STORES).forEach(function (addr) { if (m.getSubject().indexOf(addr) >= 0) id = STORES[addr]; });
       if (!id) return;
-      parseWeeklyLabor_(m.getPlainBody(), m.getDate()).forEach(function (r) {
+      seen++;
+      parseWeeklyLabor_(htmlToPipeText_(m.getBody()), m.getDate()).forEach(function (r) {
         (laborFix[r.day] = laborFix[r.day] || {})[id] = { sales: r.sales, guests: r.guests, labor: r.labor };
         (parsed[r.day] = parsed[r.day] || {});
       });
     });
   });
-  if (!Object.keys(parsed).length) { Logger.log('no Toast mails found'); return; }
+  if (!Object.keys(parsed).length) {
+    Logger.log(seen ? 'found ' + seen + ' Toast mails but could not read their tables (layout changed?)'
+                    : 'no Toast mails found in ' + Session.getActiveUser().getEmail() + ' (wrong account?)');
+    return;
+  }
 
   var gh = getFile_();
   var db = JSON.parse(gh.content);
@@ -63,7 +69,7 @@ function syncToastDaily() {
   Object.keys(parsed).forEach(function (day) {
     db.days[day] = db.days[day] || {};
     Object.keys(laborFix[day] || {}).forEach(function (id) {
-      if (!parsed[day][id] && !db.days[day][id]) return;          // no sales row yet for that day
+      // A weekly-mail day creates the row even without a daily mail (orders then stay empty).
       var fix = laborFix[day][id], v = { sales: fix.sales, guests: fix.guests };
       if (fix.labor != null) v.labor = fix.labor;
       parsed[day][id] = Object.assign({}, parsed[day][id] || {}, v);
@@ -90,6 +96,22 @@ function parseDay_(subject, sent) {
   var d = new Date(m[1] + ' ' + m[2] + ', ' + year);
   if (d > sent) d.setFullYear(year - 1);
   return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');  // d was built in the script's own zone
+}
+
+// Toast mails are HTML-only. Flatten every innermost <tr> into "| cell | cell |" so the table
+// parsers below can read them. Toast leaves some <td> unclosed, so a cell also ends at the next cell.
+function htmlToPipeText_(html) {
+  var dec = function (s) {
+    return s.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#36;|&dollar;/g, '$')
+      .replace(/&#(\d+);/g, function (_, n) { return String.fromCharCode(Number(n)); }).replace(/\s+/g, ' ').trim();
+  };
+  var lines = [], tr = /<tr\b[^>]*>((?:(?!<tr\b)[\s\S])*?)<\/tr>/gi, m;
+  while ((m = tr.exec(html))) {
+    var cells = [], td = /<t[dh]\b[^>]*>([\s\S]*?)(?=<\/t[dh]>|<t[dh]\b|$)/gi, c;
+    while ((c = td.exec(m[1]))) cells.push(dec(c[1]));
+    if (cells.join('')) lines.push('| ' + cells.join(' | ') + ' |');
+  }
+  return lines.join('\n');
 }
 
 // Three per-location tables in the mail, keyed by their header row:
@@ -132,7 +154,7 @@ function parseWeeklyLabor_(text, sent) {
     if (!/^\|/.test(l)) break;
     var c = l.split('|').map(function (s) { return s.trim(); });
     var md = c[1].match(/(\d{2})\/(\d{2})/), pct = parseFloat(c[5]);
-    if (!md) continue;
+    if (!md) { if (out.length) break; continue; }   // end of the Daily breakdown table
     var y = sent.getFullYear(); if (Number(md[1]) > sent.getMonth() + 1) y--;   // Dec week mailed in Jan
     var net = Number(c[2].replace(/[$,]/g, ''));
     out.push({ day: y + '-' + md[1] + '-' + md[2], sales: Math.round(net), guests: Number(c[3]) || 0,
