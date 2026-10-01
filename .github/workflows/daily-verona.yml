@@ -3,7 +3,8 @@
 name: Daily Verona scrape
 on:
   schedule:
-    - cron: '0 13 * * *'   # 13:00 UTC = 05:00 PST / 06:00 PDT, after every store has closed
+    - cron: '0 13 * * *'
+    - cron: '0 16 * * *'    # 13:00 UTC = 05:00 PST / 06:00 PDT, after every store has closed
   workflow_dispatch:
     inputs:
       from: { description: 'Backfill start YYYY-MM-DD (blank = yesterday PT)', type: string, default: '' }
