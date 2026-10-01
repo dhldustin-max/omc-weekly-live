@@ -88,6 +88,30 @@
         "takeout": 228,
         "delivery": 45,
         "labor": 396
+      },
+      "obento-hayward": {
+        "sales": 797,
+        "orders": 30,
+        "guests": 30,
+        "dineIn": 0,
+        "takeout": 797,
+        "delivery": 0
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 2292,
+        "orders": 41,
+        "guests": 11,
+        "dineIn": 1967,
+        "takeout": 207,
+        "delivery": 118
+      },
+      "tuum-oakland": {
+        "sales": 693,
+        "orders": 9,
+        "guests": 2,
+        "dineIn": 573,
+        "takeout": 120,
+        "delivery": 0
       }
     },
     "2026-09-02": {
@@ -179,6 +203,30 @@
         "takeout": 381,
         "delivery": 206,
         "labor": 396
+      },
+      "obento-hayward": {
+        "sales": 1210,
+        "orders": 36,
+        "guests": 36,
+        "dineIn": 0,
+        "takeout": 1210,
+        "delivery": 0
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1528,
+        "orders": 30,
+        "guests": 6,
+        "dineIn": 1427,
+        "takeout": 44,
+        "delivery": 56
+      },
+      "tuum-oakland": {
+        "sales": 715,
+        "orders": 8,
+        "guests": 16,
+        "dineIn": 591,
+        "takeout": 124,
+        "delivery": 0
       }
     },
     "2026-09-03": {
@@ -269,6 +317,30 @@
         "takeout": 388,
         "delivery": 0,
         "labor": 408
+      },
+      "obento-hayward": {
+        "sales": 643,
+        "orders": 25,
+        "guests": 25,
+        "dineIn": 0,
+        "takeout": 643,
+        "delivery": 0
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 2712,
+        "orders": 39,
+        "guests": 15,
+        "dineIn": 2572,
+        "takeout": 52,
+        "delivery": 88
+      },
+      "tuum-oakland": {
+        "sales": 1739,
+        "orders": 14,
+        "guests": 4,
+        "dineIn": 1671,
+        "takeout": 68,
+        "delivery": 0
       }
     },
     "2026-09-04": {
@@ -360,6 +432,30 @@
         "takeout": 47,
         "delivery": 54,
         "labor": 54
+      },
+      "obento-hayward": {
+        "sales": 1671,
+        "orders": 62,
+        "guests": 62,
+        "dineIn": 0,
+        "takeout": 1671,
+        "delivery": 0
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 4385,
+        "orders": 68,
+        "guests": 9,
+        "dineIn": 3867,
+        "takeout": 416,
+        "delivery": 103
+      },
+      "tuum-oakland": {
+        "sales": 4443,
+        "orders": 19,
+        "guests": 20,
+        "dineIn": 4354,
+        "takeout": 89,
+        "delivery": 0
       }
     },
     "2026-09-05": {
@@ -451,6 +547,30 @@
         "takeout": 441,
         "delivery": 261,
         "labor": 469
+      },
+      "obento-hayward": {
+        "sales": 1142,
+        "orders": 47,
+        "guests": 47,
+        "dineIn": 0,
+        "takeout": 1142,
+        "delivery": 0
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 5111,
+        "orders": 73,
+        "guests": 18,
+        "dineIn": 4459,
+        "takeout": 399,
+        "delivery": 253
+      },
+      "tuum-oakland": {
+        "sales": 5749,
+        "orders": 49,
+        "guests": 19,
+        "dineIn": 5593,
+        "takeout": 156,
+        "delivery": 0
       }
     },
     "2026-09-06": {
@@ -541,6 +661,30 @@
         "takeout": 760,
         "delivery": 55,
         "labor": 395
+      },
+      "obento-hayward": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0,
+        "dineIn": 0,
+        "takeout": 0,
+        "delivery": 0
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 5762,
+        "orders": 80,
+        "guests": 500,
+        "dineIn": 5440,
+        "takeout": 223,
+        "delivery": 99
+      },
+      "tuum-oakland": {
+        "sales": 1653,
+        "orders": 17,
+        "guests": 2,
+        "dineIn": 1594,
+        "takeout": 59,
+        "delivery": 0
       }
     },
     "2026-09-07": {
