@@ -2385,7 +2385,7 @@
         "dineIn": 501,
         "takeout": 23,
         "delivery": 80,
-        "labor": 347
+        "labor": 346
       },
       "obento-hayward": {
         "sales": 773,
@@ -2531,7 +2531,7 @@
         "dineIn": 246,
         "takeout": 252,
         "delivery": 177,
-        "labor": 406
+        "labor": 405
       },
       "tuum-oakland": {
         "sales": 1084,
@@ -2983,7 +2983,7 @@
         "dineIn": 471,
         "takeout": 474,
         "delivery": 250,
-        "labor": 580
+        "labor": 579
       },
       "obento-hayward": {
         "sales": 1220,
