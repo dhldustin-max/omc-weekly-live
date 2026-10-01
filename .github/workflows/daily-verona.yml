@@ -1,1 +1,34 @@
-pbcopy < ~/Documents/omc-weekly-live/.github/workflows/daily-verona.yml
+# Daily Verona scrape (7 stores, yesterday's business day) -> daily.json.
+# Same secrets as weekly-verona.yml. Manual backfill: Run workflow with from/to.
+name: Daily Verona scrape
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 13:00 UTC = 05:00 PST / 06:00 PDT, after every store has closed
+  workflow_dispatch:
+    inputs:
+      from: { description: 'Backfill start YYYY-MM-DD (blank = yesterday PT)', type: string, default: '' }
+      to:   { description: 'Backfill end YYYY-MM-DD (blank = same as from)', type: string, default: '' }
+permissions: { contents: write }
+concurrency: { group: daily-verona, cancel-in-progress: false }
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: |
+          git config user.name  "OMC daily bot (GitHub Actions)"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - env:
+          VERONA_EMAIL: ${{ secrets.VERONA_EMAIL }}
+          VERONA_PASSWORD: ${{ secrets.VERONA_PASSWORD }}
+          FROM: ${{ inputs.from }}
+          TO: ${{ inputs.to }}
+        run: |
+          ARGS=""
+          [ -n "$FROM" ] && ARGS="--from $FROM --to ${TO:-$FROM}"
+          node scripts/daily-update.js $ARGS
