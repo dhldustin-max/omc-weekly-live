@@ -985,8 +985,10 @@
       orders: 358, guests: 432,
       googleRating: 3.9, yelpRating: 4.0,
       channelDine: 87, channelTakeout: 5, channelDelivery: 5 },
+    // Oh G Burger Berkeley — CLOSED (last full day 09-30-2026, per Dustin 10-03-2026). Hidden from views
+    // that start on/after closedFrom; history stays in daily.json / weekly-snapshots.json.
     { id: "oh-g-burger-berkeley", name: "Oh G Burger Berkeley", concept: "Oh G Burger", cuisine: "K-Fusion Burger",
-      location: "Berkeley, CA", pos: "Toast", isNew: true,
+      location: "Berkeley, CA", pos: "Toast", isNew: true, closedFrom: "2026-10-01",
       sales: 6136, target: 20785, floor: 18707, stretch: 23383, rent: 8100,
       orders: 232, guests: 232,
       googleRating: 4.4, yelpRating: 4.1,
@@ -1037,6 +1039,9 @@
       googleRating: null, yelpRating: null,
       channelDine: null },
   ];
+  // Closed stores leave the meeting tool from their closedFrom date (PT).
+  { const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
+    for (let i = STORES.length - 1; i >= 0; i--) if (STORES[i].closedFrom && STORES[i].closedFrom <= today) STORES.splice(i, 1); }
 
   const DUSTIN_EMAIL = "dhldustin@gmail.com";
 

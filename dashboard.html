@@ -126,10 +126,11 @@ async function load() {
     fetch("daily.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { days: {} }).catch(() => ({ days: {} })),
   ]);
   const m = html.match(/const STORES = (\[[\s\S]*?\n  \]);/);
-  STORES = new Function("return " + m[1])().map(s => ({ id: s.id, name: s.name, concept: s.concept, pos: s.pos, target: s.target, floor: s.floor, stretch: s.stretch }));
+  STORES = new Function("return " + m[1])().map(s => ({ id: s.id, name: s.name, concept: s.concept, pos: s.pos, target: s.target, floor: s.floor, stretch: s.stretch, closedFrom: s.closedFrom }));
   DAILY = dl.days || {};
   WEEKS = mergeDailyWeeks(wk.weeks, DAILY);   // week totals from daily rows where all 7 days exist
-  $("#subtitle").textContent = `${STORES.length} stores · Toast ${STORES.filter(s => s.pos === "Toast").length} · Verona ${STORES.filter(s => s.pos === "Verona").length}`;
+  const open = STORES.filter(s => !s.closedFrom || s.closedFrom > new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date()));
+  $("#subtitle").textContent = `${open.length} stores · Toast ${open.filter(s => s.pos === "Toast").length} · Verona ${open.filter(s => s.pos === "Verona").length}`;
   document.querySelectorAll("#period button").forEach(b => b.addEventListener("click", () => setPeriod(b.dataset.p)));
   $("#picker").addEventListener("change", render);
   document.querySelectorAll("th[data-k]").forEach(th => th.addEventListener("click", () => {
@@ -238,7 +239,8 @@ function render() {
   const k = $("#picker").value; if (!k) { $("#table tbody").innerHTML = ""; $("#kpis").innerHTML = ""; return; }
   const ks = keys(), i = ks.indexOf(k), cur = values(k), prev = i > 0 ? values(ks[i - 1]) : {}, sc = scale(k);
   const ex = extras(k);
-  const rows = STORES.map(s => {
+  const start = daysOf(k).sort()[0] || k;   // a store closed on/before the period's first day is left out
+  const rows = STORES.filter(s => !s.closedFrom || s.closedFrom > start).map(s => {
     const v = cur[s.id] || {}, p = prev[s.id] || {};
     // Month: prorate each store's target by ITS OWN days with data (Toast and Verona coverage can differ).
     const target = Math.round(s.target * (period === "month" ? (v.n || 0) / 7 : sc));
@@ -291,7 +293,7 @@ function heatmap(end) {
   const days = Array.from({ length: 28 }, (_, i) => addDays(end, -i)).filter(d => DAILY[d]);
   const dark = matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light" || document.documentElement.dataset.theme === "dark";
   const ramp = dark ? RAMP_DARK : RAMP;
-  const rows = STORES.map(s => {
+  const rows = STORES.filter(s => !s.closedFrom || s.closedFrom > end).map(s => {
     const sum = Array(7).fill(0), n = Array(7).fill(0);
     days.forEach(d => { const v = DAILY[d][s.id]; if (v?.sales == null) return; const w = (new Date(d + "T00:00:00Z").getUTCDay() + 6) % 7; sum[w] += v.sales; n[w]++; });
     const avg = sum.map((x, i) => n[i] ? x / n[i] : null), max = Math.max(...avg.filter(v => v != null), 0);

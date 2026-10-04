@@ -22,7 +22,8 @@ const sum = (id, ds) => ds.every(d => days[d]?.[id]?.sales != null) ? ds.reduce(
 
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const pct = (a, b) => b ? `${a >= b ? '+' : ''}${((a - b) / b * 100).toFixed(1)}%` : '—';
-const rows = STORES.map(s => ({ name: s.name, pos: s.pos, now: sum(s.id, cur), before: sum(s.id, prev) }));
+const rows = STORES.filter(s => !s.closedFrom || s.closedFrom > from).map(s => ({   // closed stores drop out from closedFrom
+ name: s.name, pos: s.pos, now: sum(s.id, cur), before: sum(s.id, prev) }));
 const have = rows.filter(r => r.now != null).sort((a, b) => b.now - a.now), missing = rows.filter(r => r.now == null);
 const both = have.filter(r => r.before != null);
 const tot = have.reduce((a, r) => a + r.now, 0), totNowCmp = both.reduce((a, r) => a + r.now, 0), totBefore = both.reduce((a, r) => a + r.before, 0);
