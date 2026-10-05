@@ -3336,7 +3336,7 @@
         "dineIn": 1066,
         "takeout": 145,
         "delivery": 0,
-        "labor": 788
+        "labor": 599
       },
       "jjamppong-zizon-oakland": {
         "sales": 572,
@@ -3456,7 +3456,7 @@
         "takeout": 44,
         "delivery": 0,
         "dineIn": 1824,
-        "labor": 842
+        "labor": 667
       },
       "jjamppong-zizon-oakland": {
         "sales": 492,
@@ -3576,7 +3576,7 @@
         "takeout": 181,
         "delivery": 0,
         "dineIn": 2464,
-        "labor": 775
+        "labor": 852
       },
       "jjamppong-zizon-oakland": {
         "sales": 1238,
@@ -3697,7 +3697,7 @@
         "takeout": 124,
         "delivery": 41,
         "dineIn": 2689,
-        "labor": 1224
+        "labor": 1033
       },
       "jjamppong-zizon-oakland": {
         "sales": 807,
