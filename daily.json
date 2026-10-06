@@ -4049,6 +4049,62 @@
         "takeout": 527,
         "delivery": 913
       }
+    },
+    "2026-10-05": {
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1351,
+        "orders": 22,
+        "guests": 7,
+        "takeout": 53,
+        "delivery": 86,
+        "dineIn": 1212,
+        "labor": 711
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 595,
+        "orders": 19,
+        "guests": 14,
+        "takeout": 141,
+        "delivery": 193,
+        "dineIn": 262,
+        "labor": 340
+      },
+      "obento-hayward": {
+        "sales": 929,
+        "orders": 31,
+        "guests": 31,
+        "takeout": 929,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 111
+      },
+      "ohgane-concord": {
+        "sales": 7328,
+        "orders": 71,
+        "guests": 194,
+        "takeout": 325,
+        "delivery": 0,
+        "dineIn": 7003,
+        "labor": 3224
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0,
+        "takeout": 0,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 0
+      },
+      "tuum-oakland": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0,
+        "takeout": 0,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 0
+      }
     }
   },
   "_comment": "Per-business-day sales by store (America/Los_Angeles). Verona: scripts/daily-update.js. Toast: scripts/toast-daily-appsscript.gs (Gmail daily group email). The dashboard builds Day and Month views from this file; weekly-snapshots.json stays the source for Week."
