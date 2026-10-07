@@ -4224,6 +4224,69 @@
         "delivery": 0,
         "dineIn": 0,
         "labor": 0
+      },
+      "ohgane-oakland": {
+        "sales": 3458,
+        "orders": 36,
+        "guests": 80,
+        "alcohol": 119,
+        "dineIn": 2879,
+        "takeout": 77,
+        "delivery": 502
+      },
+      "ohgane-alameda": {
+        "sales": 5323,
+        "orders": 57,
+        "guests": 124,
+        "alcohol": 226,
+        "dineIn": 5016,
+        "takeout": 174,
+        "delivery": 133
+      },
+      "tangjip-hayward": {
+        "sales": 4724,
+        "orders": 61,
+        "guests": 102,
+        "alcohol": 168,
+        "dineIn": 4030,
+        "takeout": 243,
+        "delivery": 451
+      },
+      "tangjip-concord": {
+        "sales": 5069,
+        "orders": 63,
+        "guests": 65,
+        "alcohol": 192,
+        "dineIn": 3977,
+        "takeout": 287,
+        "delivery": 806
+      },
+      "tangjip-alameda": {
+        "sales": 1776,
+        "orders": 33,
+        "guests": 34,
+        "alcohol": 22,
+        "dineIn": 1560,
+        "takeout": 135,
+        "delivery": 81
+      },
+      "spoon-berkeley": {
+        "sales": 1553,
+        "orders": 33,
+        "guests": 22,
+        "alcohol": 27,
+        "dineIn": 957,
+        "takeout": 27,
+        "delivery": 570
+      },
+      "bowld-albany": {
+        "sales": 2365,
+        "orders": 42,
+        "guests": 30,
+        "alcohol": 0,
+        "dineIn": 843,
+        "takeout": 317,
+        "delivery": 1205
       }
     }
   },
