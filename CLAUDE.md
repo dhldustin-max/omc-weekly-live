@@ -34,6 +34,9 @@ That's it. Intentionally simple — no build step, no framework, no dependencies
 | Bowl'd (K-Rice Bowl) | Albany | Verona |
 | Golden Wang Donkatsu (K-Donkatsu) | Dublin | Verona |
 | Jjamppong Zizon (Korean-Chinese) | Oakland (3905 Broadway) | Toast (added 07-06-2026, isNew) |
+| TUUM | Oakland | Toast — **closed for construction from 10-05-2026, reopens as "Oh Crab" (date TBD)**: then rename the STORES entry and match the new Toast email name then; keep the sales history under the same row |
+
+This table lags; `STORES` in `index.html` is authoritative (as of 09-30-2026 it has TUUM Oakland and no Hanshin).
 
 The `STORES` array in `index.html` (~line 450) is the single source of truth — sales, target, ratings, channel mix.
 
