@@ -12,7 +12,8 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const FILES = ["dashboard.html", "store.html", "labor.html", "index.html", "nav.js", "chart.js", "data.js", "omc-logo.png"];
 fs.rmSync(ROOT + "dist", { recursive: true, force: true });
 fs.mkdirSync(ROOT + "dist");
-FILES.forEach(f => fs.copyFileSync(ROOT + f, ROOT + "dist/" + f));
+// The meeting tool is index.html on GitHub Pages; on the hub "/" goes to the dashboard, so it ships as meeting.html.
+FILES.forEach(f => fs.copyFileSync(ROOT + f, ROOT + "dist/" + (f === "index.html" ? "meeting.html" : f)));
 
 const html = fs.readFileSync(ROOT + "index.html", "utf8");
 const stores = new Function("return " + html.match(/const STORES = (\[[\s\S]*?\n  \]);/)[1])();

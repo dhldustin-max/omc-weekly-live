@@ -2,7 +2,8 @@
 // a ☰ button that slides it in on phones. Uses each page's own color tokens.
 (() => {
   let PAGES = [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["index.html", "Meeting tool"]];
-  const here = location.pathname.split("/").pop() || "index.html";
+  const bare = h => h.split("?")[0].replace(/\.html$/, "");
+  const here = bare(location.pathname.split("/").pop() || "index.html");
   const css = document.createElement("style");
   css.textContent = `
     .omc-nav { position: fixed; top: 0; left: 0; bottom: 0; width: 190px; background: var(--surface, #fff); border-right: 1px solid var(--border, rgba(0,0,0,.1));
@@ -28,7 +29,7 @@
   const nav = document.createElement("nav");
   nav.className = "omc-nav";
   nav.innerHTML = `<a href="dashboard.html" aria-label="OMC Hospitality — dashboard" style="padding:0;background:none"><img class="logo" src="omc-logo.png" alt="OMC Hospitality"></a>` + PAGES.map(([href, label]) =>
-    `<a href="${href}"${href === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("");
+    `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("");
   const burger = Object.assign(document.createElement("button"), { className: "omc-burger", textContent: "☰" });
   burger.setAttribute("aria-label", "Menu");
   const veil = Object.assign(document.createElement("div"), { className: "omc-veil" });
@@ -38,11 +39,11 @@
   // On the hub: add Payroll, and show managers only their store + payroll (the server enforces it too).
   if (window.OMC_HUB) fetch("/api/me").then(r => r.json()).then(me => {
     PAGES = me.stores === "*"
-      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["payroll.html", "Payroll"], ["index.html", "Meeting tool"]]
+      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["payroll.html", "Payroll"], ["meeting.html", "Meeting tool"]]
       : [[`store.html?id=${me.stores[0]}`, "My store"], ["payroll.html", "Payroll"]];
     nav.querySelectorAll("a:not([aria-label])").forEach(a => a.remove());
     nav.insertAdjacentHTML("beforeend", PAGES.map(([href, label]) =>
-      `<a href="${href}"${href.split("?")[0] === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("") +
+      `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("") +
       `<div style="position:absolute;bottom:14px;left:22px;right:12px;font-size:11px;color:var(--muted, #888);overflow-wrap:anywhere">${me.email}</div>`);
   }).catch(() => {});
 })();
