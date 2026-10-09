@@ -2516,9 +2516,8 @@
 
   // ---- Payroll (managers submit in the OMC Payroll web app → payroll.json, store totals only) ----
   // Under each store's Prime Cost box: the pay period that covers the viewed week (net payroll =
-  // gross − tips paid through payroll, the labor the company funds), and the manager's "Labor $ (week)"
-  // compared with the actual: payroll ÷ 2 when that period is in, otherwise the POS timecard labor
-  // (Toast stores, from daily.json) for the same Mon–Sun week.
+  // gross − tips paid through payroll, the labor the company funds). The POS-vs-payroll check lives
+  // in the payroll app and on labor.html (owner's choice, 10-09-2026).
   let PAYROLL = {}, VIEW_WEEK = null;
   fetch("payroll.json", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => { PAYROLL = j.periods || {}; renderPayroll(); }).catch(() => {});
   function renderPayroll() {
@@ -2528,13 +2527,9 @@
     const md = iso => `${+iso.slice(5, 7)}/${+iso.slice(8)}`;
     const day = (d, id, k) => (DAILY[d] && DAILY[d][id] && DAILY[d][id][k]) || 0;
     STORES.forEach(s => {
-      const el = document.getElementById(`payroll-${s.id}`), l = document.getElementById(`labor-${s.id}`);
+      const el = document.getElementById(`payroll-${s.id}`);
       if (!el) return;
       const v = start && PAYROLL[start].stores[s.id];
-      let pos = 0;
-      for (let i = 0; i < 7; i++) pos += day(isoAddDays(VIEW_WEEK, i), s.id, "labor");
-      const actual = v ? Math.round(v.net / 2) : pos ? Math.round(pos) : 0;
-      const src = v ? `페이롤 ${md(start)}–${md(PAYROLL[start].end)} ÷ 2` : "POS 타임카드";
       const lines = [];
       if (v) {
         let sales = 0;
@@ -2542,17 +2537,7 @@
         lines.push(`💵 페이롤 ${md(start)}–${md(PAYROLL[start].end)}: <strong>${fmtMoney(v.net)}</strong>` +
           (sales ? ` · 매출 대비 <strong>${(v.net / sales * 100).toFixed(1)}%</strong>` : "") + ` (2주, 팁 제외)`);
       }
-      const mgr = parseFloat(l && l.value) || 0;
-      if (actual && mgr) {
-        const diff = mgr - actual, pct = diff / actual * 100;
-        const color = Math.abs(pct) <= 5 ? "#059669" : "#dc2626";
-        lines.push(`🧾 매니저 입력 <strong>${fmtMoney(mgr)}</strong> vs 실제 <strong>${fmtMoney(actual)}</strong> <span style="color:#6b7280">(${src})</span> → ` +
-          `<strong style="color:${color}">${diff >= 0 ? "+" : "−"}${fmtMoney(Math.abs(diff))} (${diff >= 0 ? "+" : "−"}${Math.abs(pct).toFixed(1)}%)</strong>`);
-      } else if (actual) {
-        lines.push(`🧾 실제 인건비(이번 주) <strong>${fmtMoney(actual)}</strong> <span style="color:#6b7280">(${src})</span> · 매니저 입력을 넣으면 비교됩니다`);
-      }
       el.innerHTML = lines.join("<br>");
-      if (l && !l.dataset.payrollHook) { l.dataset.payrollHook = "1"; l.addEventListener("input", renderPayroll); }
     });
   }
 

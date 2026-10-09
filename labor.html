@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OMC Labor</title>
+<meta name="description" content="OMC Hospitality — labor by pay period: payroll vs sales, and POS timecards vs payroll.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10); --accent: #2a78d6; --accent-soft: #cde2fb;
+    --good: #006300; --good-bg: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+  h1 { font-size: 18px; margin: 0; }
+  h1 small { font-weight: 400; color: var(--ink-2); margin-left: 6px; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-weight: 600; padding: 6px 12px; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  select { font: inherit; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+  a.meeting { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 12px; color: var(--ink-2); }
+  .kpi .v { font-size: 26px; font-weight: 700; margin: 2px 0; white-space: nowrap; }
+  .kpi .v .grade { font-size: 15px; padding: 2px 7px; }
+  .kpi .d { font-size: 12px; color: var(--ink-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--ink-2); font-weight: 600; border-top: 0; cursor: pointer; user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th[aria-sort="descending"]::after { content: " ▼"; } th[aria-sort="ascending"]::after { content: " ▲"; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.store b { display: block; } td.store span { font-size: 12px; color: var(--muted); }
+  .meter { display: inline-grid; grid-template-columns: 72px 42px; align-items: center; gap: 8px; }
+  .track { position: relative; height: 8px; background: var(--grid); border-radius: 4px; overflow: visible; }
+  .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); left: calc(100% / 1.3); }
+  .up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+  .grade { display: inline-block; min-width: 26px; text-align: center; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; }
+  .grade.A { background: var(--good-bg); } .grade.B { background: var(--warn); color: #0b0b0b; } .grade.C { background: var(--bad); } .grade.NA { background: var(--muted); }
+  .spark { width: 84px; height: 22px; display: block; }
+  .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--accent); }
+  .empty { color: var(--muted); }
+  .warn { color: var(--bad); font-weight: 600; }
+  h2 { font-size: 14px; margin: 18px 0 8px; } h2 small { font-weight: 400; color: var(--muted); }
+  .heat { min-width: 560px; }
+  .heat td.cell { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; border: 2px solid var(--surface); border-radius: 6px; }
+  .heat th { cursor: default; text-align: right; } .heat th:first-child { text-align: left; }
+  .legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Labor <small id="sub"></small></h1>
+    <span class="spacer"></span>
+    <select id="period" aria-label="Pay period"></select>
+    <a class="meeting" href="dashboard.html">← Dashboard</a>
+    <a class="meeting" href="index.html">Meeting tool →</a>
+  </header>
+  <section class="kpis" id="kpis"></section>
+  <div class="card"><table>
+    <thead><tr>
+      <th>Store</th><th class="num">Sales (14 days)</th><th class="num">Net payroll</th><th class="num">Labor %</th>
+      <th class="num">Gross</th><th class="num">Tips</th><th class="num">Hours</th><th class="num">People</th><th>POS vs payroll</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <p class="note" id="note" style="color:var(--ink-2);font-size:12px;margin:10px 2px"></p>
+  <h2 style="font-size:15px;margin:22px 0 8px">Labor % by pay period</h2>
+  <div class="card"><table><thead id="trendHead"></thead><tbody id="trend"></tbody></table></div>
+</main>
+<script>
+// Labor by bi-weekly pay period (Sun–Sat, anchored 2026-09-20 like the OMC Payroll app).
+// payroll.json = store totals the managers submit (net = gross − tips paid through payroll);
+// daily.json = sales, Toast timecard labor $ (labor) and Verona clock hours (hours).
+// Before a store submits, its row shows what the POS alone says.
+const ANCHOR = "2026-09-20";
+const iso = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
+const add = (s, k) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + k); return iso(d); };
+const md = s => `${+s.slice(5, 7)}/${+s.slice(8)}`;
+const $ = v => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
+const pc = v => v == null || !isFinite(v) ? "—" : v.toFixed(1) + "%";
+let STORES = [], DAILY = {}, PAY = {};
+
+function periods() {
+  const out = [], today = iso(new Date());
+  for (let s = ANCHOR; s <= today; s = add(s, 14)) out.unshift({ start: s, end: add(s, 13) });
+  return out;
+}
+function posSum(id, p) {
+  const t = { sales: 0, labor: 0, hours: 0, days: 0 };
+  for (let d = p.start; d <= p.end; d = add(d, 1)) {
+    const v = DAILY[d] && DAILY[d][id]; if (!v) continue;
+    if (v.sales != null) { t.sales += v.sales; t.days++; }
+    t.labor += v.labor || 0; t.hours += v.hours || 0;
+  }
+  return t;
+}
+function check(pay, pos) {
+  if (!pay) return pos.labor ? `POS timecards ${$(pos.labor)} · ${pc(pos.labor / pos.sales * 100)} of sales` :
+                  pos.hours ? `POS clock ${Math.round(pos.hours).toLocaleString()} h` : "—";
+  const [a, b, f] = pos.labor ? [pos.labor, pay.wages, $] : pos.hours ? [pos.hours, pay.hours, v => Math.round(v).toLocaleString() + " h"] : [];
+  if (!a || b == null) return "—";
+  const d = b - a, p = d / a * 100, cls = Math.abs(p) <= 5 ? "up" : "down";
+  return `${pos.labor ? "Timecards" : "Clock"} ${f(a)} vs payroll ${f(b)} <b class="${cls}">${d >= 0 ? "+" : "−"}${f(Math.abs(d))} (${d >= 0 ? "+" : "−"}${Math.abs(p).toFixed(1)}%)</b>`;
+}
+
+function render() {
+  const p = periods().find(x => x.start === document.getElementById("period").value);
+  const pay = (PAY[p.start] || {}).stores || {};
+  const open = STORES.filter(s => !s.closedFrom || s.closedFrom > p.start);
+  let T = { sales: 0, net: 0, gross: 0, tips: 0, hours: 0, salesPaid: 0, n: 0 };
+  document.getElementById("rows").innerHTML = open.map(s => {
+    const v = pay[s.id], pos = posSum(s.id, p);
+    T.sales += pos.sales;
+    if (v) { T.n++; T.net += v.net; T.gross += v.gross; T.tips += v.tips; T.hours += v.hours; T.salesPaid += pos.sales; }
+    return `<tr><td class="store"><b>${s.name}</b><span>${s.pos}${v ? " · ✓ submitted" : " · payroll not in"}${pos.days < 14 ? ` · ${pos.days}/14 days sales` : ""}</span></td>
+      <td class="num">${$(pos.sales)}</td><td class="num">${v ? $(v.net) : "—"}</td>
+      <td class="num"><b>${v && pos.sales ? pc(v.net / pos.sales * 100) : "—"}</b></td>
+      <td class="num">${v ? $(v.gross) : "—"}</td><td class="num">${v ? $(v.tips) : "—"}</td>
+      <td class="num">${v ? Math.round(v.hours).toLocaleString() : "—"}</td><td class="num">${v ? v.headcount : "—"}</td>
+      <td>${check(v, pos)}</td></tr>`;
+  }).join("");
+  document.getElementById("sub").textContent = `${md(p.start)} – ${md(p.end)} · ${T.n}/${open.length} stores submitted`;
+  document.getElementById("kpis").innerHTML = [
+    ["Labor % (submitted stores)", T.salesPaid ? pc(T.net / T.salesPaid * 100) : "—", "net payroll ÷ same 14 days' sales"],
+    ["Net payroll", $(T.net), `gross ${$(T.gross)} − tips ${$(T.tips)}`],
+    ["Sales (all stores)", $(T.sales), "14-day pay period"],
+    ["Payroll hours", T.hours ? Math.round(T.hours).toLocaleString() : "—", `${T.n} stores`],
+  ].map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
+  document.getElementById("note").textContent = "POS vs payroll: Toast stores compare timecard labor $ with the hourly wages on the payroll; Verona stores compare clock hours with payroll hours (Verona has no labor $). Green = within 5%.";
+
+  const ps = periods().slice(0, 6);
+  document.getElementById("trendHead").innerHTML = `<tr><th>Store</th>${ps.map(x => `<th class="num">${md(x.start)}</th>`).join("")}</tr>`;
+  document.getElementById("trend").innerHTML = open.map(s => `<tr><td class="store"><b>${s.name}</b></td>${ps.map(x => {
+    const v = ((PAY[x.start] || {}).stores || {})[s.id], pos = posSum(s.id, x);
+    return `<td class="num">${v && pos.sales ? pc(v.net / pos.sales * 100) : pos.labor && pos.sales ? `<span style="color:var(--muted)">${pc(pos.labor / pos.sales * 100)} POS</span>` : "—"}</td>`;
+  }).join("")}</tr>`).join("");
+}
+
+(async () => {
+  const [html, daily, pay] = await Promise.all([
+    fetch("index.html", { cache: "no-store" }).then(r => r.text()),
+    fetch("daily.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { days: {} }).catch(() => ({ days: {} })),
+    fetch("payroll.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { periods: {} }).catch(() => ({ periods: {} })),
+  ]);
+  const m = html.match(/const STORES = (\[[\s\S]*?\n  \]);/);
+  STORES = new Function("return " + m[1])().map(s => ({ id: s.id, name: s.name, pos: s.pos, closedFrom: s.closedFrom }));
+  DAILY = daily.days || {}; PAY = pay.periods || {};
+  const sel = document.getElementById("period");
+  const ps = periods(), today = iso(new Date());
+  sel.innerHTML = ps.map(p => `<option value="${p.start}">${md(p.start)} – ${md(p.end)}${p.end >= today ? " (in progress)" : ""}</option>`).join("");
+  sel.value = (ps.find(p => p.end < today) || ps[0]).start;
+  sel.onchange = render;
+  render();
+})();
+</script>
+</body>
+</html>
