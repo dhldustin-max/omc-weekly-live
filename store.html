@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OMC Store</title>
+<meta name="description" content="OMC Hospitality — one store: daily sales by weekday, weekly sales, and labor by pay period.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10); --accent: #2a78d6; --accent-soft: #cde2fb;
+    --good: #006300; --good-bg: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+  h1 { font-size: 18px; margin: 0; }
+  h1 small { font-weight: 400; color: var(--ink-2); margin-left: 6px; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-weight: 600; padding: 6px 12px; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  select { font: inherit; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+  a.meeting { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 12px; color: var(--ink-2); }
+  .kpi .v { font-size: 26px; font-weight: 700; margin: 2px 0; white-space: nowrap; }
+  .kpi .v .grade { font-size: 15px; padding: 2px 7px; }
+  .kpi .d { font-size: 12px; color: var(--ink-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--ink-2); font-weight: 600; border-top: 0; cursor: pointer; user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th[aria-sort="descending"]::after { content: " ▼"; } th[aria-sort="ascending"]::after { content: " ▲"; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.store b { display: block; } td.store span { font-size: 12px; color: var(--muted); }
+  .meter { display: inline-grid; grid-template-columns: 72px 42px; align-items: center; gap: 8px; }
+  .track { position: relative; height: 8px; background: var(--grid); border-radius: 4px; overflow: visible; }
+  .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); left: calc(100% / 1.3); }
+  .up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+  .grade { display: inline-block; min-width: 26px; text-align: center; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; }
+  .grade.A { background: var(--good-bg); } .grade.B { background: var(--warn); color: #0b0b0b; } .grade.C { background: var(--bad); } .grade.NA { background: var(--muted); }
+  .spark { width: 84px; height: 22px; display: block; }
+  .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--accent); }
+  .empty { color: var(--muted); }
+  .warn { color: var(--bad); font-weight: 600; }
+  h2 { font-size: 14px; margin: 18px 0 8px; } h2 small { font-weight: 400; color: var(--muted); }
+  .heat { min-width: 560px; }
+  .heat td.cell { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; border: 2px solid var(--surface); border-radius: 6px; }
+  .heat th { cursor: default; text-align: right; } .heat th:first-child { text-align: left; }
+  .legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 id="title">Store</h1>
+    <span class="spacer"></span>
+    <select id="store" aria-label="Store"></select>
+  </header>
+  <section class="kpis" id="kpis"></section>
+  <section class="panel"><h2>Sales by weekday — last 3 weeks</h2><div id="c-week"></div></section>
+  <section class="panel"><h2>Weekly sales — last 8 weeks</h2><div id="c-weeks"></div></section>
+  <section class="panel"><h2 id="labor-h">Labor by pay period — POS vs payroll</h2><div id="c-labor"></div>
+    <div class="card" style="margin-top:10px"><table><thead><tr><th>Pay period</th><th class="num">Sales</th><th class="num">Net payroll</th><th class="num">Labor %</th><th class="num">POS</th><th class="num">Payroll</th><th class="num">Diff</th></tr></thead><tbody id="t-labor"></tbody></table></div>
+  </section>
+</main>
+<style>
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .panel h2 { font-size: 14px; margin: 0 0 10px; }
+</style>
+<script src="chart.js"></script>
+<script>
+// One store at a glance. Data: index.html STORES (names, targets), daily.json (sales, Toast labor $,
+// Verona clock hours), payroll.json (store totals from the OMC Payroll app). Weeks are Mon–Sun;
+// pay periods are bi-weekly Sun–Sat from 2026-09-20 (same as the payroll app).
+const ANCHOR = "2026-09-20";
+const iso = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
+const add = (s, k) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + k); return iso(d); };
+const md = s => `${+s.slice(5, 7)}/${+s.slice(8)}`;
+const money = v => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
+const kfmt = v => v >= 1000 ? "$" + (v / 1000).toFixed(v >= 10000 ? 0 : 1) + "k" : "$" + Math.round(v);
+let STORES = [], DAILY = {}, PAY = {}, SNAP = {};
+
+function day(d, id) { return (DAILY[d] || {})[id] || {}; }
+function lastMonday() { const t = iso(new Date()), dow = new Date(t + "T12:00:00").getDay(); return add(t, -((dow + 6) % 7) - 7); }
+
+function render() {
+  const s = STORES.find(x => x.id === document.getElementById("store").value);
+  history.replaceState(null, "", "?id=" + s.id);
+  document.getElementById("title").innerHTML = `${s.name} <small>${s.concept || ""} · ${s.pos}</small>`;
+  const wk = lastMonday(), sumWeek = w => { let t = 0, n = 0, o = 0; for (let i = 0; i < 7; i++) { const v = day(add(w, i), s.id); if (v.sales != null) { t += v.sales; n++; o += v.orders || 0; } } return { t, n, o }; };
+  const cur = sumWeek(wk), prev = sumWeek(add(wk, -7));
+
+  // Labor by pay period
+  const periods = []; for (let p = ANCHOR; add(p, 13) < iso(new Date()); p = add(p, 14)) periods.unshift(p);
+  const toast = s.pos === "Toast", unit = toast ? money : v => v == null ? "—" : Math.round(v).toLocaleString() + " h";
+  const L = periods.slice(0, 6).reverse().map(p => {
+    let sales = 0, labor = 0, hours = 0;
+    for (let d = p; d <= add(p, 13); d = add(d, 1)) { const v = day(d, s.id); sales += v.sales || 0; labor += v.labor || 0; hours += v.hours || 0; }
+    const pay = ((PAY[p] || {}).stores || {})[s.id];
+    return { p, sales, pos: toast ? labor || null : hours || null, payroll: pay ? (toast ? pay.wages : pay.hours) : null, net: pay ? pay.net : null };
+  });
+  const lastPaid = [...L].reverse().find(x => x.net != null);
+
+  document.getElementById("kpis").innerHTML = [
+    ["Last week sales", money(cur.t), `target ${money(s.target)} · ${s.target ? Math.round(cur.t / s.target * 100) + "%" : ""}`],
+    ["vs week before", cur.t && prev.t ? `<span class="${cur.t >= prev.t ? "up" : "down"}">${cur.t >= prev.t ? "▲" : "▼"} ${money(Math.abs(cur.t - prev.t))}</span>` : "—", prev.t ? `${((cur.t - prev.t) / prev.t * 100).toFixed(1)}%` : ""],
+    ["Avg check", cur.o ? money(cur.t / cur.o) : "—", `${cur.o || "—"} orders`],
+    ["Labor % (payroll)", lastPaid && lastPaid.sales ? (lastPaid.net / lastPaid.sales * 100).toFixed(1) + "%" : "—", lastPaid ? `pay period ${md(lastPaid.p)}–${md(add(lastPaid.p, 13))}` : "no payroll submitted yet"],
+  ].map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
+
+  // Sales by weekday: this week vs the two before (color follows the week, newest = slot 1)
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], weeks = [wk, add(wk, -7), add(wk, -14)];
+  groupedBars(document.getElementById("c-week"), { categories: days, fmt: kfmt,
+    series: weeks.map(w => ({ name: `Week of ${md(w)}`, values: days.map((_, i) => day(add(w, i), s.id).sales ?? null) })) });
+  const w8 = Array.from({ length: 8 }, (_, i) => add(wk, -7 * (7 - i)));
+  groupedBars(document.getElementById("c-weeks"), { categories: w8.map(md), fmt: kfmt,
+    // A week with all 7 days in daily.json uses them; older weeks come from weekly-snapshots.json.
+    series: [{ name: "Sales", values: w8.map(w => { const x = sumWeek(w); const v = SNAP[w] && SNAP[w][s.id]; return x.n === 7 ? x.t : v && v.sales != null ? v.sales : x.n ? x.t : null; }) }] });
+
+  document.getElementById("labor-h").textContent = `Labor by pay period — POS ${toast ? "timecards ($)" : "clock hours"} vs payroll`;
+  groupedBars(document.getElementById("c-labor"), { categories: L.map(x => md(x.p)), fmt: toast ? kfmt : v => Math.round(v) + "h",
+    series: [{ name: toast ? "POS timecards" : "POS clock hours", values: L.map(x => x.pos) }, { name: toast ? "Payroll hourly wages" : "Payroll hours", values: L.map(x => x.payroll) }] });
+  document.getElementById("t-labor").innerHTML = [...L].reverse().map(x => {
+    const d = x.pos && x.payroll != null ? x.payroll - x.pos : null, dp = d != null ? d / x.pos * 100 : null;
+    return `<tr><td>${md(x.p)} – ${md(add(x.p, 13))}</td><td class="num">${money(x.sales)}</td><td class="num">${money(x.net)}</td>
+      <td class="num"><b>${x.net != null && x.sales ? (x.net / x.sales * 100).toFixed(1) + "%" : "—"}</b></td>
+      <td class="num">${unit(x.pos)}</td><td class="num">${unit(x.payroll)}</td>
+      <td class="num">${d == null ? "—" : `<span class="${Math.abs(dp) <= 5 ? "up" : "down"}">${d >= 0 ? "+" : "−"}${unit(Math.abs(d))} (${dp.toFixed(1)}%)</span>`}</td></tr>`;
+  }).join("");
+}
+
+(async () => {
+  const [html, daily, pay, snaps] = await Promise.all([
+    fetch("index.html", { cache: "no-store" }).then(r => r.text()),
+    fetch("daily.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { days: {} }).catch(() => ({ days: {} })),
+    fetch("payroll.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { periods: {} }).catch(() => ({ periods: {} })),
+    fetch("weekly-snapshots.json", { cache: "no-store" }).then(r => r.ok ? r.json() : { weeks: [] }).catch(() => ({ weeks: [] })),
+  ]);
+  (snaps.weeks || []).forEach(w => SNAP[w.weekStartISO] = w.stores || {});
+  const m = html.match(/const STORES = (\[[\s\S]*?\n  \]);/);
+  const today = iso(new Date());
+  STORES = new Function("return " + m[1])().filter(s => !s.closedFrom || s.closedFrom > today)
+    .map(s => ({ id: s.id, name: s.name, concept: s.concept, pos: s.pos, target: s.target }));
+  DAILY = daily.days || {}; PAY = pay.periods || {};
+  const sel = document.getElementById("store");
+  sel.innerHTML = STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  sel.value = new URLSearchParams(location.search).get("id") || STORES[0].id;
+  if (!sel.value) sel.value = STORES[0].id;
+  sel.onchange = render; render();
+  addEventListener("resize", () => { clearTimeout(window._rz); window._rz = setTimeout(render, 200); });
+})();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

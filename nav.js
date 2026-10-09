@@ -1,18 +1,18 @@
 // Left menu shared by dashboard.html and labor.html: always visible on wide screens,
 // a ☰ button that slides it in on phones. Uses each page's own color tokens.
 (() => {
-  const PAGES = [["dashboard.html", "Dashboard"], ["labor.html", "Labor"], ["index.html", "Meeting tool"]];
+  const PAGES = [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["index.html", "Meeting tool"]];
   const here = location.pathname.split("/").pop() || "index.html";
   const css = document.createElement("style");
   css.textContent = `
-    .omc-nav { position: fixed; top: 0; left: 0; bottom: 0; width: 190px; background: var(--surface); border-right: 1px solid var(--border);
+    .omc-nav { position: fixed; top: 0; left: 0; bottom: 0; width: 190px; background: var(--surface, #fff); border-right: 1px solid var(--border, rgba(0,0,0,.1));
       padding: 18px 12px; z-index: 20; transition: transform .2s ease; }
-    .omc-nav b { display: block; font-size: 13px; color: var(--muted); padding: 0 10px 12px; letter-spacing: .02em; }
-    .omc-nav a { display: block; padding: 9px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font-weight: 600; }
-    .omc-nav a:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
-    .omc-nav a.on { background: var(--accent); color: #fff; }
+    .omc-nav b { display: block; font-size: 13px; color: var(--muted, #888); padding: 0 10px 12px; letter-spacing: .02em; }
+    .omc-nav a { display: block; padding: 9px 10px; border-radius: 8px; color: var(--ink, #111); text-decoration: none; font-weight: 600; }
+    .omc-nav a:hover { background: color-mix(in srgb, var(--accent, #2a78d6) 8%, transparent); }
+    .omc-nav a.on { background: var(--accent, #2a78d6); color: #fff; }
     .omc-burger { display: none; position: fixed; top: 10px; left: 10px; z-index: 21; width: 40px; height: 40px; border-radius: 10px;
-      border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 20px; cursor: pointer; }
+      border: 1px solid var(--border, rgba(0,0,0,.1)); background: var(--surface, #fff); color: var(--ink, #111); font-size: 20px; cursor: pointer; }
     .omc-veil { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 19; }
     body { padding-left: 190px; }
     @media (max-width: 900px) {

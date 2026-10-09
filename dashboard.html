@@ -267,7 +267,7 @@ function render() {
   rows.sort((a, b) => { const x = a[key], y = b[key]; if (x == null) return 1; if (y == null) return -1; return (typeof x === "string" ? x.localeCompare(y) : x - y) * dir; });
   document.querySelectorAll("th[data-k]").forEach(th => th.setAttribute("aria-sort", th.dataset.k === key ? (dir < 0 ? "descending" : "ascending") : "none"));
   $("#table tbody").innerHTML = rows.map(r => `<tr>
-    <td class="store"><b>${r.name}</b><span>${r.concept} · ${r.pos}${period === "month" && r.n != null && r.n < cur._days ? ` · <span class="warn">${r.n} of ${cur._days} days</span>` : ""}</span></td>
+    <td class="store"><b><a href="store.html?id=${r.id}" style="color:inherit">${r.name}</a></b><span>${r.concept} · ${r.pos}${period === "month" && r.n != null && r.n < cur._days ? ` · <span class="warn">${r.n} of ${cur._days} days</span>` : ""}</span></td>
     <td class="num">${r.sales == null ? `<span class="empty">no data</span>` : `<b>${money(r.sales)}</b>`}</td>
     <td class="num">${r.pct == null ? "—" : `<span class="meter" title="target ${money(r.target)}"><span class="track"><span class="fill" style="width:${Math.min(130, r.pct * 100) / 1.3}%"></span><span class="tick"></span></span><span>${(r.pct * 100).toFixed(0)}%</span></span>`}</td>
     <td class="num">${r.delta == null ? "—" : dl(r.delta)}</td>

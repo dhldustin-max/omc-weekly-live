@@ -89,6 +89,10 @@
     <tbody id="rows"></tbody>
   </table></div>
   <p class="note" id="note" style="color:var(--ink-2);font-size:12px;margin:10px 2px"></p>
+  <h2 style="font-size:15px;margin:22px 0 8px">Labor % by store — last 3 pay periods</h2>
+  <div class="card" style="padding:12px 14px"><div id="c-labor" style="min-width:720px"></div></div>
+  <h2 style="font-size:15px;margin:22px 0 8px">Sales by store — last 3 pay periods</h2>
+  <div class="card" style="padding:12px 14px"><div id="c-sales" style="min-width:720px"></div></div>
   <h2 style="font-size:15px;margin:22px 0 8px">Labor % by pay period</h2>
   <div class="card"><table><thead id="trendHead"></thead><tbody id="trend"></tbody></table></div>
 </main>
@@ -137,7 +141,7 @@ function render() {
     const v = pay[s.id], pos = posSum(s.id, p);
     T.sales += pos.sales;
     if (v) { T.n++; T.net += v.net; T.gross += v.gross; T.tips += v.tips; T.hours += v.hours; T.salesPaid += pos.sales; }
-    return `<tr><td class="store"><b>${s.name}</b><span>${s.pos}${v ? " · ✓ submitted" : " · payroll not in"}${pos.days < 14 ? ` · ${pos.days}/14 days sales` : ""}</span></td>
+    return `<tr><td class="store"><b><a href="store.html?id=${s.id}" style="color:inherit">${s.name}</a></b><span>${s.pos}${v ? " · ✓ submitted" : " · payroll not in"}${pos.days < 14 ? ` · ${pos.days}/14 days sales` : ""}</span></td>
       <td class="num">${$(pos.sales)}</td><td class="num">${v ? $(v.net) : "—"}</td>
       <td class="num"><b>${v && pos.sales ? pc(v.net / pos.sales * 100) : "—"}</b></td>
       <td class="num">${v ? $(v.gross) : "—"}</td><td class="num">${v ? $(v.tips) : "—"}</td>
@@ -152,6 +156,16 @@ function render() {
     ["Payroll hours", T.hours ? Math.round(T.hours).toLocaleString() : "—", `${T.n} stores`],
   ].map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
   document.getElementById("note").textContent = "POS vs payroll: Toast stores compare timecard labor $ with the hourly wages on the payroll; Verona stores compare clock hours with payroll hours (Verona has no labor $). Green = within 5%.";
+
+  // Grouped bars: each store, its last 3 finished pay periods side by side (newest = slot 1).
+  const today = iso(new Date()), done = periods().filter(x => x.end < today).slice(0, 3);
+  const short = n => ({ "Oh G Burger Berkeley": "OG Burger", "Golden Wang Donkatsu Dublin": "Golden Wang", "Spoon Korean Bistro": "Spoon",
+    "Jjamppong Zizon Oakland": "JJ Zizon", "TUUM Oakland": "TUUM", "Bowl'd Albany": "Bowl'd" })[n] || n;
+  groupedBars(document.getElementById("c-labor"), { categories: open.map(s => short(s.name)), fmt: v => v.toFixed(0) + "%",
+    series: done.map(x => ({ name: `${md(x.start)}–${md(x.end)}`, values: open.map(s => {
+      const v = ((PAY[x.start] || {}).stores || {})[s.id], pos = posSum(s.id, x); return v && pos.sales ? v.net / pos.sales * 100 : null; }) })) });
+  groupedBars(document.getElementById("c-sales"), { categories: open.map(s => short(s.name)), fmt: v => "$" + Math.round(v / 1000) + "k",
+    series: done.map(x => ({ name: `${md(x.start)}–${md(x.end)}`, values: open.map(s => posSum(s.id, x).sales || null) })) });
 
   const ps = periods().slice(0, 6);
   document.getElementById("trendHead").innerHTML = `<tr><th>Store</th>${ps.map(x => `<th class="num">${md(x.start)}</th>`).join("")}</tr>`;
@@ -178,6 +192,7 @@ function render() {
   render();
 })();
 </script>
+<script src="chart.js"></script>
 <script src="nav.js"></script>
 </body>
 </html>
