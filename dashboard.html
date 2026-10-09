@@ -84,8 +84,6 @@
     </span>
     <select id="picker" aria-label="Period picker"></select>
     <span class="spacer"></span>
-    <a class="meeting" href="labor.html">Labor →</a>
-    <a class="meeting" href="index.html">Meeting tool →</a>
   </header>
 
   <section class="kpis" id="kpis" aria-label="Totals"></section>
@@ -313,5 +311,6 @@ function heatmap(end) {
 }
 load().catch(e => { $("#foot").textContent = "Failed to load data: " + e.message; });
 </script>
+<script src="nav.js"></script>
 </body>
 </html>
