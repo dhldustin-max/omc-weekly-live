@@ -4409,6 +4409,72 @@
         "takeout": 319,
         "delivery": 561
       }
+    },
+    "2026-10-08": {
+      "ohgane-oakland": {
+        "sales": 5731,
+        "orders": 46,
+        "guests": 121,
+        "alcohol": 412,
+        "dineIn": 5178,
+        "takeout": 272,
+        "delivery": 281
+      },
+      "ohgane-alameda": {
+        "sales": 6075,
+        "orders": 73,
+        "guests": 138,
+        "alcohol": 193,
+        "dineIn": 5612,
+        "takeout": 211,
+        "delivery": 252
+      },
+      "tangjip-hayward": {
+        "sales": 5048,
+        "orders": 68,
+        "guests": 56,
+        "discount": 6,
+        "alcohol": 116,
+        "dineIn": 3436,
+        "takeout": 580,
+        "delivery": 1027
+      },
+      "tangjip-concord": {
+        "sales": 3037,
+        "orders": 43,
+        "guests": 48,
+        "alcohol": 23,
+        "dineIn": 2523,
+        "takeout": 169,
+        "delivery": 345
+      },
+      "tangjip-alameda": {
+        "sales": 2556,
+        "orders": 46,
+        "guests": 44,
+        "alcohol": 111,
+        "dineIn": 2035,
+        "takeout": 253,
+        "delivery": 268
+      },
+      "spoon-berkeley": {
+        "sales": 2527,
+        "orders": 33,
+        "guests": 29,
+        "alcohol": 7,
+        "dineIn": 1285,
+        "takeout": 774,
+        "delivery": 468
+      },
+      "bowld-albany": {
+        "sales": 2654,
+        "orders": 48,
+        "guests": 34,
+        "alcohol": 0,
+        "dineIn": 1738,
+        "takeout": 215,
+        "delivery": 701
+      }
     }
   },
   "_comment": "Per-business-day sales by store (America/Los_Angeles). Verona: scripts/daily-update.js. Toast: scripts/toast-daily-appsscript.gs (Gmail daily group email). The dashboard builds Day and Month views from this file; weekly-snapshots.json stays the source for Week."
