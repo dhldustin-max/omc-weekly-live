@@ -815,6 +815,39 @@
     .meeting-info-row { grid-template-columns: 1fr; }
   }
 </style>
+<style id="dash-look">
+  /* Dashboard look for the meeting tool (10-09-2026): same tokens, flat bordered surfaces, one accent.
+     Screen only — the PDF print styles above are untouched. Light only for now (many card colors are inline). */
+  @media screen {
+    :root { --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781; --grid:#e1e0d9;
+            --border:rgba(11,11,11,0.10); --accent:#2a78d6; --accent-soft:#cde2fb; }
+    body { background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .container { max-width: 1100px; }
+    .header { border-bottom-color: var(--grid); }
+    .title { font-size: 18px; letter-spacing: 0; }
+    .subtitle, .meeting-info label, .concept-header { color: var(--ink-2); }
+    .week-tag, .period-toggle button, .week-tag-select { color: var(--accent); }
+    .period-toggle, .period-toggle button + button, .week-tag-select { border-color: var(--border); }
+    .period-toggle button.active { background: var(--accent); color: #fff; }
+    .week-tag-select { background-color: var(--surface); }
+    .help-banner { background: var(--surface); border-color: var(--border); color: var(--ink-2); }
+    .meeting-info, .summary, .store-card, .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: none; }
+    .store-card:hover { transform: none; }
+    .store-card.filled { box-shadow: 0 0 0 1.5px #0ca30c; } .store-card.over-prime { box-shadow: 0 0 0 1.5px #fab219; } .store-card.danger { box-shadow: 0 0 0 1.5px #d03b3b; }
+    .concept-header { border-bottom: 1px solid var(--grid); }
+    .focus-bar { background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+                 border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .focus-bar-label { color: var(--accent); opacity: 1; } .focus-bar-status { color: var(--ink-2); opacity: 1; }
+    .focus-bar select { background: var(--page); border: 1px solid var(--border); color: var(--ink); }
+    .actions { background: color-mix(in srgb, var(--surface) 94%, transparent); border-top-color: var(--border); }
+    .actions-inner { max-width: 1100px; }
+    .btn { border-radius: 8px; } .btn-primary, .btn-success { background: var(--accent); }
+    .btn-secondary { background: var(--page); border: 1px solid var(--border); color: var(--ink); }
+    .meeting-info input, .note-input, .prime-input { border-color: var(--border); background: #fff; }
+    .note-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+    .nav-prev-next button { border-color: var(--border); background: var(--surface); }
+  }
+</style>
 </head>
 <body>
 <div class="container">
