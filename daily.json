@@ -4474,6 +4474,60 @@
         "dineIn": 1738,
         "takeout": 215,
         "delivery": 701
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 1034,
+        "orders": 18,
+        "guests": 4,
+        "takeout": 55,
+        "delivery": 0,
+        "dineIn": 980,
+        "labor": 910
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 736,
+        "orders": 23,
+        "guests": 10,
+        "takeout": 151,
+        "delivery": 171,
+        "dineIn": 414,
+        "labor": 629
+      },
+      "obento-hayward": {
+        "sales": 1244,
+        "orders": 37,
+        "guests": 37,
+        "takeout": 1244,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 116
+      },
+      "ohgane-concord": {
+        "sales": 8459,
+        "orders": 71,
+        "guests": 210,
+        "takeout": 589,
+        "delivery": 0,
+        "dineIn": 7869,
+        "labor": 2284
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 53,
+        "orders": 2,
+        "guests": 2,
+        "takeout": 53,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 0
+      },
+      "tuum-oakland": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0,
+        "takeout": 0,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 0
       }
     }
   },
