@@ -47,6 +47,7 @@ for (let day = from; day <= to; day = addDays(day, 1)) {
     if (r.error) { log(`  ❌ ${r.id}: ${r.error}`); failed++; continue; }
     const R = v => v == null ? null : Math.round(v);
     const row = { sales: R(r.sales), orders: r.orders, guests: r.guests, discount: R(r.discount), alcohol: R(r.alcohol) };
+    if (r.hours != null) row.hours = r.hours;
     if (r.channel) Object.assign(row, { dineIn: R(r.channel.dineIn), takeout: R(r.channel.takeout), delivery: R(r.channel.delivery) });
     for (const k of Object.keys(row)) if (row[k] == null) delete row[k];
     db.days[day][r.id] = { ...(db.days[day][r.id] || {}), ...row };

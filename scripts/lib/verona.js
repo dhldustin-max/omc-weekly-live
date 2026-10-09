@@ -404,7 +404,22 @@ export async function scrapeStoreByName(page, storePrefix, startDate, endDate) {
     throw new Error(`SUMMARY_PARSE_FAILED for ${storePrefix} — page layout may have changed`);
   }
   const { anchorLine, valueLine, ...rest } = parsed;
+  // Clock hours for the same range (Employee Hours report: one "12.68 h" per employee). Verona has
+  // no labor $; the payroll app compares these hours with the hours managers submit.
+  try {
+    u.searchParams.set('type', 'EMPLOYEE_HOUR');
+    await page.goto(u.toString(), { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    const t = await page.evaluate(() => document.body.innerText);
+    rest.hours = sumHours(t);
+  } catch { rest.hours = null; }
   return rest;
+}
+
+// "ALEX\n7.52 h\nANNY\n12.68 h" -> 20.2 (null when the report has no hour lines).
+export function sumHours(text) {
+  const m = text.match(/^\s*\d+(?:\.\d+)?\s*h\s*$/gm);
+  return m ? Math.round(m.reduce((a, l) => a + parseFloat(l), 0) * 100) / 100 : null;
 }
 
 // Navigate back to the merchant list ("Group List" link in the side menu).
