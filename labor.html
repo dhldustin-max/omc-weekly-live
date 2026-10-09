@@ -143,7 +143,7 @@ function render() {
     if (v) { T.n++; T.net += v.net; T.gross += v.gross; T.tips += v.tips; T.hours += v.hours; T.salesPaid += pos.sales; }
     return `<tr><td class="store"><b><a href="store.html?id=${s.id}" style="color:inherit">${s.name}</a></b><span>${s.pos}${v ? " · ✓ submitted" : " · payroll not in"}${pos.days < 14 ? ` · ${pos.days}/14 days sales` : ""}</span></td>
       <td class="num">${$(pos.sales)}</td><td class="num">${v ? $(v.net) : "—"}</td>
-      <td class="num"><b>${v && pos.sales ? pc(v.net / pos.sales * 100) : "—"}</b></td>
+      <td class="num"><b class="${v && pos.sales && v.net / pos.sales > 0.25 ? "down" : ""}">${v && pos.sales ? (v.net / pos.sales > 0.25 ? "⚠ " : "") + pc(v.net / pos.sales * 100) : "—"}</b></td>
       <td class="num">${v ? $(v.gross) : "—"}</td><td class="num">${v ? $(v.tips) : "—"}</td>
       <td class="num">${v ? Math.round(v.hours).toLocaleString() : "—"}</td><td class="num">${v ? v.headcount : "—"}</td>
       <td>${check(v, pos)}</td></tr>`;

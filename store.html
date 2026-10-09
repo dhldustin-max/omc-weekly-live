@@ -147,7 +147,7 @@ function render() {
   document.getElementById("t-labor").innerHTML = [...L].reverse().map(x => {
     const d = x.pos && x.payroll != null ? x.payroll - x.pos : null, dp = d != null ? d / x.pos * 100 : null;
     return `<tr><td>${md(x.p)} – ${md(add(x.p, 13))}</td><td class="num">${money(x.sales)}</td><td class="num">${money(x.net)}</td>
-      <td class="num"><b>${x.net != null && x.sales ? (x.net / x.sales * 100).toFixed(1) + "%" : "—"}</b></td>
+      <td class="num"><b class="${x.net != null && x.sales && x.net / x.sales > 0.25 ? "down" : ""}">${x.net != null && x.sales ? (x.net / x.sales > 0.25 ? "⚠ " : "") + (x.net / x.sales * 100).toFixed(1) + "%" : "—"}</b></td>
       <td class="num">${unit(x.pos)}</td><td class="num">${unit(x.payroll)}</td>
       <td class="num">${d == null ? "—" : `<span class="${Math.abs(dp) <= 5 ? "up" : "down"}">${d >= 0 ? "+" : "−"}${unit(Math.abs(d))} (${dp.toFixed(1)}%)</span>`}</td></tr>`;
   }).join("");
