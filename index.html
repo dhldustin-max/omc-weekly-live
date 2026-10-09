@@ -1539,6 +1539,7 @@
         </div>
         <div class="prime-breakdown" id="prime-breakdown-${s.id}">Labor — % · Food — %</div>
         <div class="prime-prev-line no-data" id="prime-prev-${s.id}">지난주 데이터 없음</div>
+        <div class="prime-prev-line" id="payroll-${s.id}"></div>
         <div class="prime-save-row">
           <span class="prime-saved-pill hidden" id="prime-saved-pill-${s.id}"></span>
           <button class="prime-save-btn" id="prime-save-btn-${s.id}" data-store-id="${s.id}" onclick="saveCommittedPrime('${s.id}')">💾 Save</button>
@@ -2480,6 +2481,7 @@
   }
 
   function applyWeekSnapshot(weekStartISO, isCurrent) {
+    VIEW_WEEK = weekStartISO;
     let snap;
     // Day/Month views scale target/floor/stretch; put the weekly ones back.
     STORES.forEach(s => { const b = CURRENT_WEEK_BACKUP && CURRENT_WEEK_BACKUP[s.id]; if (b) { s.target = b.target; s.floor = b.floor; s.stretch = b.stretch; } });
@@ -2509,6 +2511,31 @@
     applyFocus(currentFocus || "all");
     // Notes need to be rerendered against existing PREV_NOTES state
     STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
+    renderPayroll();
+  }
+
+  // ---- Payroll (managers submit in the OMC Payroll web app → payroll.json, store totals only) ----
+  // Shows the pay period that covers the viewed week; net payroll (gross − tips paid through payroll)
+  // is the labor the company funds. An empty "Labor $ (week)" box gets half the 2-week net.
+  let PAYROLL = {}, VIEW_WEEK = null;
+  fetch("payroll.json", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => { PAYROLL = j.periods || {}; renderPayroll(); }).catch(() => {});
+  function renderPayroll() {
+    if (!VIEW_WEEK) return;
+    const mid = isoAddDays(VIEW_WEEK, 3);
+    const start = Object.keys(PAYROLL).find(p => p <= mid && PAYROLL[p].end >= mid);
+    const md = iso => `${+iso.slice(5, 7)}/${+iso.slice(8)}`;
+    STORES.forEach(s => {
+      const el = document.getElementById(`payroll-${s.id}`);
+      const v = start && PAYROLL[start].stores[s.id];
+      if (!el) return;
+      if (!v) { el.textContent = ""; return; }
+      let sales = 0;
+      for (let d = start; d <= PAYROLL[start].end; d = isoAddDays(d, 1)) sales += (DAILY[d] && DAILY[d][s.id] && DAILY[d][s.id].sales) || 0;
+      el.innerHTML = `💵 페이롤 ${md(start)}–${md(PAYROLL[start].end)}: <strong>${fmtMoney(v.net)}</strong>` +
+        (sales ? ` · 매출 대비 <strong>${(v.net / sales * 100).toFixed(1)}%</strong>` : "") + ` (2주, 팁 제외 · Gross ${fmtMoney(v.gross)})`;
+      const l = document.getElementById(`labor-${s.id}`);
+      if (l && !l.value) { l.value = Math.round(v.net / 2); l.title = "페이롤 2주 순인건비 ÷ 2"; l.dispatchEvent(new Event("input")); }
+    });
   }
 
   // ---- Day / Week / Month views ------------------------------------------
