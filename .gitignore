@@ -27,3 +27,8 @@ playwright/.cache/
 # Finder duplicate-file artefacts
 * 2
 *\ 2.*
+
+# OMC hub build output (scripts/build-hub.mjs)
+dist/
+hub/stores.json
+.wrangler/
