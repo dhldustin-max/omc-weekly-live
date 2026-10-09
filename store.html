@@ -83,6 +83,8 @@
   <section class="kpis" id="kpis"></section>
   <section class="panel"><h2>Sales by weekday — last 3 weeks</h2><div id="c-week"></div></section>
   <section class="panel"><h2>Weekly sales — last 8 weeks</h2><div id="c-weeks"></div></section>
+  <section class="panel"><h2>Labor % by pay period (25% limit)</h2><div id="c-pct"></div></section>
+  <section class="panel"><h2>Where payroll goes — by pay period</h2><div id="c-mix"></div></section>
   <section class="panel"><h2 id="labor-h">Labor by pay period — POS vs payroll</h2><div id="c-labor"></div>
     <div class="card" style="margin-top:10px"><table><thead><tr><th>Pay period</th><th class="num">Sales</th><th class="num">Net payroll</th><th class="num">Labor %</th><th class="num">POS</th><th class="num">Payroll</th><th class="num">Diff</th></tr></thead><tbody id="t-labor"></tbody></table></div>
   </section>
@@ -121,7 +123,7 @@ function render() {
     let sales = 0, labor = 0, hours = 0;
     for (let d = p; d <= add(p, 13); d = add(d, 1)) { const v = day(d, s.id); sales += v.sales || 0; labor += v.labor || 0; hours += v.hours || 0; }
     const pay = ((PAY[p] || {}).stores || {})[s.id];
-    return { p, sales, pos: toast ? labor || null : hours || null, payroll: pay ? (toast ? pay.wages : pay.hours) : null, net: pay ? pay.net : null };
+    return { p, sales, pay, pos: toast ? labor || null : hours || null, payroll: pay ? (toast ? pay.wages : pay.hours) : null, net: pay ? pay.net : null };
   });
   const lastPaid = [...L].reverse().find(x => x.net != null);
 
@@ -142,7 +144,13 @@ function render() {
     series: [{ name: "Sales", values: w8.map(w => { const x = sumWeek(w); const v = SNAP[w] && SNAP[w][s.id]; return x.n === 7 ? x.t : v && v.sales != null ? v.sales : x.n ? x.t : null; }) }] });
 
   document.getElementById("labor-h").textContent = `Labor by pay period — POS ${toast ? "timecards ($)" : "clock hours"} vs payroll`;
-  groupedBars(document.getElementById("c-labor"), { categories: L.map(x => md(x.p)), fmt: toast ? kfmt : v => Math.round(v) + "h",
+  const rng = p => `${md(p)}–${md(add(p, 13))}`;
+  lineChart(document.getElementById("c-pct"), { categories: L.map(x => rng(x.p)), fmt: v => v.toFixed(0) + "%", target: { value: 25, label: "25% limit" },
+    series: [{ name: "Labor %", values: L.map(x => x.net != null && x.sales ? x.net / x.sales * 100 : null) }] });
+  stackedBars(document.getElementById("c-mix"), { categories: L.map(x => rng(x.p)), fmt: kfmt,
+    series: [["regPay", "Regular"], ["otPay", "Overtime"], ["salary", "Salary"], ["tips", "Tips"], ["bonus", "Bonus"]]
+      .map(([k, name]) => ({ name, values: L.map(x => (x.pay && x.pay[k]) || null) })) });
+  groupedBars(document.getElementById("c-labor"), { categories: L.map(x => rng(x.p)), fmt: toast ? kfmt : v => Math.round(v) + "h",
     series: [{ name: toast ? "POS timecards" : "POS clock hours", values: L.map(x => x.pos) }, { name: toast ? "Payroll hourly wages" : "Payroll hours", values: L.map(x => x.payroll) }] });
   document.getElementById("t-labor").innerHTML = [...L].reverse().map(x => {
     const d = x.pos && x.payroll != null ? x.payroll - x.pos : null, dp = d != null ? d / x.pos * 100 : null;

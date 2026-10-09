@@ -89,6 +89,10 @@
     <tbody id="rows"></tbody>
   </table></div>
   <p class="note" id="note" style="color:var(--ink-2);font-size:12px;margin:10px 2px"></p>
+  <h2 style="font-size:15px;margin:22px 0 8px">Labor % trend — all stores (25% limit)</h2>
+  <div class="card" style="padding:12px 14px"><div id="c-trend"></div></div>
+  <h2 style="font-size:15px;margin:22px 0 8px" id="mix-h">Where payroll goes — by store</h2>
+  <div class="card" style="padding:12px 14px"><div id="c-mix" style="min-width:720px"></div></div>
   <h2 style="font-size:15px;margin:22px 0 8px">Labor % by store — last 3 pay periods</h2>
   <div class="card" style="padding:12px 14px"><div id="c-labor" style="min-width:720px"></div></div>
   <h2 style="font-size:15px;margin:22px 0 8px">Sales by store — last 3 pay periods</h2>
@@ -167,8 +171,20 @@ function render() {
   groupedBars(document.getElementById("c-sales"), { categories: open.map(s => short(s.name)), fmt: v => "$" + Math.round(v / 1000) + "k",
     series: done.map(x => ({ name: `${md(x.start)}–${md(x.end)}`, values: open.map(s => posSum(s.id, x).sales || null) })) });
 
+  // Trend: all submitted stores' net payroll ÷ their sales, per pay period, against the 25% limit.
+  const six = periods().filter(x => x.end < today).slice(0, 6).reverse();
+  lineChart(document.getElementById("c-trend"), { categories: six.map(x => `${md(x.start)}–${md(x.end)}`), fmt: v => v.toFixed(0) + "%",
+    target: { value: 25, label: "25% limit" },
+    series: [{ name: "Labor %", values: six.map(x => { const st = (PAY[x.start] || {}).stores || {}; let n = 0, sl = 0;
+      Object.keys(st).forEach(id => { n += st[id].net; sl += posSum(id, x).sales; }); return sl ? n / sl * 100 : null; }) }] });
+  // Mix: the selected period's gross per store, split regular / overtime / salary / tips / bonus.
+  document.getElementById("mix-h").textContent = `Where payroll goes — by store, ${md(p.start)}–${md(p.end)}`;
+  const parts = [["regPay", "Regular"], ["otPay", "Overtime"], ["salary", "Salary"], ["tips", "Tips"], ["bonus", "Bonus"]];
+  stackedBars(document.getElementById("c-mix"), { categories: open.map(s => short(s.name)), fmt: v => "$" + (v >= 1000 ? (v / 1000).toFixed(1) + "k" : Math.round(v)),
+    series: parts.map(([k, name]) => ({ name, values: open.map(s => (pay[s.id] && pay[s.id][k]) || null) })) });
+
   const ps = periods().slice(0, 6);
-  document.getElementById("trendHead").innerHTML = `<tr><th>Store</th>${ps.map(x => `<th class="num">${md(x.start)}</th>`).join("")}</tr>`;
+  document.getElementById("trendHead").innerHTML = `<tr><th>Store</th>${ps.map(x => `<th class="num">${md(x.start)}–${md(x.end)}</th>`).join("")}</tr>`;
   document.getElementById("trend").innerHTML = open.map(s => `<tr><td class="store"><b>${s.name}</b></td>${ps.map(x => {
     const v = ((PAY[x.start] || {}).stores || {})[s.id], pos = posSum(s.id, x);
     return `<td class="num">${v && pos.sales ? pc(v.net / pos.sales * 100) : pos.labor && pos.sales ? `<span style="color:var(--muted)">${pc(pos.labor / pos.sales * 100)} POS</span>` : "—"}</td>`;
