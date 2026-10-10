@@ -9,12 +9,14 @@ const fx = f => fs.readFileSync(new URL('./fixtures/' + f, import.meta.url), 'ut
 const msg = (subject, isoDate, html) => ({ getSubject: () => subject, getDate: () => new Date(isoDate), getBody: () => html,
   getPlainBody: () => { throw new Error('Toast mails have no plain-text part; parse getBody()'); } });
 const daily = msg('OMC Hospitality - Tuesday, September 29', '2026-09-30T13:14:40Z', fx('toast-daily-2026-09-29.html'));
+// A single-location nightly mail (real JZ Oakland 10/8 body, Chez Maeju subject) for SINGLE stores.
+const single = msg('Chez Maeju - 6200 Claremont Avenue - Thursday, October 8', '2026-10-09T15:46:34Z', fx('toast-single-jzoak-2026-10-08.html'));
 const weekly = msg('TUUM Korean Gastro Pub - 4869 Telegraph Avenue - Week of Sep 21–27', '2026-09-29T14:14:39Z', fx('toast-weekly-tuum-2026-09-21.html'));
 
 const start = { days: { '2026-09-21': { 'tuum-oakland': { sales: 1, orders: 6 } } } };   // stale TUUM row to be corrected
 let put = null; const logs = [];
 const ctx = {
-  GmailApp: { search: q => /Week of/.test(q) ? [{ getMessages: () => [weekly] }] : [{ getMessages: () => [daily] }] },
+  GmailApp: { search: q => /Claremont/.test(q) ? [{ getMessages: () => [single] }] : /Week of/.test(q) ? [{ getMessages: () => [weekly] }] : [{ getMessages: () => [daily] }] },
   Logger: { log: s => logs.push(s) },
   Session: { getScriptTimeZone: () => 'America/Los_Angeles', getActiveUser: () => ({ getEmail: () => 'test@example.com' }) },
   PropertiesService: { getScriptProperties: () => ({ getProperty: () => 'TEST_TOKEN' }) },
@@ -45,3 +47,6 @@ assert.deepStrictEqual(out['2026-09-21']['tuum-oakland'], { sales: 261, orders: 
 assert.equal(out['2026-09-27']['tuum-oakland'].sales, 122);
 assert.equal(Object.keys(out).filter(d => out[d]['tuum-oakland']).length, 8);   // 9/21..9/27 + 9/29
 console.log('apps script end-to-end ok ·', logs.join(' / '));
+// single-location mail -> its own row, same fields as the group mail
+assert.deepStrictEqual(out['2026-10-08']['chez-maeju-oakland'], { sales: 736, orders: 23, guests: 10, labor: 629, dineIn: 414, delivery: 171, takeout: 151 });
+console.log('single-location mail ok');

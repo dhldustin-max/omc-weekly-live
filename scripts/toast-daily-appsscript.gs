@@ -28,6 +28,9 @@ var STORES = {                     // Location column -> store id (same table as
   '4869 Telegraph Avenue': 'tuum-oakland',
   '6200 Claremont Avenue': 'chez-maeju-oakland'
 };
+// Toast stores that are not in the "OMC Hospitality" group mail: read their own nightly mail
+// ("Chez Maeju - 6200 Claremont Avenue - Thursday, October 8"). Added 10-09-2026.
+var SINGLE = { '6200 Claremont Avenue': 'chez-maeju-oakland' };
 var LOOKBACK_DAYS = 3;
 
 function syncToastDaily() {
@@ -40,6 +43,17 @@ function syncToastDaily() {
       seen++;
       var rows = parseStores_(htmlToPipeText_(m.getBody()));   // Toast mails are HTML-only
       if (Object.keys(rows).length) parsed[day] = rows;
+    });
+  });
+  Object.keys(SINGLE).forEach(function (addr) {
+    GmailApp.search('from:no-reply@toasttab.com subject:"' + addr + '" -subject:"Week of" newer_than:' + (LOOKBACK_DAYS + 1) + 'd').forEach(function (t) {
+      t.getMessages().forEach(function (m) {
+        var day = parseDay_(m.getSubject(), m.getDate());
+        if (!day) return;
+        seen++;
+        var v = parseSingle_(m.getBody());
+        if (v) (parsed[day] = parsed[day] || {})[SINGLE[addr]] = v;
+      });
     });
   });
   // Weekly mails ("<store> - <address> - Week of Sep 20-26") carry corrected per-day labor %
@@ -97,6 +111,23 @@ function parseDay_(subject, sent) {
   var d = new Date(m[1] + ' ' + m[2] + ', ' + year);
   if (d > sent) d.setFullYear(year - 1);
   return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');  // d was built in the script's own zone
+}
+
+// One store's nightly mail: the "At a Glance" numbers are plain blocks ("Net sales" then "$735.69"),
+// the Order type table gives the dine-in / take-out / delivery split (its Net sales column).
+function parseSingle_(html) {
+  var flat = html.replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, '\n').replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&#36;/g, '$').split('\n').map(function (x) { return x.trim(); }).filter(String);
+  var num = function (k) { var i = flat.indexOf(k); return i < 0 ? null : Number(String(flat[i + 1]).replace(/[$,%]/g, '')); };
+  var sales = num('Net sales');
+  if (sales == null || isNaN(sales)) return null;
+  var v = { sales: Math.round(sales), orders: num('Orders'), guests: num('Guests / covers'), labor: Math.round(num('Hourly labor cost') || 0) };
+  var ch = { 'Dine-In': 'dineIn', 'Take-Out': 'takeout', 'Delivery': 'delivery' };
+  htmlToPipeText_(html).split('\n').forEach(function (l) {
+    var c = l.split('|').map(function (x) { return x.trim(); });
+    if (ch[c[1]] && c.length > 5) v[ch[c[1]]] = Math.round(Number(c[5].replace(/[$,]/g, '')));
+  });
+  return v;
 }
 
 // Toast mails are HTML-only. Flatten every innermost <tr> into "| cell | cell |" so the table
