@@ -87,10 +87,13 @@
   .day h3 { margin: 0 0 8px; font-size: 17px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .day h3 small { font: 600 13px system-ui; color: var(--ink-2); }
   .day h3 small.over { color: var(--bad); }
-  .p { display: grid; grid-template-columns: 1.4fr 1fr 1fr 64px 28px; gap: 6px; margin-bottom: 6px; }
+  .p { display: grid; grid-template-columns: 1.4fr 1fr 1fr 64px 34px 28px; gap: 6px; margin-bottom: 6px; }
   .p input { min-width: 0; font: 600 16px system-ui; padding: 9px 10px; border-radius: 10px; border: 2px solid var(--border); background: var(--page); color: var(--ink); }
   .p input:focus { outline: none; border-color: var(--accent); }
   .p input.bad { border-color: var(--bad); }
+  .p .pin { border: 0; background: none; font-size: 17px; cursor: pointer; opacity: .25; filter: grayscale(1); }
+  .p .pin.on { opacity: 1; filter: none; }
+  .p.fixed input { background: color-mix(in srgb, var(--accent) 8%, var(--page)); }
   .p .x { border: 0; background: none; color: var(--muted); font-size: 18px; cursor: pointer; }
   .head { font-size: 12px; color: var(--muted); font-weight: 600; }
   .add { font: 700 14px system-ui; padding: 8px; border-radius: 10px; border: 2px dashed var(--border); background: none; color: var(--accent); cursor: pointer; width: 100%; }
@@ -99,9 +102,9 @@
   .done { text-align: center; color: var(--good); font-weight: 700; font-size: 16px; min-height: 22px; }
   .done.err { color: var(--bad); }
   .total { font: 700 16px system-ui; margin: 4px 0 12px; } .total.over { color: var(--bad); }
-  @media (max-width: 600px) { .p { grid-template-columns: 1fr 1fr 56px 24px; } .p .t { grid-column: 1 / 3; grid-row: 2; } .head { display: none !important; } }
+  @media (max-width: 600px) { .p { grid-template-columns: 1fr 1fr 56px 30px 24px; } .p .t { grid-column: 1 / 3; grid-row: 2; } .head { display: none !important; } }
   @media print {
-    .omc-nav, .omc-burger, .row, .hours, .add, .send, .done, .p .x, .btn, #budgetnote { display: none !important; }
+    .omc-nav, .omc-burger, .row, .hours, .add, .send, .done, .p .x, .p .pin, .btn, #budgetnote { display: none !important; }
     body { padding: 0 !important; background: #fff; color: #000; } .day { break-inside: avoid; border-color: #999; }
     .p input { border: 0; padding: 2px 0; background: none; color: #000; }
   }
@@ -118,6 +121,7 @@
     <span class="spacer"></span><button class="btn" id="copy">Copy last week</button><button class="btn" onclick="print()">Print</button>
   </div>
   <p class="hint" id="budgetnote"></p>
+  <p class="hint">📌 = fixed shift: comes back every week by itself. A new week starts as a copy of last week plus the fixed shifts.</p>
   <div class="total" id="total"></div>
   <div id="days"></div>
   <button id="send" class="send">Save schedule</button>
@@ -135,7 +139,9 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const $ = id => document.getElementById(id);
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const TITLES = { FOH: ["Server", "Host", "Busser", "Bartender", "Cashier", "Manager"], BOH: ["Cook", "Line cook", "Prep", "Dishwasher", "Sushi chef", "Kitchen manager"] };
-let STORES = [], DAILY = {}, PAY = {}, S = { FOH: [], BOH: [] }, SIDE = "FOH", ROLES = [], BUDGET = null, DIRTY = false;
+let STORES = [], DAILY = {}, PAY = {}, S = { FOH: [], BOH: [] }, SIDE = "FOH", ROLES = [], BUDGET = null, DIRTY = false, FIX = { FOH: [], BOH: [] }, FIXDIRTY = false;
+const key = r => r.day + "|" + String(r.name).trim().toLowerCase();
+const isFixed = (side, r) => r.name.trim() && FIX[side].some(f => key(f) === key(r));
 function thisMonday() { const t = iso(new Date()), dow = new Date(t + "T12:00:00").getDay(); return add(t, -((dow + 6) % 7)); }
 function call(fn, store, args) {
   return fetch("/api/payroll", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fn, store, args }) })
@@ -151,13 +157,14 @@ function draw() {
   $("days").innerHTML = DAYS.map((name, d) => {
     const rows = S[SIDE].map((r, i) => [r, i]).filter(([r]) => r.day === d);
     return `<div class="day"><h3>${name} ${md(add(wk, d))} <small id="sum${d}"></small></h3>
-      ${rows.length ? `<div class="p head"><span>Name</span><span class="t">Title</span><span>Time</span><span>Hours</span><span></span></div>` : ""}
-      ${rows.map(([r, i]) => `<div class="p">
+      ${rows.length ? `<div class="p head"><span>Name</span><span class="t">Title</span><span>Time</span><span>Hours</span><span></span><span></span></div>` : ""}
+      ${rows.map(([r, i]) => `<div class="p${isFixed(SIDE, r) ? " fixed" : ""}">
         <input aria-label="Name" list="names" value="${esc(r.name)}" data-i="${i}" data-k="name" placeholder="Name">
         <input class="t" aria-label="Title" list="titles" value="${esc(r.title)}" data-i="${i}" data-k="title" placeholder="Title">
         <input aria-label="Time" value="${esc(r.time)}" data-i="${i}" data-k="time" placeholder="10-9">
         <input aria-label="Hours" type="number" step="0.25" inputmode="decimal" value="${r.hrs ?? ""}" data-i="${i}" data-k="hrs" class="${r.time && r.hrs == null ? "bad" : ""}">
-        <button class="x" aria-label="Remove" data-del="${i}">✕</button></div>`).join("")}
+        <button class="pin${isFixed(SIDE, r) ? " on" : ""}" aria-label="Fixed shift every week" aria-pressed="${isFixed(SIDE, r)}" title="Fixed shift (every week)" data-pin="${i}">📌</button>
+        <button class="x" aria-label="Remove from this week" data-del="${i}">✕</button></div>`).join("")}
       <button class="add" data-add="${d}">+ Add person</button></div>`;
   }).join("");
   sums();
@@ -190,6 +197,13 @@ $("days").oninput = e => {
 $("days").onclick = e => {
   const t = e.target;
   if (t.dataset.add != null) { S[SIDE].push({ day: +t.dataset.add, name: "", title: "", time: "", hrs: null }); DIRTY = true; draw(); [...document.querySelectorAll(".day")[+t.dataset.add].querySelectorAll('[data-k="name"]')].pop().focus(); }
+  if (t.dataset.pin != null) {
+    const r = S[SIDE][t.dataset.pin];
+    if (!r.name.trim()) return say("Type the name first, then tap 📌.", true);
+    if (isFixed(SIDE, r)) FIX[SIDE] = FIX[SIDE].filter(f => key(f) !== key(r));
+    else FIX[SIDE].push({ day: r.day, name: r.name.trim(), title: r.title, time: r.time, hrs: r.hrs });
+    FIXDIRTY = DIRTY = true; draw();
+  }
   if (t.dataset.del != null) { S[SIDE].splice(+t.dataset.del, 1); DIRTY = true; draw(); }
 };
 // O/C hours changed → recompute the rows that use them.
@@ -209,7 +223,8 @@ async function load() {
   BUDGET = laborBudget(DAILY, PAY, id, wk, add);
   $("budgetnote").textContent = `Budget = hours you can schedule and stay under 25% labor (same as Labor plan, at $${BUDGET.rate.toFixed(2)}/hour).`;
   try {
-    const r = await call("scheduleGet", id, [wk]);
+    const [r, fx] = await Promise.all([call("scheduleGet", id, [wk]), call("scheduleGet", id, ["fixed"])]);
+    FIX = { FOH: fx.FOH ? fx.FOH.rows : [], BOH: fx.BOH ? fx.BOH.rows : [] }; FIXDIRTY = false;
     $("title").textContent = `Schedule — ${r.storeName}`;
     S = { FOH: r.FOH ? r.FOH.rows : [], BOH: r.BOH ? r.BOH.rows : [] };
     $("open").value = r.open || ""; $("close").value = r.close || "";
@@ -217,23 +232,39 @@ async function load() {
     $("names").innerHTML = ROSTER.map(p => `<option value="${esc(p.name)}">`).join("");
     const at = [r.FOH, r.BOH].filter(Boolean).map(x => x.at).sort().pop();
     if (at) say(`✓ Saved ${at}`);
-    DIRTY = false; draw();
+    DIRTY = false;
+    if (!r.FOH && !r.BOH) {   // new week: last week + fixed shifts, ready to adjust
+      const lw = await call("scheduleGet", id, [add(wk, -7)]);
+      S = fill(lw);
+      if (S.FOH.length || S.BOH.length) { DIRTY = true; say("New week: filled from last week + fixed shifts. Change what you need, then Save."); }
+    }
+    draw();
   } catch (e) { say(e.message, true); }
   $("send").disabled = false;
 }
+// Fixed shifts, plus last week's other rows (a fixed person removed last week, e.g. vacation, still comes back).
+function fill(lw) {
+  const out = {};
+  for (const side of ["FOH", "BOH"]) {
+    const fixedKeys = new Set(FIX[side].map(key));
+    out[side] = [...FIX[side], ...(lw[side] ? lw[side].rows : []).filter(r => !fixedKeys.has(key(r)))].map(r => ({ ...r })).sort((a, b) => a.day - b.day);
+  }
+  return out;
+}
 $("copy").onclick = async () => {
-  if ((S.FOH.length || S.BOH.length) && !confirm("Replace this week with last week's schedule?")) return;
+  if ((S.FOH.length || S.BOH.length) && !confirm("Start this week over from last week's schedule?")) return;
   try {
     const r = await call("scheduleGet", $("store").value, [add($("week").value, -7)]);
     if (!r.FOH && !r.BOH) return say("Last week has no schedule to copy.", true);
-    S = { FOH: r.FOH ? r.FOH.rows : [], BOH: r.BOH ? r.BOH.rows : [] }; DIRTY = true; draw(); say("Copied. Change what you need, then Save.");
+    S = fill(r); DIRTY = true; draw(); say("Copied last week + fixed shifts. Change what you need, then Save.");
   } catch (e) { say(e.message, true); }
 };
 $("send").onclick = async () => {
   $("send").disabled = true; $("send").textContent = "Saving…";
   try {
     for (const side of ["FOH", "BOH"]) await call("scheduleSave", $("store").value, [$("week").value, side, S[side], $("open").value, $("close").value]);
-    DIRTY = false; say("✓ Saved. The office can see it now.");
+    if (FIXDIRTY) for (const side of ["FOH", "BOH"]) await call("scheduleSave", $("store").value, ["fixed", side, FIX[side], $("open").value, $("close").value]);
+    DIRTY = FIXDIRTY = false; say("✓ Saved. The office can see it now.");
   } catch (e) { say(e.message, true); }
   $("send").disabled = false; $("send").textContent = "Save schedule";
 };
