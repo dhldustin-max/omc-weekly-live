@@ -45,5 +45,11 @@
     nav.insertAdjacentHTML("beforeend", PAGES.map(([href, label]) =>
       `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("") +
       `<div style="position:absolute;bottom:14px;left:22px;right:12px;font-size:11px;color:var(--muted, #888);overflow-wrap:anywhere">${me.email}</div>`);
+    // Corporate can preview a store manager's view; while previewing, a bar says so with an exit link.
+    if (me.viewAs) document.body.insertAdjacentHTML("afterbegin", `<div style="position:sticky;top:0;z-index:40;background:#fab219;color:#0b0b0b;padding:8px 14px;font:600 13px system-ui;text-align:center">Preview: you are seeing what the ${me.viewAs} manager sees · payroll is read-only · <a href="/api/view-as" style="color:#0b0b0b">Exit preview</a></div>`);
+    else if (me.stores === "*") fetch("/api/stores").then(r => r.text()).then(t => {
+      const list = new Function("return " + t.match(/const STORES = (\[[\s\S]*?\n  \]);/)[1])();
+      nav.insertAdjacentHTML("beforeend", `<select aria-label="Preview as a store manager" style="margin:14px 10px 0;width:calc(100% - 20px);font:12px system-ui;padding:6px;border-radius:8px;border:1px solid var(--border, #ddd);background:var(--surface, #fff);color:var(--ink, #111)" onchange="if(this.value)location='/api/view-as?store='+this.value"><option value="">Preview as manager…</option>${list.map(s => `<option value="${s.id}">${s.name}</option>`).join("")}</select>`);
+    });
   }).catch(() => {});
 })();
