@@ -1,7 +1,7 @@
 // Left menu shared by dashboard.html and labor.html: always visible on wide screens,
 // a ☰ button that slides it in on phones. Uses each page's own color tokens.
 (() => {
-  let PAGES = [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["marketing.html", "Marketing"], ["index.html", "Meeting tool"]];
+  let PAGES = [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["Labor", [["labor.html", "Overview"]]], ["marketing.html", "Marketing"], ["index.html", "Meeting tool"]];
   const bare = h => h.split("?")[0].replace(/\.html$/, "");
   const here = bare(location.pathname.split("/").pop() || "index.html");
   const css = document.createElement("style");
@@ -14,6 +14,12 @@
     .omc-nav a { display: block; padding: 9px 10px; border-radius: 8px; color: var(--ink, #111); text-decoration: none; font-weight: 600; }
     .omc-nav a:hover { background: color-mix(in srgb, var(--accent, #2a78d6) 8%, transparent); }
     .omc-nav a.on { background: var(--accent, #2a78d6); color: #fff; }
+    .omc-nav summary { padding: 9px 10px; border-radius: 8px; font-weight: 600; color: var(--ink, #111); cursor: pointer; list-style: none; }
+    .omc-nav summary::-webkit-details-marker { display: none; }
+    .omc-nav summary::after { content: "›"; float: right; transition: transform .15s; }
+    .omc-nav details[open] summary::after { transform: rotate(90deg); }
+    .omc-nav summary:hover { background: color-mix(in srgb, var(--accent, #2a78d6) 8%, transparent); }
+    .omc-nav details a { padding-left: 24px; font-weight: 500; }
     .omc-burger { display: none; position: fixed; top: 10px; left: 10px; z-index: 21; width: 40px; height: 40px; border-radius: 10px;
       border: 1px solid var(--border, rgba(0,0,0,.1)); background: var(--surface, #fff); color: var(--ink, #111); font-size: 20px; cursor: pointer; }
     .omc-veil { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 19; }
@@ -28,8 +34,12 @@
   document.head.appendChild(css);
   const nav = document.createElement("nav");
   nav.className = "omc-nav";
-  nav.innerHTML = `<a href="dashboard.html" aria-label="OMC Hospitality — dashboard" style="padding:0;background:none"><img class="logo" src="omc-logo.png" alt="OMC Hospitality"></a>` + PAGES.map(([href, label]) =>
-    `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("");
+  // An entry is [href, label] or [label, [[href, label], …]] — a group, open while you are on one of its pages.
+  const link = ([href, label]) => `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`;
+  const render = list => list.map(e => Array.isArray(e[1])
+    ? `<details class="grp"${e[1].some(([h]) => bare(h) === here) ? " open" : ""}><summary>${e[0]}</summary>${e[1].map(link).join("")}</details>`
+    : link(e)).join("");
+  nav.innerHTML = `<a href="dashboard.html" aria-label="OMC Hospitality — dashboard" style="padding:0;background:none"><img class="logo" src="omc-logo.png" alt="OMC Hospitality"></a>` + render(PAGES);
   const burger = Object.assign(document.createElement("button"), { className: "omc-burger", textContent: "☰" });
   burger.setAttribute("aria-label", "Menu");
   const veil = Object.assign(document.createElement("div"), { className: "omc-veil" });
@@ -39,11 +49,12 @@
   // On the hub: add Payroll, and show managers only their store + payroll (the server enforces it too).
   if (window.OMC_HUB) fetch("/api/me").then(r => r.json()).then(me => {
     PAGES = me.stores === "*"
-      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["plan.html", "Labor plan"], ["marketing.html", "Marketing"], ["payroll.html", "Payroll"], ["weekly.html", "Weekly report"], ["cash.html", "Cash pickup"], ["meeting.html", "Meeting tool"]]
-      : [[`store.html?id=${me.stores[0]}`, "My store"], ["weekly.html", "Weekly report"], ["cash.html", "Cash pickup"], ["plan.html", "Labor plan"], ["payroll.html", "Payroll"], ["marketing.html", "Marketing"]];
-    nav.querySelectorAll("a:not([aria-label])").forEach(a => a.remove());
-    nav.insertAdjacentHTML("beforeend", PAGES.map(([href, label]) =>
-      `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("") +
+      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["Labor", [["labor.html", "Overview"], ["plan.html", "Labor plan"], ["payroll.html", "Payroll"]]],
+         ["marketing.html", "Marketing"], ["weekly.html", "Weekly report"], ["cash.html", "Cash pickup"], ["meeting.html", "Meeting tool"]]
+      : [[`store.html?id=${me.stores[0]}`, "My store"], ["Labor", [["plan.html", "Labor plan"], ["payroll.html", "Payroll"]]],
+         ["weekly.html", "Weekly report"], ["cash.html", "Cash pickup"], ["marketing.html", "Marketing"]];
+    nav.querySelectorAll("a:not([aria-label]), details").forEach(a => a.remove());
+    nav.insertAdjacentHTML("beforeend", render(PAGES) +
       `<div style="position:absolute;bottom:14px;left:22px;right:12px;font-size:11px;color:var(--muted, #888);overflow-wrap:anywhere">${me.email}</div>`);
     // Corporate can preview a store manager's view; while previewing, a bar says so with an exit link.
     if (me.viewAs) document.body.insertAdjacentHTML("afterbegin", `<div style="position:sticky;top:0;z-index:40;background:#fab219;color:#0b0b0b;padding:8px 14px;font:600 13px system-ui;text-align:center">Preview: you are seeing what the ${me.viewAs} manager sees · payroll is read-only · <a href="/api/view-as" style="color:#0b0b0b">Exit preview</a></div>`);
