@@ -25,7 +25,8 @@ var STORES = {                     // Location column -> store id (same table as
   '22521 Main Street': 'obento-hayward',
   '3905 Broadway': 'jjamppong-zizon-oakland',
   '7222 Regional Street': 'golden-wang-donkatsu-dublin',
-  '4869 Telegraph Avenue': 'tuum-oakland'
+  '4869 Telegraph Avenue': 'tuum-oakland',
+  '6200 Claremont Avenue': 'chez-maeju-oakland'
 };
 var LOOKBACK_DAYS = 3;
 

@@ -1072,6 +1072,14 @@
       orders: 103, guests: 61,
       googleRating: null, yelpRating: null,
       channelDine: null },
+    // Added 10-09-2026. Rent $8,000 → target 8000 / 0.09 / 4.33. Toast (6200 Claremont Ave) is not in the
+    // "OMC Hospitality" group mail yet, so sales stay empty until its own daily mail is wired in.
+    { id: "chez-maeju-oakland", name: "Chez Maeju Oakland", concept: "Chez Maeju", cuisine: "Korean",
+      location: "Oakland, CA", pos: "Toast", isNew: true,
+      sales: null, target: 20529, floor: 18476, stretch: 23095, rent: 8000,
+      orders: null, guests: null,
+      googleRating: null, yelpRating: null,
+      channelDine: null },
   ];
   // Closed stores leave the meeting tool from their closedFrom date (PT).
   { const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
