@@ -1686,6 +1686,11 @@
           "sales": 21865,
           "orders": 480,
           "guests": 511
+        },
+        "jjamppong-zizon-hayward": {
+          "sales": 0,
+          "orders": null,
+          "guests": null
         }
       }
     }

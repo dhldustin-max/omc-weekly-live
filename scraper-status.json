@@ -1,5 +1,5 @@
 {
-  "lastRunAt": "2026-10-05T07:58:16.652Z",
+  "lastRunAt": "2026-10-10T01:10:55.590Z",
   "lastRunStatus": "ok",
   "lastRunScopes": [
     "verona"
@@ -9,7 +9,7 @@
   "lastErrors": [],
   "consecutiveFailures": 0,
   "lastSuccess": {
-    "ranAt": "2026-10-05T07:58:16.652Z",
+    "ranAt": "2026-10-10T01:10:55.590Z",
     "weekStartISO": "2026-09-28",
     "weekEndISO": "2026-10-04",
     "scopes": [
@@ -50,6 +50,11 @@
         "source": "verona",
         "storeId": "bowld-albany",
         "sales": 21865
+      },
+      {
+        "source": "verona",
+        "storeId": "jjamppong-zizon-hayward",
+        "sales": 0
       }
     ]
   }
