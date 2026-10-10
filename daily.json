@@ -4661,6 +4661,97 @@
         "delivery": 0,
         "dineIn": 0,
         "labor": 0
+      },
+      "jjamppong-zizon-hayward": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0,
+        "discount": 0,
+        "alcohol": 0,
+        "hours": 35.79
+      }
+    },
+    "2026-10-09": {
+      "ohgane-oakland": {
+        "sales": 1414,
+        "orders": 22,
+        "guests": 41,
+        "alcohol": 27,
+        "hours": 37.13,
+        "dineIn": 1363,
+        "takeout": 50,
+        "delivery": 0
+      },
+      "ohgane-alameda": {
+        "sales": 1274,
+        "orders": 15,
+        "guests": 27,
+        "alcohol": 154,
+        "hours": 46.86,
+        "dineIn": 1231,
+        "takeout": 43,
+        "delivery": 0
+      },
+      "tangjip-hayward": {
+        "sales": 1437,
+        "orders": 20,
+        "guests": 15,
+        "alcohol": 30,
+        "hours": 38.28,
+        "dineIn": 1140,
+        "takeout": 62,
+        "delivery": 235
+      },
+      "tangjip-concord": {
+        "sales": 2349,
+        "orders": 33,
+        "guests": 29,
+        "alcohol": 39,
+        "hours": 12.73,
+        "dineIn": 1668,
+        "takeout": 287,
+        "delivery": 394
+      },
+      "tangjip-alameda": {
+        "sales": 1226,
+        "orders": 27,
+        "guests": 27,
+        "alcohol": 18,
+        "hours": 28.48,
+        "dineIn": 1012,
+        "takeout": 20,
+        "delivery": 194
+      },
+      "spoon-berkeley": {
+        "sales": 870,
+        "orders": 18,
+        "guests": 8,
+        "alcohol": 0,
+        "hours": 11.83,
+        "dineIn": 359,
+        "takeout": 62,
+        "delivery": 449
+      },
+      "bowld-albany": {
+        "sales": 963,
+        "orders": 23,
+        "guests": 18,
+        "alcohol": 0,
+        "hours": 21.77,
+        "dineIn": 621,
+        "takeout": 94,
+        "delivery": 248
+      },
+      "jjamppong-zizon-hayward": {
+        "sales": 448,
+        "orders": 12,
+        "guests": 10,
+        "discount": 21,
+        "alcohol": 0,
+        "hours": 12.82,
+        "dineIn": 388,
+        "takeout": 39,
+        "delivery": 0
       }
     }
   },
