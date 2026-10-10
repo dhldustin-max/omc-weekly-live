@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="data.js"></script>
+<title>OMC Cash Pickup</title>
+<meta name="description" content="Store managers count last week's cash; the office marks it picked up.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10); --accent: #2a78d6; --accent-soft: #cde2fb;
+    --good: #006300; --good-bg: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+  h1 { font-size: 18px; margin: 0; }
+  h1 small { font-weight: 400; color: var(--ink-2); margin-left: 6px; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-weight: 600; padding: 6px 12px; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  select { font: inherit; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+  a.meeting { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 12px; color: var(--ink-2); }
+  .kpi .v { font-size: 26px; font-weight: 700; margin: 2px 0; white-space: nowrap; }
+  .kpi .v .grade { font-size: 15px; padding: 2px 7px; }
+  .kpi .d { font-size: 12px; color: var(--ink-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--ink-2); font-weight: 600; border-top: 0; cursor: pointer; user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th[aria-sort="descending"]::after { content: " ▼"; } th[aria-sort="ascending"]::after { content: " ▲"; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.store b { display: block; } td.store span { font-size: 12px; color: var(--muted); }
+  .meter { display: inline-grid; grid-template-columns: 72px 42px; align-items: center; gap: 8px; }
+  .track { position: relative; height: 8px; background: var(--grid); border-radius: 4px; overflow: visible; }
+  .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); left: calc(100% / 1.3); }
+  .up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+  .grade { display: inline-block; min-width: 26px; text-align: center; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; }
+  .grade.A { background: var(--good-bg); } .grade.B { background: var(--warn); color: #0b0b0b; } .grade.C { background: var(--bad); } .grade.NA { background: var(--muted); }
+  .spark { width: 84px; height: 22px; display: block; }
+  .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--accent); }
+  .empty { color: var(--muted); }
+  .warn { color: var(--bad); font-weight: 600; }
+  h2 { font-size: 14px; margin: 18px 0 8px; } h2 small { font-weight: 400; color: var(--muted); }
+  .heat { min-width: 560px; }
+  .heat td.cell { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; border: 2px solid var(--surface); border-radius: 6px; }
+  .heat th { cursor: default; text-align: right; } .heat th:first-child { text-align: left; }
+  .legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<style>
+  main { max-width: 620px; }
+  main.wide { max-width: 1100px; }
+  .big { display: block; width: 100%; font: 600 28px system-ui; padding: 14px 16px; border-radius: 14px; border: 2px solid var(--border); background: var(--surface); color: var(--ink); }
+  .big:focus { outline: none; border-color: var(--accent); }
+  .big:disabled { opacity: .7; }
+  label.q { display: block; font: 700 18px system-ui; margin: 22px 0 4px; }
+  .hint { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+  .sum { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 0; padding: 12px 16px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); font: 600 18px system-ui; }
+  .sum b { font-size: 26px; font-variant-numeric: tabular-nums; }
+  .sum.final { background: var(--accent); color: #fff; border: 0; } .sum.final b { font-size: 34px; }
+  .misc { display: grid; grid-template-columns: 1fr 130px; gap: 8px; margin-bottom: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+  .misc input { font: 600 18px system-ui; padding: 10px 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--page); color: var(--ink); width: 100%; }
+  .misc .photo { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
+  .misc .photo label { font: 700 16px system-ui; padding: 10px 14px; border-radius: 10px; background: var(--accent-soft); color: var(--ink); cursor: pointer; }
+  .misc .photo label.need { background: var(--bad); color: #fff; }
+  .misc .photo input { display: none; }
+  .misc .photo a { color: var(--good); font-weight: 700; }
+  .misc .x { margin-left: auto; font: 600 14px system-ui; color: var(--muted); background: none; border: 0; cursor: pointer; }
+  .add { font: 700 16px system-ui; padding: 10px 14px; border-radius: 10px; border: 2px dashed var(--border); background: none; color: var(--accent); cursor: pointer; width: 100%; }
+  .send { display: block; width: 100%; margin: 24px 0 8px; font: 700 20px system-ui; padding: 16px; border: 0; border-radius: 14px; background: var(--accent); color: #fff; cursor: pointer; }
+  .send:disabled { opacity: .5; }
+  .done { text-align: center; color: var(--good); font-weight: 700; font-size: 16px; min-height: 22px; }
+  .done.err { color: var(--bad); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+  .row select { font-size: 16px; padding: 8px 10px; }
+  td button { font: 700 13px system-ui; padding: 6px 10px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; cursor: pointer; }
+  td a { color: var(--accent); }
+</style>
+<body>
+<main id="main">
+  <header><h1 id="title">Cash pickup</h1></header>
+  <div class="row"><select id="store" aria-label="Store"></select><select id="week" aria-label="Week"></select></div>
+  <div id="form" hidden>
+    <label class="q" for="sales">1. Cash sales ($)</label>
+    <p class="hint">From the POS: cash sales for the whole week.</p>
+    <input id="sales" class="big" type="number" inputmode="decimal" placeholder="0">
+    <label class="q" for="tips">2. Cash tips ($)</label>
+    <p class="hint">From the POS: cash tips for the whole week.</p>
+    <input id="tips" class="big" type="number" inputmode="decimal" placeholder="0">
+    <div class="sum">Total cash <b id="total">$0</b></div>
+    <label class="q">3. Cash you paid out <small class="hint">(only if any)</small></label>
+    <p class="hint">Each one needs a photo of the receipt. No receipt = not accepted.</p>
+    <div id="miscs"></div>
+    <button class="add" id="add">+ Add a payout</button>
+    <div class="sum final">Put in the envelope <b id="pickup">$0</b></div>
+    <button id="send" class="send">Send to office</button>
+    <div class="done" id="done"></div>
+  </div>
+  <div id="office" hidden>
+    <section class="kpis" id="kpis"></section>
+    <div class="card"><table><thead><tr><th>Store</th><th class="num">Cash sales</th><th class="num">Cash tips</th><th class="num">Paid out</th><th class="num">Pickup</th><th>Sent</th><th>Picked up</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <div class="done" id="odone"></div>
+  </div>
+</main>
+<script>
+// Weekly cash pickup (replaces Weekly_Cash_Pickup_Sheet.pdf). Manager: cash sales + cash tips − payouts
+// (each with a receipt photo) = the envelope. Office: every store's envelope for the week, "Picked up".
+// Hub only; saved in the payroll app's Google Sheet ("Cash") through /api/payroll. The hub adds the
+// signed-in email to cashSave / cashPickup, so that is the signature.
+const iso = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
+const add = (s, k) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + k); return iso(d); };
+const md = s => `${+s.slice(5, 7)}/${+s.slice(8)}`;
+const money = v => "$" + (Math.round(v * 100) / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const $ = id => document.getElementById(id);
+let STORES = [], MISC = [], LOCKED = false;
+function lastMonday() { const t = iso(new Date()), dow = new Date(t + "T12:00:00").getDay(); return add(t, -((dow + 6) % 7) - 7); }
+function call(fn, store, args) {
+  return fetch("/api/payroll", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fn, store, args }) })
+    .then(r => r.json()).then(j => { if (!j.ok) throw new Error(j.error); return j.result; });
+}
+const num = v => Number(v) || 0;
+function say(id, msg, err) { $(id).textContent = msg; $(id).classList.toggle("err", !!err); }
+
+// ---- manager form ----
+function totals() {
+  const total = num($("sales").value) + num($("tips").value), out = MISC.reduce((a, m) => a + num(m.amount), 0);
+  $("total").textContent = money(total); $("pickup").textContent = money(total - out);
+}
+function drawMisc() {
+  $("miscs").innerHTML = MISC.map((m, i) => `<div class="misc">
+    <input aria-label="What was it for" placeholder="What for? (ice, gas…)" value="${esc(m.what)}" data-i="${i}" data-k="what"${LOCKED ? " disabled" : ""}>
+    <input aria-label="Amount" type="number" inputmode="decimal" placeholder="$0" value="${m.amount ?? ""}" data-i="${i}" data-k="amount"${LOCKED ? " disabled" : ""}>
+    <div class="photo">${m.receipt ? `<a href="${esc(m.receipt)}" target="_blank" rel="noopener">✓ Receipt</a>` : ""}
+      ${LOCKED ? "" : `<label class="${m.receipt ? "" : "need"}">📷 ${m.receipt ? "Retake" : "Receipt photo"}<input type="file" accept="image/*" capture="environment" data-i="${i}"></label>
+      <button class="x" data-del="${i}">Remove</button>`}</div></div>`).join("");
+  $("add").hidden = LOCKED || MISC.length >= 4;
+  totals();
+}
+$("miscs").oninput = e => { const t = e.target; if (t.dataset.k) { MISC[t.dataset.i][t.dataset.k] = t.value; totals(); } };
+$("miscs").onclick = e => { if (e.target.dataset.del != null) { MISC.splice(+e.target.dataset.del, 1); drawMisc(); } };
+$("miscs").onchange = async e => {
+  const t = e.target; if (t.type !== "file" || !t.files[0]) return;
+  say("done", "Uploading photo…");
+  try { MISC[t.dataset.i].receipt = await call("cashReceipt", $("store").value, [$("week").value, await shrink(t.files[0])]); say("done", ""); }
+  catch (err) { say("done", err.message, true); }
+  drawMisc();
+};
+// Phone photos are 3–10 MB; send a ~1400px JPEG instead.
+function shrink(file) {
+  return new Promise((ok, bad) => {
+    const img = new Image(); img.onerror = () => bad(new Error("Could not read that photo. Try again."));
+    img.onload = () => {
+      const k = Math.min(1, 1400 / Math.max(img.width, img.height)), c = document.createElement("canvas");
+      c.width = img.width * k; c.height = img.height * k; c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src); ok(c.toDataURL("image/jpeg", 0.7).split(",")[1]);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+$("add").onclick = () => { MISC.push({ what: "", amount: "", receipt: "" }); drawMisc(); };
+$("sales").oninput = $("tips").oninput = totals;
+async function loadForm() {
+  say("done", ""); $("send").disabled = true;
+  try {
+    const r = await call("cashGet", $("store").value, [$("week").value]);
+    $("title").textContent = `Cash pickup — ${r.storeName}`;
+    $("sales").value = r.cashSales ?? ""; $("tips").value = r.cashTips ?? "";
+    MISC = r.misc.map(m => ({ ...m })); LOCKED = !!r.pickedBy;
+    $("sales").disabled = $("tips").disabled = LOCKED; $("send").hidden = LOCKED;
+    drawMisc();
+    if (LOCKED) say("done", `✓ Picked up by ${r.pickedBy} on ${r.pickedAt}.`);
+    else if (r.sentAt) say("done", `✓ Sent ${r.sentAt}. You can change it and send again.`);
+  } catch (e) { say("done", e.message, true); }
+  $("send").disabled = false;
+}
+$("send").onclick = async () => {
+  const bad = MISC.find(m => num(m.amount) > 0 && !m.receipt);
+  if (bad) return say("done", "Every payout needs a receipt photo (the red button).", true);
+  if ($("sales").value === "" || $("tips").value === "") return say("done", "Fill in cash sales and cash tips (0 is OK).", true);
+  $("send").disabled = true; $("send").textContent = "Sending…";
+  try { await call("cashSave", $("store").value, [$("week").value, num($("sales").value), num($("tips").value), MISC]); say("done", "✓ Sent. Thank you!"); }
+  catch (e) { say("done", e.message, true); }
+  $("send").disabled = false; $("send").textContent = "Send to office";
+};
+
+// ---- office view ----
+async function loadOffice() {
+  say("odone", "Loading…");
+  try { drawOffice(await call("cashAll", "*office", [$("week").value])); say("odone", ""); }
+  catch (e) { say("odone", e.message, true); }
+}
+function drawOffice(all) {
+  const list = STORES.map(s => ({ s, r: all[s.id] })), sent = list.filter(x => x.r), picked = sent.filter(x => x.r.pickedBy);
+  const out = r => r.misc.reduce((a, m) => a + m.amount, 0);
+  $("kpis").innerHTML = [["Sent", `${sent.length} / ${list.length}`, list.length - sent.length ? `${list.length - sent.length} not sent yet` : "all stores"],
+    ["Picked up", `${picked.length} / ${sent.length}`, ""], ["Total pickup", money(sent.reduce((a, x) => a + x.r.pickup, 0)), "all sent stores"]]
+    .map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
+  $("rows").innerHTML = list.map(({ s, r }) => !r ? `<tr><td class="store"><b>${s.name}</b></td><td colspan="6" class="empty">Not sent yet</td></tr>` :
+    `<tr><td class="store"><b>${s.name}</b><span>${esc(r.manager)}</span></td><td class="num">${money(r.cashSales)}</td><td class="num">${money(r.cashTips)}</td>
+     <td class="num">${r.misc.length ? r.misc.map(m => `${esc(m.what || "payout")} ${money(m.amount)} <a href="${esc(m.receipt)}" target="_blank" rel="noopener">receipt</a>`).join("<br>") : money(0)}</td>
+     <td class="num"><b>${money(r.pickup)}</b></td><td>${r.sentAt}</td>
+     <td>${r.pickedBy ? `✓ ${esc(r.pickedBy)}<br><span class="empty">${r.pickedAt}</span>` : `<button data-pick="${s.id}">Mark picked up</button>`}</td></tr>`).join("");
+}
+$("rows").onclick = async e => {
+  const id = e.target.dataset.pick; if (!id) return;
+  e.target.disabled = true;
+  try { drawOffice(await call("cashPickup", "*office", [id, $("week").value])); } catch (err) { say("odone", err.message, true); }
+};
+
+(async () => {
+  if (!window.OMC_HUB) { $("main").innerHTML = "<p>Open this page on the OMC hub (omc-hub.pages.dev).</p>"; return; }
+  const [html, me] = await Promise.all([fetch("index.html").then(r => r.text()), fetch("/api/me").then(r => r.json())]);
+  const today = iso(new Date()), office = me.stores === "*";
+  STORES = new Function("return " + html.match(/const STORES = (\[[\s\S]*?\n  \]);/)[1])().filter(s => !s.closedFrom || s.closedFrom > today);
+  const w0 = lastMonday();
+  $("week").innerHTML = [0, 1, 2, 3].map(k => add(w0, -7 * k)).map((w, k) => `<option value="${w}">Week ${md(w)}–${md(add(w, 6))}${k ? "" : " (last week)"}</option>`).join("");
+  if (office) {
+    $("main").classList.add("wide"); $("store").hidden = true; $("office").hidden = false;
+    $("title").textContent = "Cash pickup — all stores";
+    $("week").onchange = loadOffice; loadOffice();
+  } else {
+    $("store").innerHTML = STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+    $("store").hidden = STORES.length < 2; $("form").hidden = false;
+    $("store").onchange = $("week").onchange = loadForm; loadForm();
+  }
+})();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

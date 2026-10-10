@@ -15,6 +15,7 @@ for (const p of ["/dashboard", "/labor", "/meeting", "/index.html", "/daily.json
 assert.equal(route(M, H + "/payroll"), null);
 assert.equal(route(M, H + "/marketing"), null);
 assert.equal(route(M, H + "/weekly"), null);
+assert.equal(route(M, H + "/cash"), null);
 assert.equal(route(M, H + "/plan"), null);
 assert.equal(route(M, H + "/api/data/daily.json"), null);   // the API itself filters to M
 // a redirect target is always allowed for that user (no loops)
