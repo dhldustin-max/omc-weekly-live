@@ -74,105 +74,78 @@
   @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
 </style>
 </head>
-<style>
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
-  .panel h2 { font-size: 14px; margin: 0 0 10px; }
-  .pill { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 99px; padding: 2px 8px; background: var(--grid); color: var(--ink-2); }
-  .pill.on { background: color-mix(in srgb, var(--good-bg) 20%, transparent); color: var(--good); }
-  .pill.bad { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
-  .muted { color: var(--muted); } .bad { color: var(--bad); font-weight: 700; }
-  ul.plain { margin: 0; padding-left: 18px; } ul.plain li { margin: 3px 0; }
-  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
-  td a { color: var(--accent); }
-</style>
 <body>
 <main>
   <header>
     <h1>Marketing <small id="sub"></small></h1>
-    <span class="spacer"></span>
-    <select id="store" aria-label="Store"></select>
   </header>
   <section class="kpis" id="kpis"></section>
-  <section class="panel"><h2>Ratings — Google vs Yelp</h2><div id="c-ratings" style="min-width:640px"></div></section>
-  <section class="panel"><h2>Ads</h2><div class="card"><table><thead><tr><th>Store</th><th>Campaign</th><th>Status</th><th>Dates</th><th class="num">Spend</th><th class="num">Results</th><th class="num">Cost / result</th></tr></thead><tbody id="ads"></tbody></table></div></section>
-  <div class="grid2">
-    <section class="panel"><h2>Promotions</h2><div id="promos"></div></section>
-    <section class="panel"><h2>Competitor changes</h2><div id="comps"></div></section>
-  </div>
-  <section class="panel"><h2>Websites &amp; listings</h2><div class="card"><table><thead><tr><th>Store</th><th>Website</th><th class="num">Google</th><th class="num">Yelp</th><th class="num">Unanswered Yelp</th><th>Note</th></tr></thead><tbody id="listings"></tbody></table></div></section>
-  <section class="panel"><h2>Open items</h2><div id="open"></div></section>
-  <p class="muted" id="note" style="font-size:12px"></p>
+  <section class="panel"><h2>Google vs Yelp</h2><div id="c-ratings" style="min-width:640px"></div></section>
+  <div class="card"><table>
+    <thead><tr><th>Store</th><th class="num">Google</th><th class="num">Yelp</th><th>Ads</th><th>Promo</th><th class="num">To-do</th><th></th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <p class="muted" style="font-size:12px;margin:8px 2px">Tap a store for details. Red = under 4.0★ or unanswered Yelp reviews.</p>
 </main>
+<style>
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .panel h2 { font-size: 14px; margin: 0 0 10px; }
+  .muted { color: var(--muted); } .bad { color: var(--bad); font-weight: 700; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good-bg); margin-right: 6px; }
+  .badge { display: inline-block; min-width: 22px; text-align: center; border-radius: 99px; padding: 1px 7px; font-weight: 700; font-size: 12px; background: var(--grid); }
+  tr.store-row { cursor: pointer; } tr.store-row td:last-child { color: var(--muted); }
+  tr.detail td { background: var(--page); white-space: normal; padding: 12px 14px; }
+  .det { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 24px; font-size: 13px; }
+  .det h4 { margin: 0 0 4px; font-size: 12px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .03em; }
+  .det ul { margin: 0; padding-left: 16px; } .det li { margin: 2px 0; }
+  .det a { color: var(--accent); }
+</style>
 <script src="chart.js"></script>
 <script>
-// Marketing by store, from marketing.json (kept up to date by the daily brief for ads and the Monday
-// weekly run for ratings, Yelp replies and competitors). Flags: Yelp under 4.0 with 500+ reviews is
-// urgent (review-analyst rule); a rating under 4.0 or unanswered Yelp reviews show red.
+// Marketing at a glance: one row per store (ratings, ads, promo, to-do count); tap a row for details.
+// Data: marketing.json (ads refreshed by the daily brief, ratings/Yelp/competitors by the Monday run).
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-const money = v => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
 const md = s => s ? `${+s.slice(5, 7)}/${+s.slice(8)}` : "";
-const rng = (a, b) => a || b ? `${md(a) || "…"}–${md(b) || "…"}` : "—";
-let STORES = [], M = { stores: {} };
+let STORES = [], M = { stores: {} }, OPEN = null;
+const star = x => !x || x.rating == null ? `<span class="muted">—</span>` : `<span class="${x.rating < 4 ? "bad" : ""}">${x.rating.toFixed(1)}</span>`;
+const short = n => n.replace(" Donkatsu Dublin", "").replace(" Korean Bistro", "").replace("Jjamppong Zizon", "JJ Zizon");
 
-function stars(x) {
-  if (!x || x.rating == null) return `<span class="muted">—</span>`;
-  const bad = x.rating < 4 || (x.reviews >= 500 && x.rating < 4);
-  return `<span class="${bad ? "bad" : ""}">${x.rating.toFixed(1)}★</span> <span class="muted">${x.reviews != null ? x.reviews.toLocaleString() : ""}</span>`;
+function details(m) {
+  const l = m.listings || {}, list = (t, items) => items.length ? `<div><h4>${t}</h4><ul>${items.join("")}</ul></div>` : "";
+  const links = [["Website", l.website && l.website.url], ["Google", l.google && l.google.url], ["Yelp", l.yelp && l.yelp.url]].filter(x => x[1]);
+  return `<div class="det">` +
+    list("Ads", (m.ads || []).map(a => `<li>${esc(a.name.replace(/_/g, " "))} — ${esc(a.status)}${a.spend != null ? `, $${Math.round(a.spend)}` : ""}${a.costPerResult != null ? ` · $${a.costPerResult.toFixed(2)}/${esc(a.resultType || "result")}` : ""}</li>`)) +
+    list("Promo", (m.promos || []).map(p => `<li>${esc(p.title)}${p.start || p.end ? ` <span class="muted">${md(p.start)}–${md(p.end)}</span>` : ""}</li>`)) +
+    list("Competitors", (m.competitors || []).map(c => `<li><b>${esc(c.name)}</b> ${esc(c.change)}</li>`)) +
+    list("To-do", (m.open || []).map(o => `<li>${esc(o)}</li>`)) +
+    (links.length ? `<div><h4>Links</h4>${links.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</div>` : "") +
+    `</div>`;
 }
-const link = (u, t) => u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>` : `<span class="muted">—</span>`;
 
 function render() {
-  const pick = document.getElementById("store").value;
-  const list = STORES.filter(s => pick === "*" || s.id === pick).map(s => ({ s, m: M.stores[s.id] || {} }));
-  history.replaceState(null, "", pick === "*" ? location.pathname : "?id=" + pick);
-  const ads = list.flatMap(({ s, m }) => (m.ads || []).map(a => ({ s, a })));
-  const active = ads.filter(x => x.a.status === "Active");
-  const promos = list.flatMap(({ s, m }) => (m.promos || []).map(p => ({ s, p })));
-  const L = list.map(({ s, m }) => ({ s, l: m.listings || {} }));
-  const avg = k => { const v = L.map(x => x.l[k] && x.l[k].rating).filter(v => v != null); return v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(2) + "★" : "—"; };
-  const unanswered = L.reduce((a, x) => a + ((x.l.yelp && x.l.yelp.unanswered) || 0), 0);
-  const opens = list.flatMap(({ s, m }) => (m.open || []).map(o => ({ s, o })));
-  document.getElementById("sub").textContent = M.updated ? `updated ${M.updated}` : "";
-  document.getElementById("kpis").innerHTML = [
-    ["Active ad campaigns", active.length, money(active.reduce((a, x) => a + (x.a.spend || 0), 0)) + " spend shown"],
-    ["Running promotions", promos.filter(x => x.p.status === "Running").length, `${promos.filter(x => x.p.status === "Planned").length} planned`],
-    ["Avg Google", avg("google"), `${L.filter(x => x.l.google && x.l.google.rating != null).length} stores rated`],
-    ["Avg Yelp", avg("yelp"), unanswered ? `<span class="bad">${unanswered} unanswered</span>` : "no unanswered on record"],
-    ["Open items", opens.length, "listings, websites, ads"],
-  ].map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
-
-  const R = L.filter(x => (x.l.google && x.l.google.rating != null) || (x.l.yelp && x.l.yelp.rating != null));
-  const short = n => n.replace(" Donkatsu Dublin", "").replace(" Korean Bistro", "").replace("Jjamppong Zizon", "JJ Zizon");
-  groupedBars(document.getElementById("c-ratings"), { categories: R.map(x => short(x.s.name)), fmt: v => v.toFixed(1),
-    series: [{ name: "Google", values: R.map(x => x.l.google && x.l.google.rating) }, { name: "Yelp", values: R.map(x => x.l.yelp && x.l.yelp.rating) }] });
-
-  document.getElementById("ads").innerHTML = ads.length ? ads.map(({ s, a }) => `<tr><td class="store"><b>${esc(s.name)}</b><span>${esc(a.platform || "")}</span></td>
-    <td>${esc(a.name)}${a.note ? `<br><span class="muted" style="font-size:12px">${esc(a.note)}</span>` : ""}</td>
-    <td><span class="pill ${a.status === "Active" ? "on" : ""}">${esc(a.status || "—")}</span></td><td>${rng(a.start, a.end)}</td>
-    <td class="num">${money(a.spend)}${a.spendPeriod ? `<br><span class="muted" style="font-size:11px">${esc(a.spendPeriod)}</span>` : ""}</td>
-    <td class="num">${a.results ?? "—"}${a.resultType ? `<br><span class="muted" style="font-size:11px">${esc(a.resultType)}</span>` : ""}</td>
-    <td class="num">${a.costPerResult != null ? "$" + a.costPerResult.toFixed(2) : "—"}</td></tr>`).join("")
-    : `<tr><td colspan="7" class="muted">No campaigns on record</td></tr>`;
-
-  document.getElementById("promos").innerHTML = promos.length ? `<ul class="plain">${promos.map(({ s, p }) =>
-    `<li><span class="pill ${p.status === "Running" ? "on" : ""}">${esc(p.status)}</span> <b>${esc(p.title)}</b> — ${esc(s.name)} <span class="muted">${rng(p.start, p.end)}${p.where ? " · " + esc(p.where) : ""}</span></li>`).join("")}</ul>` : `<p class="muted">None on record</p>`;
-
-  const comps = list.flatMap(({ s, m }) => (m.competitors || []).map(c => ({ s, c })));
-  document.getElementById("comps").innerHTML = comps.length ? `<ul class="plain">${comps.map(({ s, c }) =>
-    `<li><b>${esc(c.name)}</b> <span class="muted">(vs ${esc(s.name)}${c.date ? ", " + md(c.date) : ""})</span> — ${esc(c.change)}</li>`).join("")}</ul>` : `<p class="muted">No changes on record</p>`;
-
-  document.getElementById("listings").innerHTML = L.map(({ s, l }) => {
-    const y = l.yelp || {}, g = l.google || {}, w = l.website || {};
-    return `<tr><td class="store"><b><a href="store.html?id=${s.id}" style="color:inherit">${esc(s.name)}</a></b></td>
-      <td>${w.url ? link(w.url, w.url.replace(/^https?:\/\//, "").replace(/\/$/, "")) : `<span class="muted">${esc(w.status || "—")}</span>`}</td>
-      <td class="num">${g.url ? `<a href="${esc(g.url)}" target="_blank" rel="noopener" style="color:inherit">${stars(g)}</a>` : stars(g)}</td>
-      <td class="num">${y.url ? `<a href="${esc(y.url)}" target="_blank" rel="noopener" style="color:inherit">${stars(y)}</a>` : stars(y)}</td>
-      <td class="num">${y.unanswered ? `<span class="bad">${y.unanswered}</span>` : y.unanswered === 0 ? "0" : "—"}</td>
-      <td style="white-space:normal;font-size:12px">${esc([g.note, y.note, w.status && w.url ? w.status : ""].filter(Boolean).join(" · "))}</td></tr>`;
+  const rows = STORES.map(s => ({ s, m: M.stores[s.id] || {} }));
+  const g = rows.map(r => r.m.listings && r.m.listings.google && r.m.listings.google.rating).filter(v => v != null);
+  const y = rows.map(r => r.m.listings && r.m.listings.yelp && r.m.listings.yelp.rating).filter(v => v != null);
+  const avg = v => v.length ? (v.reduce((a, b) => a + b, 0) / v.length).toFixed(2) : "—";
+  const running = rows.reduce((a, r) => a + (r.m.ads || []).filter(x => x.status === "Active").length, 0);
+  const todo = rows.reduce((a, r) => a + (r.m.open || []).length, 0);
+  document.getElementById("sub").textContent = M.updated ? `updated ${md(M.updated)}` : "";
+  document.getElementById("kpis").innerHTML = [["Google avg", avg(g) + "★"], ["Yelp avg", avg(y) + "★"], ["Ads running", running], ["To-do", todo]]
+    .map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join("");
+  const R = rows.filter(r => r.m.listings && ((r.m.listings.google || {}).rating != null || (r.m.listings.yelp || {}).rating != null));
+  groupedBars(document.getElementById("c-ratings"), { categories: R.map(r => short(r.s.name)), fmt: v => v.toFixed(1),
+    series: [{ name: "Google", values: R.map(r => (r.m.listings.google || {}).rating ?? null) }, { name: "Yelp", values: R.map(r => (r.m.listings.yelp || {}).rating ?? null) }] });
+  document.getElementById("rows").innerHTML = rows.map(({ s, m }) => {
+    const l = m.listings || {}, ads = (m.ads || []).filter(a => a.status === "Active"), promo = (m.promos || []).find(p => p.status === "Running");
+    const un = l.yelp && l.yelp.unanswered;
+    return `<tr class="store-row" data-id="${s.id}"><td><b>${esc(s.name)}</b></td><td class="num">${star(l.google)}</td>
+      <td class="num">${star(l.yelp)}${un ? ` <span class="bad">· ${un} unanswered</span>` : ""}</td>
+      <td>${ads.length ? `<span class="dot"></span>${ads.length} running` : `<span class="muted">—</span>`}</td>
+      <td>${promo ? `<span class="dot"></span>${esc(promo.title.split(/[,(—-]/)[0].trim().slice(0, 28))}` : `<span class="muted">—</span>`}</td>
+      <td class="num">${(m.open || []).length ? `<span class="badge">${m.open.length}</span>` : `<span class="muted">—</span>`}</td><td>${OPEN === s.id ? "▴" : "▾"}</td></tr>` +
+      (OPEN === s.id ? `<tr class="detail"><td colspan="7">${details(m)}</td></tr>` : "");
   }).join("");
-
-  document.getElementById("open").innerHTML = opens.length ? `<ul class="plain">${opens.map(({ s, o }) => `<li><b>${esc(s.name)}</b> — ${esc(o)}</li>`).join("")}</ul>` : `<p class="muted">Nothing open</p>`;
-  document.getElementById("note").textContent = "Ratings show the latest snapshot on record (see the as-of date in the data). Red: rating under 4.0, or unanswered Yelp reviews.";
+  document.querySelectorAll("tr.store-row").forEach(tr => tr.onclick = () => { OPEN = OPEN === tr.dataset.id ? null : tr.dataset.id; render(); });
 }
 
 (async () => {
@@ -182,12 +155,8 @@ function render() {
   ]);
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(new Date());
   STORES = new Function("return " + html.match(/const STORES = (\[[\s\S]*?\n  \]);/)[1])().filter(s => !s.closedFrom || s.closedFrom > today);
-  M = mk;
-  const sel = document.getElementById("store");
-  sel.innerHTML = (STORES.length > 1 ? `<option value="*">All stores</option>` : "") + STORES.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join("");
-  sel.value = new URLSearchParams(location.search).get("id") || sel.options[0].value;
-  if (!sel.value) sel.value = sel.options[0].value;
-  sel.onchange = render; render();
+  M = mk; OPEN = new URLSearchParams(location.search).get("id") || (STORES.length === 1 ? STORES[0].id : null);
+  render();
 })();
 </script>
 <script src="nav.js"></script>
