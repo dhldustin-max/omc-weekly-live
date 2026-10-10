@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="data.js"></script>
+<title>OMC Weekly Report</title>
+<meta name="description" content="Store managers send last week's food cost and a note for the Monday meeting.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10); --accent: #2a78d6; --accent-soft: #cde2fb;
+    --good: #006300; --good-bg: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+  h1 { font-size: 18px; margin: 0; }
+  h1 small { font-weight: 400; color: var(--ink-2); margin-left: 6px; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-weight: 600; padding: 6px 12px; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  select { font: inherit; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+  a.meeting { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 12px; color: var(--ink-2); }
+  .kpi .v { font-size: 26px; font-weight: 700; margin: 2px 0; white-space: nowrap; }
+  .kpi .v .grade { font-size: 15px; padding: 2px 7px; }
+  .kpi .d { font-size: 12px; color: var(--ink-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--ink-2); font-weight: 600; border-top: 0; cursor: pointer; user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th[aria-sort="descending"]::after { content: " ▼"; } th[aria-sort="ascending"]::after { content: " ▲"; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.store b { display: block; } td.store span { font-size: 12px; color: var(--muted); }
+  .meter { display: inline-grid; grid-template-columns: 72px 42px; align-items: center; gap: 8px; }
+  .track { position: relative; height: 8px; background: var(--grid); border-radius: 4px; overflow: visible; }
+  .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); left: calc(100% / 1.3); }
+  .up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+  .grade { display: inline-block; min-width: 26px; text-align: center; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; }
+  .grade.A { background: var(--good-bg); } .grade.B { background: var(--warn); color: #0b0b0b; } .grade.C { background: var(--bad); } .grade.NA { background: var(--muted); }
+  .spark { width: 84px; height: 22px; display: block; }
+  .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--accent); }
+  .empty { color: var(--muted); }
+  .warn { color: var(--bad); font-weight: 600; }
+  h2 { font-size: 14px; margin: 18px 0 8px; } h2 small { font-weight: 400; color: var(--muted); }
+  .heat { min-width: 560px; }
+  .heat td.cell { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; border: 2px solid var(--surface); border-radius: 6px; }
+  .heat th { cursor: default; text-align: right; } .heat th:first-child { text-align: left; }
+  .legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<style>
+  main { max-width: 620px; }
+  .big { display: block; width: 100%; font: 600 28px system-ui; padding: 14px 16px; border-radius: 14px; border: 2px solid var(--border); background: var(--surface); color: var(--ink); }
+  textarea.big { font: 18px/1.4 system-ui; min-height: 150px; resize: vertical; }
+  .big:focus { outline: none; border-color: var(--accent); }
+  label.q { display: block; font: 700 18px system-ui; margin: 22px 0 4px; }
+  .hint { color: var(--muted); font-size: 14px; margin: 0 0 8px; }
+  .send { display: block; width: 100%; margin: 24px 0 8px; font: 700 20px system-ui; padding: 16px; border: 0; border-radius: 14px; background: var(--accent); color: #fff; cursor: pointer; }
+  .send:disabled { opacity: .5; }
+  .done { text-align: center; color: var(--good); font-weight: 700; font-size: 16px; min-height: 22px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+  .row select { font-size: 16px; padding: 8px 10px; }
+</style>
+<body>
+<main>
+  <header><h1 id="title">Weekly report</h1></header>
+  <div class="row"><select id="store" aria-label="Store"></select><select id="week" aria-label="Week"></select></div>
+  <section class="kpis" id="kpis"></section>
+  <label class="q" for="food">1. Food cost this week ($)</label>
+  <p class="hint">All food and supplies you bought this week. Just the total.</p>
+  <input id="food" class="big" type="number" inputmode="decimal" placeholder="0">
+  <label class="q" for="note">2. Notes for the Monday meeting</label>
+  <p class="hint">What went well? Any problems? Need help from the office?</p>
+  <textarea id="note" class="big" placeholder="Type here…"></textarea>
+  <button id="send" class="send">Send to office</button>
+  <div class="done" id="done"></div>
+</main>
+<script>
+// Weekly report: a manager sends last week's food cost and a note; the Monday meeting tool shows both
+// on that store's card (and fills the empty Food cost box). Hub only (needs sign-in); saved in the
+// payroll app's Google Sheet through /api/payroll (weeklyGet / weeklySave).
+const iso = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
+const add = (s, k) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + k); return iso(d); };
+const md = s => `${+s.slice(5, 7)}/${+s.slice(8)}`;
+const money = v => "$" + Math.round(v).toLocaleString("en-US");
+const $ = id => document.getElementById(id);
+let STORES = [], DAILY = {};
+function lastMonday() { const t = iso(new Date()), dow = new Date(t + "T12:00:00").getDay(); return add(t, -((dow + 6) % 7) - 7); }
+function call(fn, store, args) {
+  return fetch("/api/payroll", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fn, store, args }) })
+    .then(r => r.json()).then(j => { if (!j.ok) throw new Error(j.error); return j.result; });
+}
+function context(id, wk) {
+  let sales = 0, labor = 0, n = 0;
+  for (let i = 0; i < 7; i++) { const v = (DAILY[add(wk, i)] || {})[id]; if (v && v.sales != null) { sales += v.sales; labor += v.labor || 0; n++; } }
+  const s = STORES.find(x => x.id === id), tiles = [["Sales last week", n ? money(sales) : "—", n ? `${Math.round(sales / s.target * 100)}% of target` : ""]];
+  if (labor) tiles.push(["Labor (POS)", (labor / sales * 100).toFixed(1) + "%", labor / sales > 0.25 ? "⚠ over 25%" : "under 25%"]);
+  $("kpis").innerHTML = tiles.map(k => `<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="d">${k[2]}</div></div>`).join("");
+}
+async function load() {
+  const id = $("store").value, wk = $("week").value;
+  $("done").textContent = ""; $("send").disabled = true;
+  context(id, wk);
+  try {
+    const r = await call("weeklyGet", id, [wk]);
+    $("food").value = r.food ?? ""; $("note").value = r.note || "";
+    $("title").textContent = `Weekly report — ${r.storeName}`;
+    if (r.at) $("done").textContent = `✓ Sent ${r.at}. You can change it and send again.`;
+  } catch (e) { $("done").textContent = e.message; }
+  $("send").disabled = false;
+}
+$("send").onclick = async () => {
+  $("send").disabled = true; $("send").textContent = "Sending…";
+  try {
+    const food = $("food").value === "" ? null : Number($("food").value);
+    await call("weeklySave", $("store").value, [$("week").value, food, $("note").value]);
+    $("done").textContent = "✓ Sent. Thank you!";
+  } catch (e) { $("done").textContent = e.message; }
+  $("send").disabled = false; $("send").textContent = "Send to office";
+};
+(async () => {
+  if (!window.OMC_HUB) { document.querySelector("main").innerHTML = "<p>Open this page on the OMC hub (omc-hub.pages.dev).</p>"; return; }
+  const [html, daily] = await Promise.all([fetch("index.html").then(r => r.text()), fetch("daily.json").then(r => r.json()).catch(() => ({ days: {} }))]);
+  const today = iso(new Date());
+  STORES = new Function("return " + html.match(/const STORES = (\[[\s\S]*?\n  \]);/)[1])().filter(s => !s.closedFrom || s.closedFrom > today);
+  DAILY = daily.days || {};
+  $("store").innerHTML = STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  const want = new URLSearchParams(location.search).get("id"); if (want && STORES.some(s => s.id === want)) $("store").value = want;
+  $("store").hidden = STORES.length < 2;
+  const w0 = lastMonday();
+  $("week").innerHTML = [0, 1, 2, 3].map(k => add(w0, -7 * k)).map((w, k) => `<option value="${w}">Week ${md(w)}–${md(add(w, 6))}${k ? "" : " (last week)"}</option>`).join("");
+  $("store").onchange = load; $("week").onchange = load;
+  load();
+})();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

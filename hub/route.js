@@ -1,6 +1,6 @@
 // Where a signed-in user may go. Returns null (allowed) or the path to redirect to.
 // stores: "*" (corporate) or a list of store ids. Pages serves /store.html as /store, so ".html" is ignored.
-const MANAGER_OK = /^\/(store|payroll|marketing|nav\.js|chart\.js|data\.js|omc-logo\.png|api\/.*)$/;
+const MANAGER_OK = /^\/(store|payroll|marketing|weekly|nav\.js|chart\.js|data\.js|omc-logo\.png|api\/.*)$/;
 
 export function route(stores, href) {
   const url = new URL(href), path = url.pathname.replace(/\.html$/, "");

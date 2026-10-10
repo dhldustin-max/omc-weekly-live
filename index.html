@@ -1589,6 +1589,7 @@
         <div class="prime-breakdown" id="prime-breakdown-${s.id}">Labor — % · Food — %</div>
         <div class="prime-prev-line no-data" id="prime-prev-${s.id}">지난주 데이터 없음</div>
         <div class="prime-prev-line" id="payroll-${s.id}"></div>
+        <div class="prime-prev-line" id="weekly-${s.id}" hidden></div>
         <div class="prime-save-row">
           <span class="prime-saved-pill hidden" id="prime-saved-pill-${s.id}"></span>
           <button class="prime-save-btn" id="prime-save-btn-${s.id}" data-store-id="${s.id}" onclick="saveCommittedPrime('${s.id}')">💾 Save</button>
@@ -2561,6 +2562,29 @@
     // Notes need to be rerendered against existing PREV_NOTES state
     STORES.forEach(s => { renderRecapNotes(s.id); renderNewNotes(s.id); });
     renderPayroll();
+    renderWeekly();
+  }
+
+  // ---- Weekly report (hub only): each manager's food cost + note for this meeting week ----
+  // Fills an empty Food Cost box and shows the note on the store card.
+  let WEEKLY = {}, WEEKLY_FOR = null;
+  function renderWeekly() {
+    if (!window.OMC_HUB || !VIEW_WEEK) return;
+    if (WEEKLY_FOR !== VIEW_WEEK) {
+      WEEKLY_FOR = VIEW_WEEK;
+      fetch("/api/payroll", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fn: "weeklyAll", store: "*office", args: [VIEW_WEEK] }) })
+        .then(r => r.json()).then(j => { WEEKLY = j.ok ? j.result : {}; renderWeekly(); }).catch(() => {});
+      return;
+    }
+    STORES.forEach(s => {
+      const w = WEEKLY[s.id], el = document.getElementById(`weekly-${s.id}`), f = document.getElementById(`food-${s.id}`);
+      if (!el) return;
+      el.hidden = !w;
+      if (!w) return;
+      el.textContent = "";
+      el.append("📝 Manager: ", Object.assign(document.createElement("strong"), { textContent: w.note || "(no note)" }), w.food != null ? ` · Food $${Math.round(w.food).toLocaleString()}` : "");
+      if (f && !f.value && w.food != null) { f.value = Math.round(w.food); f.dispatchEvent(new Event("input")); }
+    });
   }
 
   // ---- Payroll (managers submit in the OMC Payroll web app → payroll.json, store totals only) ----
