@@ -34,8 +34,7 @@ import {
 import {
   scrapeAllVerona,
   loadEnvFile,
-  fmtVeronaDate,
-} from './lib/verona.js';
+  fmtVeronaDate, OMC_VERONA_STORES } from './lib/verona.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = path.resolve(path.dirname(__filename), '..');
@@ -90,11 +89,7 @@ const MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','
 // Stores still on Verona. Golden Wang Donkatsu Dublin moved to Toast on
 // 08-17-2026 and is owned by the Cowork task now -- if Verona still returns a
 // row for it we must discard it, or it overwrites the correct Toast number.
-const VERONA_STORE_IDS = [
-  'ohgane-oakland', 'ohgane-alameda',
-  'tangjip-hayward', 'tangjip-concord', 'tangjip-alameda',
-  'spoon-berkeley', 'bowld-albany',
-];
+const VERONA_STORE_IDS = OMC_VERONA_STORES.map(s => s.id);   // one list, in lib/verona.js
 const VERONA_STORE_SET = new Set(VERONA_STORE_IDS);
 
 const ATTEMPTS_FILE = path.join(REPO_ROOT, '.weekly-attempts.json'); // untracked

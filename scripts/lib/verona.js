@@ -48,6 +48,7 @@ export const OMC_VERONA_STORES = [
   { id: 'tangjip-alameda',    veronaPrefix: 'TANGJIP ALAMEDA' },
   { id: 'spoon-berkeley',     veronaPrefix: 'SPOON KOREAN BISTRO' },
   { id: 'bowld-albany',       veronaPrefix: 'BOWLD ALBANY' },
+  { id: 'jjamppong-zizon-hayward', veronaPrefix: 'JJAMPPONG ZIZON' },   // opened 10-08-2026 (702 A St); Oakland JZ is Toast
 ];
 
 // Convert a JS Date / ms-timestamp to MM/DD/YYYY (Verona's URL format).
@@ -399,7 +400,8 @@ export async function scrapeStoreByName(page, storePrefix, startDate, endDate) {
   if (/sign in|forgot password/i.test(text.slice(0, 2000))) {
     throw new Error('SESSION_EXPIRED during scrape');
   }
-  const parsed = parseSummaryText(text);
+  // A day with no tickets shows "NO SALES RECORD" instead of the totals table: that is $0, not a failure.
+  const parsed = /NO SALES RECORD/.test(text) ? { sales: 0, orders: 0, guests: 0, discount: 0, alcohol: 0 } : parseSummaryText(text);
   if (!parsed) {
     throw new Error(`SUMMARY_PARSE_FAILED for ${storePrefix} — page layout may have changed`);
   }

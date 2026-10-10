@@ -9,11 +9,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
-import { scrapeAllVerona, loadEnvFile } from './lib/verona.js';
+import { scrapeAllVerona, loadEnvFile, OMC_VERONA_STORES } from './lib/verona.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DAILY = path.join(ROOT, 'daily.json');
-const VERONA = new Set(['ohgane-oakland','ohgane-alameda','tangjip-hayward','tangjip-concord','tangjip-alameda','spoon-berkeley','bowld-albany']);
+const VERONA = new Set(OMC_VERONA_STORES.map(s => s.id));   // one list, in lib/verona.js
 const args = process.argv.slice(2);
 const arg = f => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : null; };
 const dryRun = args.includes('--dry-run'), noPush = args.includes('--no-push');
@@ -36,7 +36,7 @@ db.days ||= {};
 let touched = 0, failed = 0;
 for (let day = from; day <= to; day = addDays(day, 1)) {
   const have = Object.keys(db.days[day] || {}).filter(id => VERONA.has(id) && db.days[day][id].orders != null).length;
-  if (have === VERONA.size && !args.includes('--force')) { log(`⏭  ${day} already 7/7`); continue; }
+  if (have === VERONA.size && !args.includes('--force')) { log(`⏭  ${day} already ${VERONA.size}/${VERONA.size}`); continue; }
   log(`▶ ${day}`);
   let results;
   try { results = await scrapeAllVerona({ email, password, startDate: mdy(day), endDate: mdy(day), headless: true }); }
