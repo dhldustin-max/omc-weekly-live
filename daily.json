@@ -4780,6 +4780,89 @@
         "orders": 6,
         "guests": 12
       }
+    },
+    "2026-10-09": {
+      "ohgane-oakland": {
+        "sales": 12397,
+        "orders": 101,
+        "guests": 275,
+        "alcohol": 908,
+        "hours": 135.05,
+        "dineIn": 11435,
+        "takeout": 141,
+        "delivery": 821
+      },
+      "ohgane-alameda": {
+        "sales": 11098,
+        "orders": 96,
+        "guests": 251,
+        "alcohol": 959,
+        "hours": 133.16,
+        "dineIn": 10700,
+        "takeout": 255,
+        "delivery": 144
+      },
+      "tangjip-hayward": {
+        "sales": 4821,
+        "orders": 65,
+        "guests": 53,
+        "alcohol": 189,
+        "hours": 91.59,
+        "dineIn": 4220,
+        "takeout": 242,
+        "delivery": 359
+      },
+      "tangjip-concord": {
+        "sales": 7413,
+        "orders": 90,
+        "guests": 74,
+        "alcohol": 276,
+        "hours": 59,
+        "dineIn": 5893,
+        "takeout": 578,
+        "delivery": 942
+      },
+      "tangjip-alameda": {
+        "sales": 3045,
+        "orders": 54,
+        "guests": 67,
+        "alcohol": 67,
+        "hours": 57.67,
+        "dineIn": 2550,
+        "takeout": 20,
+        "delivery": 475
+      },
+      "spoon-berkeley": {
+        "sales": 2138,
+        "orders": 33,
+        "guests": 46,
+        "alcohol": 0,
+        "hours": 36.48,
+        "dineIn": 1287,
+        "takeout": 78,
+        "delivery": 773
+      },
+      "bowld-albany": {
+        "sales": 5039,
+        "orders": 84,
+        "guests": 81,
+        "alcohol": 33,
+        "hours": 62.11,
+        "dineIn": 3083,
+        "takeout": 526,
+        "delivery": 1430
+      },
+      "jjamppong-zizon-hayward": {
+        "sales": 1275,
+        "orders": 31,
+        "guests": 27,
+        "discount": 21,
+        "alcohol": 0,
+        "hours": 40.25,
+        "dineIn": 1168,
+        "takeout": 86,
+        "delivery": 0
+      }
     }
   },
   "_comment": "Per-business-day sales by store (America/Los_Angeles). Verona: scripts/daily-update.js. Toast: scripts/toast-daily-appsscript.gs (Gmail daily group email). The dashboard builds Day and Month views from this file; weekly-snapshots.json stays the source for Week."
