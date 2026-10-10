@@ -4862,6 +4862,69 @@
         "dineIn": 1168,
         "takeout": 86,
         "delivery": 0
+      },
+      "chez-maeju-oakland": {
+        "sales": 2992,
+        "orders": 25,
+        "guests": 55,
+        "takeout": 47,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 395
+      },
+      "golden-wang-donkatsu-dublin": {
+        "sales": 3525,
+        "orders": 51,
+        "guests": 6,
+        "takeout": 211,
+        "delivery": 0,
+        "dineIn": 3313,
+        "labor": 1117
+      },
+      "jjamppong-zizon-oakland": {
+        "sales": 1407,
+        "orders": 36,
+        "guests": 19,
+        "takeout": 282,
+        "delivery": 342,
+        "dineIn": 783,
+        "labor": 425
+      },
+      "obento-hayward": {
+        "sales": 1488,
+        "orders": 39,
+        "guests": 39,
+        "takeout": 1488,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 113
+      },
+      "ohgane-concord": {
+        "sales": 11673,
+        "orders": 115,
+        "guests": 286,
+        "takeout": 1340,
+        "delivery": 0,
+        "dineIn": 10333,
+        "labor": 3630
+      },
+      "oh-g-burger-berkeley": {
+        "sales": 100,
+        "orders": 4,
+        "guests": 4,
+        "takeout": 100,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 0
+      },
+      "tuum-oakland": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0,
+        "takeout": 0,
+        "delivery": 0,
+        "dineIn": 0,
+        "labor": 0
       }
     }
   },
