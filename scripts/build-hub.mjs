@@ -36,6 +36,25 @@ swap(`\nstart('');`, `
 (STORE ? Promise.resolve() : fetch("/api/me").then(function (r) { return r.json(); }).then(function (me) { STORE = me.stores === "*" ? "*office" : me.stores[0]; }))
   .then(function () { start(""); }).catch(fail);`);
 swap(`<meta charset="utf-8">`, `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>OMC Payroll</title><script src="data.js"></script>`);
-swap(`</body>`, `<script src="nav.js"></script>\n</body>`);
+swap(`</body>`, `<script>
+// Hub: anyone with more than one store (and corporate: office view + test) picks which payroll to open.
+fetch("/api/me").then(function (r) { return r.json(); }).then(function (me) {
+  return fetch("/api/stores").then(function (r) { return r.text(); }).then(function (t) {
+    var list = new Function("return " + t.match(/const STORES = (\\[[\\s\\S]*?\\n  \\]);/)[1])();
+    if (me.stores === "*") list = [{ id: "*office", name: "Office view — all stores" }].concat(list, [{ id: "test", name: "TEST — nothing recorded" }]);
+    if (list.length < 2) return;
+    var cur = new URLSearchParams(location.search).get("store") || (me.stores === "*" ? "*office" : me.stores[0]);
+    var sel = document.createElement("select");
+    sel.setAttribute("aria-label", "Store");
+    sel.style.cssText = "position:fixed;top:12px;right:12px;z-index:30;font:600 14px system-ui;padding:8px 10px;border-radius:10px;border:1px solid #ddd;background:#fff";
+    list.forEach(function (s) { var o = document.createElement("option"); o.value = s.id; o.textContent = s.name; sel.appendChild(o); });
+    sel.value = cur;
+    sel.onchange = function () { location.search = "?store=" + encodeURIComponent(sel.value); };
+    document.body.appendChild(sel);
+  });
+}).catch(function () {});
+</script>
+<script src="nav.js"></script>
+</body>`);
 fs.writeFileSync(ROOT + "dist/payroll.html", pay);
 console.log("dist:", fs.readdirSync(ROOT + "dist").join(", "), "| stores:", stores.length);
