@@ -49,9 +49,9 @@
   // On the hub: add Payroll, and show managers only their store + payroll (the server enforces it too).
   if (window.OMC_HUB) fetch("/api/me").then(r => r.json()).then(me => {
     PAGES = me.stores === "*"
-      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["Labor", [["labor.html", "Overview"], ["plan.html", "Labor plan"], ["payroll.html", "Payroll"]]],
+      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["Labor", [["labor.html", "Overview"], ["plan.html", "Labor plan"], ["schedule.html", "Schedule"], ["payroll.html", "Payroll"]]],
          ["marketing.html", "Marketing"], ["weekly.html", "Weekly report"], ["cash.html", "Cash pickup"], ["meeting.html", "Meeting tool"]]
-      : [[`store.html?id=${me.stores[0]}`, "My store"], ["Labor", [["plan.html", "Labor plan"], ["payroll.html", "Payroll"]]],
+      : [[`store.html?id=${me.stores[0]}`, "My store"], ["Labor", [["plan.html", "Labor plan"], ["schedule.html", "Schedule"], ["payroll.html", "Payroll"]]],
          ["weekly.html", "Weekly report"], ["cash.html", "Cash pickup"], ["marketing.html", "Marketing"]];
     nav.querySelectorAll("a:not([aria-label]), details").forEach(a => a.remove());
     nav.insertAdjacentHTML("beforeend", render(PAGES) +

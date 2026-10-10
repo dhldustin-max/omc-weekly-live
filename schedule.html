@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="data.js"></script>
+<script src="sched.js"></script>
+<title>OMC Schedule</title>
+<meta name="description" content="Weekly FOH and BOH schedule, checked against the labor plan.">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11,11,11,0.10); --accent: #2a78d6; --accent-soft: #cde2fb;
+    --good: #006300; --good-bg: #0ca30c; --warn: #fab219; --bad: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5; --accent-soft: #184f95;
+    --good: #0ca30c; --good-bg: #0ca30c; --warn: #fab219; --bad: #e66767;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
+  h1 { font-size: 18px; margin: 0; }
+  h1 small { font-weight: 400; color: var(--ink-2); margin-left: 6px; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { font: inherit; font-weight: 600; padding: 6px 12px; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.active { background: var(--accent); color: #fff; }
+  select { font: inherit; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+  a.meeting { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 12px; color: var(--ink-2); }
+  .kpi .v { font-size: 26px; font-weight: 700; margin: 2px 0; white-space: nowrap; }
+  .kpi .v .grade { font-size: 15px; padding: 2px 7px; }
+  .kpi .d { font-size: 12px; color: var(--ink-2); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; }
+  th, td { padding: 8px 10px; text-align: left; border-top: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--ink-2); font-weight: 600; border-top: 0; cursor: pointer; user-select: none; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th[aria-sort="descending"]::after { content: " ▼"; } th[aria-sort="ascending"]::after { content: " ▲"; }
+  tbody tr:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  td.store b { display: block; } td.store span { font-size: 12px; color: var(--muted); }
+  .meter { display: inline-grid; grid-template-columns: 72px 42px; align-items: center; gap: 8px; }
+  .track { position: relative; height: 8px; background: var(--grid); border-radius: 4px; overflow: visible; }
+  .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink-2); left: calc(100% / 1.3); }
+  .up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+  .grade { display: inline-block; min-width: 26px; text-align: center; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; }
+  .grade.A { background: var(--good-bg); } .grade.B { background: var(--warn); color: #0b0b0b; } .grade.C { background: var(--bad); } .grade.NA { background: var(--muted); }
+  .spark { width: 84px; height: 22px; display: block; }
+  .spark polyline { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--accent); }
+  .empty { color: var(--muted); }
+  .warn { color: var(--bad); font-weight: 600; }
+  h2 { font-size: 14px; margin: 18px 0 8px; } h2 small { font-weight: 400; color: var(--muted); }
+  .heat { min-width: 560px; }
+  .heat td.cell { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; border: 2px solid var(--surface); border-radius: 6px; }
+  .heat th { cursor: default; text-align: right; } .heat th:first-child { text-align: left; }
+  .legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .legend i { width: 18px; height: 10px; border-radius: 3px; display: inline-block; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  @media (max-width: 600px) { .kpi .v { font-size: 22px; } th, td { padding: 7px 8px; } }
+</style>
+</head>
+<style>
+  main { max-width: 860px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .row select { font-size: 16px; padding: 8px 10px; }
+  .seg button { font-size: 16px; padding: 8px 18px; }
+  .hours { font-size: 13px; color: var(--ink-2); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .hours input { font: 600 14px system-ui; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); }
+  .btn { font: 700 14px system-ui; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--accent); cursor: pointer; }
+  .day { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 12px; }
+  .day h3 { margin: 0 0 8px; font-size: 17px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .day h3 small { font: 600 13px system-ui; color: var(--ink-2); }
+  .day h3 small.over { color: var(--bad); }
+  .p { display: grid; grid-template-columns: 1.4fr 1fr 1fr 64px 28px; gap: 6px; margin-bottom: 6px; }
+  .p input { min-width: 0; font: 600 16px system-ui; padding: 9px 10px; border-radius: 10px; border: 2px solid var(--border); background: var(--page); color: var(--ink); }
+  .p input:focus { outline: none; border-color: var(--accent); }
+  .p input.bad { border-color: var(--bad); }
+  .p .x { border: 0; background: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+  .head { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .add { font: 700 14px system-ui; padding: 8px; border-radius: 10px; border: 2px dashed var(--border); background: none; color: var(--accent); cursor: pointer; width: 100%; }
+  .send { display: block; width: 100%; margin: 18px 0 8px; font: 700 20px system-ui; padding: 16px; border: 0; border-radius: 14px; background: var(--accent); color: #fff; cursor: pointer; }
+  .send:disabled { opacity: .5; }
+  .done { text-align: center; color: var(--good); font-weight: 700; font-size: 16px; min-height: 22px; }
+  .done.err { color: var(--bad); }
+  .total { font: 700 16px system-ui; margin: 4px 0 12px; } .total.over { color: var(--bad); }
+  @media (max-width: 600px) { .p { grid-template-columns: 1fr 1fr 56px 24px; } .p .t { grid-column: 1 / 3; grid-row: 2; } .head { display: none !important; } }
+  @media print {
+    .omc-nav, .omc-burger, .row, .hours, .add, .send, .done, .p .x, .btn, #budgetnote { display: none !important; }
+    body { padding: 0 !important; background: #fff; color: #000; } .day { break-inside: avoid; border-color: #999; }
+    .p input { border: 0; padding: 2px 0; background: none; color: #000; }
+  }
+</style>
+<body>
+<main>
+  <header><h1 id="title">Schedule</h1></header>
+  <div class="row">
+    <select id="store" aria-label="Store"></select><select id="week" aria-label="Week"></select>
+    <div class="seg" role="group" aria-label="Front or back of house"><button data-side="FOH" class="active">FOH</button><button data-side="BOH">BOH</button></div>
+  </div>
+  <div class="row hours">Store hours (what O and C mean):
+    <label>Open <input id="open" type="time"></label><label>Close <input id="close" type="time"></label>
+    <span class="spacer"></span><button class="btn" id="copy">Copy last week</button><button class="btn" onclick="print()">Print</button>
+  </div>
+  <p class="hint" id="budgetnote"></p>
+  <div class="total" id="total"></div>
+  <div id="days"></div>
+  <button id="send" class="send">Save schedule</button>
+  <div class="done" id="done"></div>
+</main>
+<datalist id="names"></datalist><datalist id="titles"></datalist>
+<script>
+// Weekly schedule, FOH and BOH (Mon–Sun): day / name / title / time. A rough plan, not timecards:
+// hours come from the time ("10-9", "10-2, 5-9", "O-C") and each day's FOH+BOH total is checked
+// against the Labor plan budget. Hub only; saved in the payroll app's sheet ("Schedule").
+const iso = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
+const add = (s, k) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + k); return iso(d); };
+const md = s => `${+s.slice(5, 7)}/${+s.slice(8)}`;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const $ = id => document.getElementById(id);
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const TITLES = { FOH: ["Server", "Host", "Busser", "Bartender", "Cashier", "Manager"], BOH: ["Cook", "Line cook", "Prep", "Dishwasher", "Sushi chef", "Kitchen manager"] };
+let STORES = [], DAILY = {}, PAY = {}, S = { FOH: [], BOH: [] }, SIDE = "FOH", ROLES = [], BUDGET = null, DIRTY = false;
+function thisMonday() { const t = iso(new Date()), dow = new Date(t + "T12:00:00").getDay(); return add(t, -((dow + 6) % 7)); }
+function call(fn, store, args) {
+  return fetch("/api/payroll", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fn, store, args }) })
+    .then(r => r.json()).then(j => { if (!j.ok) throw new Error(j.error); return j.result; });
+}
+function say(msg, err) { $("done").textContent = msg; $("done").classList.toggle("err", !!err); }
+const hrs = r => r.hrs != null && r.hrs !== "" ? +r.hrs : 0;
+const dayHours = (side, d) => S[side].filter(r => r.day === d).reduce((a, r) => a + hrs(r), 0);
+
+function draw() {
+  $("titles").innerHTML = [...new Set([...TITLES[SIDE], ...ROLES])].map(t => `<option value="${esc(t)}">`).join("");
+  const wk = $("week").value;
+  $("days").innerHTML = DAYS.map((name, d) => {
+    const rows = S[SIDE].map((r, i) => [r, i]).filter(([r]) => r.day === d);
+    return `<div class="day"><h3>${name} ${md(add(wk, d))} <small id="sum${d}"></small></h3>
+      ${rows.length ? `<div class="p head"><span>Name</span><span class="t">Title</span><span>Time</span><span>Hours</span><span></span></div>` : ""}
+      ${rows.map(([r, i]) => `<div class="p">
+        <input aria-label="Name" list="names" value="${esc(r.name)}" data-i="${i}" data-k="name" placeholder="Name">
+        <input class="t" aria-label="Title" list="titles" value="${esc(r.title)}" data-i="${i}" data-k="title" placeholder="Title">
+        <input aria-label="Time" value="${esc(r.time)}" data-i="${i}" data-k="time" placeholder="10-9">
+        <input aria-label="Hours" type="number" step="0.25" inputmode="decimal" value="${r.hrs ?? ""}" data-i="${i}" data-k="hrs" class="${r.time && r.hrs == null ? "bad" : ""}">
+        <button class="x" aria-label="Remove" data-del="${i}">✕</button></div>`).join("")}
+      <button class="add" data-add="${d}">+ Add person</button></div>`;
+  }).join("");
+  sums();
+}
+function sums() {
+  let week = 0, budget = 0;
+  DAYS.forEach((_, d) => {
+    const mine = dayHours(SIDE, d), all = mine + dayHours(SIDE === "FOH" ? "BOH" : "FOH", d), b = BUDGET ? BUDGET.days[d].hours : 0;
+    week += all; budget += b;
+    const el = $("sum" + d), over = b && all > b * 1.05;
+    el.className = over ? "over" : "";
+    el.textContent = `${SIDE} ${mine} h · FOH+BOH ${all} h` + (b ? ` / budget ${Math.round(b)} h${over ? " ⚠ over" : ""}` : "");
+  });
+  const over = budget && week > budget * 1.05;
+  $("total").className = "total" + (over ? " over" : "");
+  $("total").textContent = `Week FOH+BOH: ${week} h` + (budget ? ` / labor plan budget ${Math.round(budget)} h${over ? " ⚠ over" : ""}` : "");
+}
+$("days").oninput = e => {
+  const t = e.target, r = S[SIDE][t.dataset.i]; if (!r) return;
+  DIRTY = true;
+  if (t.dataset.k === "hrs") r.hrs = t.value === "" ? null : +t.value;
+  else r[t.dataset.k] = t.value;
+  if (t.dataset.k === "time") {
+    r.hrs = hoursOf(r.time, $("open").value, $("close").value);
+    const h = t.parentNode.querySelector('[data-k="hrs"]'); h.value = r.hrs ?? ""; h.classList.toggle("bad", !!r.time && r.hrs == null);
+  }
+  if (t.dataset.k === "name" && !r.title) { const p = ROSTER.find(x => x.name === r.name); if (p && p.role) { r.title = p.role; t.parentNode.querySelector('[data-k="title"]').value = p.role; } }
+  sums();
+};
+$("days").onclick = e => {
+  const t = e.target;
+  if (t.dataset.add != null) { S[SIDE].push({ day: +t.dataset.add, name: "", title: "", time: "", hrs: null }); DIRTY = true; draw(); [...document.querySelectorAll(".day")[+t.dataset.add].querySelectorAll('[data-k="name"]')].pop().focus(); }
+  if (t.dataset.del != null) { S[SIDE].splice(+t.dataset.del, 1); DIRTY = true; draw(); }
+};
+// O/C hours changed → recompute the rows that use them.
+$("open").onchange = $("close").onchange = () => { DIRTY = true; ["FOH", "BOH"].forEach(sd => S[sd].forEach(r => { if (/\b(o|open|c|cl|close)\b/i.test(r.time)) r.hrs = hoursOf(r.time, $("open").value, $("close").value); })); draw(); };
+document.querySelector(".seg").onclick = e => {
+  if (!e.target.dataset.side) return;
+  SIDE = e.target.dataset.side;
+  document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("active", b === e.target));
+  draw();
+};
+let ROSTER = [];
+async function load() {
+  if (DIRTY && !confirm("You have changes that are not saved. Leave them?")) return;
+  const id = $("store").value, wk = $("week").value;
+  history.replaceState(null, "", "?id=" + id);
+  say(""); $("send").disabled = true;
+  BUDGET = laborBudget(DAILY, PAY, id, wk, add);
+  $("budgetnote").textContent = `Budget = hours you can schedule and stay under 25% labor (same as Labor plan, at $${BUDGET.rate.toFixed(2)}/hour).`;
+  try {
+    const r = await call("scheduleGet", id, [wk]);
+    $("title").textContent = `Schedule — ${r.storeName}`;
+    S = { FOH: r.FOH ? r.FOH.rows : [], BOH: r.BOH ? r.BOH.rows : [] };
+    $("open").value = r.open || ""; $("close").value = r.close || "";
+    ROSTER = r.roster || []; ROLES = [...new Set(ROSTER.map(p => p.role).filter(Boolean))];
+    $("names").innerHTML = ROSTER.map(p => `<option value="${esc(p.name)}">`).join("");
+    const at = [r.FOH, r.BOH].filter(Boolean).map(x => x.at).sort().pop();
+    if (at) say(`✓ Saved ${at}`);
+    DIRTY = false; draw();
+  } catch (e) { say(e.message, true); }
+  $("send").disabled = false;
+}
+$("copy").onclick = async () => {
+  if ((S.FOH.length || S.BOH.length) && !confirm("Replace this week with last week's schedule?")) return;
+  try {
+    const r = await call("scheduleGet", $("store").value, [add($("week").value, -7)]);
+    if (!r.FOH && !r.BOH) return say("Last week has no schedule to copy.", true);
+    S = { FOH: r.FOH ? r.FOH.rows : [], BOH: r.BOH ? r.BOH.rows : [] }; DIRTY = true; draw(); say("Copied. Change what you need, then Save.");
+  } catch (e) { say(e.message, true); }
+};
+$("send").onclick = async () => {
+  $("send").disabled = true; $("send").textContent = "Saving…";
+  try {
+    for (const side of ["FOH", "BOH"]) await call("scheduleSave", $("store").value, [$("week").value, side, S[side], $("open").value, $("close").value]);
+    DIRTY = false; say("✓ Saved. The office can see it now.");
+  } catch (e) { say(e.message, true); }
+  $("send").disabled = false; $("send").textContent = "Save schedule";
+};
+addEventListener("beforeunload", e => { if (DIRTY) e.preventDefault(); });
+(async () => {
+  if (!window.OMC_HUB) { document.querySelector("main").innerHTML = "<p>Open this page on the OMC hub (omc-hub.pages.dev).</p>"; return; }
+  const [html, daily, pay] = await Promise.all([fetch("index.html").then(r => r.text()), fetch("daily.json").then(r => r.json()).catch(() => ({ days: {} })),
+    fetch("payroll.json").then(r => r.ok ? r.json() : { periods: {} }).catch(() => ({ periods: {} }))]);
+  const today = iso(new Date());
+  STORES = new Function("return " + html.match(/const STORES = (\[[\s\S]*?\n  \]);/)[1])().filter(s => !s.closedFrom || s.closedFrom > today);
+  DAILY = daily.days || {}; PAY = pay.periods || {};
+  $("store").innerHTML = STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  const want = new URLSearchParams(location.search).get("id"); if (want && STORES.some(s => s.id === want)) $("store").value = want;
+  $("store").hidden = STORES.length < 2;
+  const m = thisMonday();
+  $("week").innerHTML = [[7, "next week"], [0, "this week"], [14, ""]].map(([k, l]) => `<option value="${add(m, k)}">Week ${md(add(m, k))}–${md(add(m, k + 6))}${l ? ` (${l})` : ""}</option>`).join("");
+  $("store").onchange = $("week").onchange = load;
+  load();
+})();
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

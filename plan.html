@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="data.js"></script>
+<script src="sched.js"></script>
 <title>OMC Labor Plan</title>
 <meta name="description" content="How many staff hours each day can use to stay under 25% labor, from expected sales.">
 <style>
@@ -99,9 +100,9 @@
 <script>
 // Labor plan for next week (Mon–Sun). Expected sales per weekday = average of that weekday over the
 // last 4 weeks (daily.json). Budget = 25% of expected sales ÷ average hourly pay → hours to schedule.
-// Average pay: hourly wages ÷ hours from the store's latest submitted payroll, else DEFAULT_RATE.
+// Average pay: hourly wages ÷ hours from the store's latest submitted payroll, else $19 (laborBudget in sched.js).
 // "Last week": Verona clock hours, or Toast timecard labor $ ÷ pay (≈ hours).
-const LIMIT = 0.25, DEFAULT_RATE = 19;
+const LIMIT = 0.25;
 const iso = d => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
 const add = (s, k) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + k); return iso(d); };
 const md = s => `${+s.slice(5, 7)}/${+s.slice(8)}`;
@@ -114,24 +115,37 @@ function thisMonday() { const t = iso(new Date()), dow = new Date(t + "T12:00:00
 function render() {
   const id = $("store").value, s = STORES.find(x => x.id === id), next = add(thisMonday(), 7), last = add(thisMonday(), -7);
   history.replaceState(null, "", "?id=" + id);
-  const paid = Object.keys(PAY).sort().reverse().map(p => (PAY[p].stores || {})[id]).find(v => v && v.wages && v.hours);
-  const rate = paid ? paid.wages / paid.hours : DEFAULT_RATE;
+  const B = laborBudget(DAILY, PAY, id, next, add), rate = B.rate, paid = B.paid;
   $("title").textContent = `Labor plan — ${s.name}`;
   $("hint").textContent = `Next week ${md(next)}–${md(add(next, 6))}. Hours you can schedule each day and stay under 25% labor. ` +
     `Based on sales of the last 4 weeks and $${rate.toFixed(2)}/hour ${paid ? "(your last payroll)" : "(estimate until your first payroll)"}.`;
   let totH = 0, totS = 0;
   $("days").innerHTML = DAYS.map((dname, i) => {
-    const prev = [1, 2, 3, 4].map(k => (DAILY[add(next, i - 7 * k)] || {})[id]).filter(v => v && v.sales != null && v.sales > 0);
-    const exp = prev.length ? prev.reduce((a, v) => a + v.sales, 0) / prev.length : 0;
-    const hours = exp * LIMIT / rate; totH += hours; totS += exp;
+    const { exp, hours } = B.days[i]; totH += hours; totS += exp;
+    const sch = SCHED && SCHED[i], schTxt = sch != null ? `<div class="last ${hours && sch > hours * 1.05 ? "over" : ""}">Scheduled: ${sch} h${hours && sch > hours * 1.05 ? " ⚠ over" : ""}</div>` : "";
     const lv = (DAILY[add(last, i)] || {})[id] || {}, used = lv.hours || (lv.labor ? lv.labor / rate : 0), budgetLast = (lv.sales || 0) * LIMIT / rate;
     const lastTxt = used ? `Last ${dname}: used ${Math.round(used)} h${budgetLast ? ` (budget was ${Math.round(budgetLast)} h)` : ""}` : "";
     return `<div class="day"><div class="d">${dname}<br><span class="s">${md(add(next, i))}</span></div>
       <div class="s">${exp ? `Expected sales ${money(exp)}` : "Closed or no history"}</div>
       <div class="h">${exp ? Math.round(hours) : "—"}<small> h</small></div>
+      ${schTxt}
       ${lastTxt ? `<div class="last ${used > budgetLast * 1.05 ? "over" : ""}">${lastTxt}${used > budgetLast * 1.05 ? " ⚠ over" : ""}</div>` : ""}</div>`;
   }).join("");
-  $("total").textContent = `Week: up to ${Math.round(totH)} hours · expected sales ${money(totS)}`;
+  $("total").innerHTML = `Week: up to ${Math.round(totH)} hours · expected sales ${money(totS)}` +
+    (SCHED ? ` · scheduled ${SCHED.reduce((a, h) => a + h, 0)} h` : window.OMC_HUB ? ` · <a href="schedule.html?id=${id}">Make the schedule</a>` : "");
+}
+// Hours on the Schedule page (FOH + BOH) for next week, per day; null = no schedule yet.
+let SCHED = null;
+async function loadSched() {
+  SCHED = null; render();
+  if (!window.OMC_HUB) return;
+  const id = $("store").value;
+  const r = await fetch("/api/payroll", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fn: "scheduleGet", store: id, args: [add(thisMonday(), 7)] }) })
+    .then(r => r.json()).catch(() => ({}));
+  if (id !== $("store").value || !r.ok || (!r.result.FOH && !r.result.BOH)) return;
+  const rows = [...(r.result.FOH || { rows: [] }).rows, ...(r.result.BOH || { rows: [] }).rows];
+  SCHED = [0, 1, 2, 3, 4, 5, 6].map(d => rows.filter(x => x.day === d).reduce((a, x) => a + (+x.hrs || 0), 0));
+  render();
 }
 (async () => {
   const [html, daily, pay] = await Promise.all([fetch("index.html").then(r => r.text()), fetch("daily.json").then(r => r.json()).catch(() => ({ days: {} })),
@@ -142,7 +156,7 @@ function render() {
   $("store").innerHTML = STORES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
   const want = new URLSearchParams(location.search).get("id"); if (want && STORES.some(s => s.id === want)) $("store").value = want;
   $("store").hidden = STORES.length < 2;
-  $("store").onchange = render; render();
+  $("store").onchange = loadSched; loadSched();
 })();
 </script>
 <script src="nav.js"></script>
