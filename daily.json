@@ -2005,6 +2005,11 @@
         "dineIn": 2042,
         "takeout": 369,
         "delivery": 572
+      },
+      "chez-maeju-oakland": {
+        "sales": 1315,
+        "orders": 12,
+        "guests": 135
       }
     },
     "2026-09-18": {
@@ -2125,6 +2130,11 @@
         "dineIn": 2104,
         "takeout": 817,
         "delivery": 816
+      },
+      "chez-maeju-oakland": {
+        "sales": 1069,
+        "orders": 9,
+        "guests": 25
       }
     },
     "2026-09-19": {
@@ -2246,6 +2256,11 @@
         "dineIn": 3262,
         "takeout": 776,
         "delivery": 1036
+      },
+      "chez-maeju-oakland": {
+        "sales": 432,
+        "orders": 3,
+        "guests": 8
       }
     },
     "2026-09-20": {
@@ -2373,6 +2388,11 @@
         "takeout": 209,
         "delivery": 703,
         "hours": 62.68
+      },
+      "chez-maeju-oakland": {
+        "sales": 173,
+        "orders": 3,
+        "guests": 5
       }
     },
     "2026-09-21": {
@@ -2499,6 +2519,11 @@
         "takeout": 590,
         "delivery": 639,
         "hours": 46.08
+      },
+      "chez-maeju-oakland": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
       }
     },
     "2026-09-22": {
@@ -2625,6 +2650,11 @@
         "takeout": 350,
         "delivery": 499,
         "hours": 46.93
+      },
+      "chez-maeju-oakland": {
+        "sales": 702,
+        "orders": 8,
+        "guests": 19
       }
     },
     "2026-09-23": {
@@ -2752,6 +2782,11 @@
         "takeout": 645,
         "delivery": 424,
         "hours": 43.83
+      },
+      "chez-maeju-oakland": {
+        "sales": 931,
+        "orders": 10,
+        "guests": 20
       }
     },
     "2026-09-24": {
@@ -2878,6 +2913,11 @@
         "takeout": 100,
         "delivery": 1090,
         "hours": 48.19
+      },
+      "chez-maeju-oakland": {
+        "sales": 1354,
+        "orders": 12,
+        "guests": 33
       }
     },
     "2026-09-25": {
@@ -3006,6 +3046,11 @@
         "takeout": 805,
         "delivery": 504,
         "hours": 57.92
+      },
+      "chez-maeju-oakland": {
+        "sales": 1650,
+        "orders": 1,
+        "guests": 1
       }
     },
     "2026-09-26": {
@@ -3134,6 +3179,11 @@
         "takeout": 584,
         "delivery": 1303,
         "hours": 61.59
+      },
+      "chez-maeju-oakland": {
+        "sales": 960,
+        "orders": 9,
+        "guests": 19
       }
     },
     "2026-09-27": {
@@ -3261,6 +3311,11 @@
         "takeout": 419,
         "delivery": 464,
         "hours": 60.93
+      },
+      "chez-maeju-oakland": {
+        "sales": 1891,
+        "orders": 17,
+        "guests": 37
       }
     },
     "2026-09-28": {
@@ -3389,6 +3444,11 @@
         "takeout": 338,
         "delivery": 671,
         "hours": 45.89
+      },
+      "chez-maeju-oakland": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
       }
     },
     "2026-09-29": {
@@ -3516,6 +3576,11 @@
         "takeout": 256,
         "delivery": 520,
         "hours": 48.9
+      },
+      "chez-maeju-oakland": {
+        "sales": 1640,
+        "orders": 16,
+        "guests": 34
       }
     },
     "2026-09-30": {
@@ -3643,6 +3708,11 @@
         "takeout": 382,
         "delivery": 1040,
         "hours": 42.63
+      },
+      "chez-maeju-oakland": {
+        "sales": 1139,
+        "orders": 11,
+        "guests": 28
       }
     },
     "2026-10-01": {
@@ -3771,6 +3841,11 @@
         "takeout": 178,
         "delivery": 927,
         "hours": 46.42
+      },
+      "chez-maeju-oakland": {
+        "sales": 3813,
+        "orders": 31,
+        "guests": 73
       }
     },
     "2026-10-02": {
@@ -3897,6 +3972,11 @@
         "takeout": 304,
         "delivery": 1287,
         "hours": 62.3
+      },
+      "chez-maeju-oakland": {
+        "sales": 2751,
+        "orders": 24,
+        "guests": 57
       }
     },
     "2026-10-03": {
@@ -4025,6 +4105,11 @@
         "takeout": 475,
         "delivery": 456,
         "hours": 59.17
+      },
+      "chez-maeju-oakland": {
+        "sales": 2318,
+        "orders": 1,
+        "guests": 1
       }
     },
     "2026-10-04": {
@@ -4153,6 +4238,11 @@
         "takeout": 527,
         "delivery": 913,
         "hours": 60.77
+      },
+      "chez-maeju-oakland": {
+        "sales": 1335,
+        "orders": 11,
+        "guests": 27
       }
     },
     "2026-10-05": {
@@ -4280,6 +4370,11 @@
         "takeout": 436,
         "delivery": 648,
         "hours": 41.92
+      },
+      "chez-maeju-oakland": {
+        "sales": 0,
+        "orders": 0,
+        "guests": 0
       }
     },
     "2026-10-06": {
@@ -4406,6 +4501,11 @@
         "takeout": 317,
         "delivery": 1205,
         "hours": 48.9
+      },
+      "chez-maeju-oakland": {
+        "sales": 1626,
+        "orders": 13,
+        "guests": 33
       }
     },
     "2026-10-07": {
@@ -4534,6 +4634,11 @@
         "takeout": 319,
         "delivery": 561,
         "hours": 40.84
+      },
+      "chez-maeju-oakland": {
+        "sales": 2110,
+        "orders": 17,
+        "guests": 40
       }
     },
     "2026-10-08": {
@@ -4669,6 +4774,11 @@
         "discount": 0,
         "alcohol": 0,
         "hours": 35.79
+      },
+      "chez-maeju-oakland": {
+        "sales": 702,
+        "orders": 6,
+        "guests": 12
       }
     }
   },
