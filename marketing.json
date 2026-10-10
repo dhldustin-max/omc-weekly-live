@@ -1,0 +1,281 @@
+{
+  "updated": "2026-10-09",
+  "source": "seed from client card + agent memory + research files",
+  "stores": {
+    "ohgane-oakland": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://ohgane.com/oakland-location", "status": "SpotHopper vendor site; SEO paste pack ready 10-07, not applied; JSON-LD shows wrong hours (9 PM vs actual 10 PM)" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Ohgane+Oakland+3915+Broadway%2C+Oakland%2C+CA+94611", "rating": 4.4, "reviews": 1852, "asOf": "2026-10-06", "note": "Primary category Korean BBQ since 10-06; own GBP menu (25 items) added 10-06; last GBP post 05-14" },
+        "yelp": { "url": "https://www.yelp.com/biz/ohgane-korean-bbq-oakland-3", "rating": 3.9, "reviews": 2700, "asOf": "2026-10-06", "unanswered": null, "note": "Review count rounded by Yelp (2.7k)" }
+      },
+      "competitors": [
+        { "name": "Don Blanc", "change": "Rising: Google 4.6 (213), Yelp 4.5; open to ~1 AM Fri-Sat", "date": "2026-10-06" },
+        { "name": "Jong Ga House", "change": "Running Yelp Sponsored ads; daily lunch special 11-3", "date": "2026-10-06" },
+        { "name": "Gogi Time", "change": "Yelp Sponsored ads; website redirects elsewhere; Yelp Health Score Alert", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Confirm AYCE and kids prices (blank on GBP menu)",
+        "Fix ohgane.com JSON-LD hours and LOGO_URL placeholders (vendor)",
+        "Fix location page BART line (MacArthur, 14 min walk)",
+        "Resume GBP posts (last 05-14)",
+        "Re-measure 'best korean bbq east bay' 2-3 weeks after 10-06 category change"
+      ]
+    },
+    "ohgane-concord": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://ohgane.com/concord-location", "status": "SpotHopper vendor site; SEO paste pack ready 10-07, not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Ohgane+Concord+1671+Willow+Pass+Rd%2C+Concord%2C+CA+94520", "rating": 4.2, "reviews": 996, "asOf": "2026-10-06", "note": "Recent 1-stars: iPad ordering, AYCE 2-person minimum not disclosed" },
+        "yelp": { "url": "https://www.yelp.com/biz/ohgane-concord-2", "rating": 4.0, "reviews": 1800, "asOf": "2026-10-06", "unanswered": null, "note": "Review count rounded by Yelp (1.8k)" }
+      },
+      "competitors": [
+        { "name": "GEN Korean BBQ House", "change": "Loyalty program, kids eat free/half price; Google 1,814 reviews vs our 996", "date": "2026-10-06" },
+        { "name": "Daeho Kalbijjim & Beef Soup", "change": "Launched new rewards app (monthly free item)", "date": "2026-10-06" }
+      ],
+      "open": [
+        "State AYCE 2-person minimum on menu and site",
+        "Create GBP menu (only Oakland done)",
+        "Apply ohgane.com SEO paste pack (vendor)"
+      ]
+    },
+    "ohgane-alameda": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://ohgane.com/alameda-location", "status": "SpotHopper vendor site; address shows #170 (actual #160); SEO paste pack not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Ohgane+Alameda+x+Vons+Chicken+2211+S+Shore+Center+%23160%2C+Alameda%2C+CA+94501", "rating": 4.2, "reviews": 442, "asOf": "2026-10-06", "note": "Hours daily 11-10, kitchen 11-9 (last call 9 PM) set 10-06" },
+        "yelp": { "url": "https://www.yelp.com/biz/ohgane-kbbq-x-vons-chicken-alameda", "rating": 3.9, "reviews": 1000, "asOf": "2026-10-06", "unanswered": null, "note": "Review count rounded by Yelp (1k); hours fixed to daily 11-10 on 10-06" }
+      },
+      "competitors": [
+        { "name": "BB Bowl", "change": "Google 4.6 (183), Yelp 4.1 vs our Yelp 3.9", "date": "2026-10-06" },
+        { "name": "Jong Ga House", "change": "Running Yelp Sponsored ads; daily lunch special", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Fix ohgane.com Alameda address #170 to #160 (vendor)",
+        "Create GBP menu",
+        "Resume GBP posts (last 05-14)"
+      ]
+    },
+    "tangjip-hayward": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://tang-jip.com/hayward", "status": "SpotHopper vendor site; suspected fake reviews on page; 'Reserve' button goes to Yelp; SEO pack not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Tang+Jip+Hayward+22507+Main+St%2C+Hayward%2C+CA+94541", "rating": 4.3, "reviews": 108, "asOf": "2026-10-06", "note": "Owner replies 0/10 visible" },
+        "yelp": { "url": "https://www.yelp.com/biz/tang-jip-hayward", "rating": 4.4, "reviews": 369, "asOf": "2026-10-06", "unanswered": null, "note": "Reply backlog 8+ positives as of 09-30" }
+      },
+      "competitors": [
+        { "name": "Volcano Island", "change": "Google 4.8 (362), owner replies 8/10, rewards program, new backyard patio", "date": "2026-10-06" },
+        { "name": "The Sister's House Korean BBQ", "change": "Google 487 reviews vs our 108", "date": "2026-10-06" },
+        { "name": "Mugunghwa Castro Valley", "change": "'Coming soon' on official site (watch list)", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Decide on suspected fake reviews on tang-jip.com (owner)",
+        "Fix 'Reserve a Table' button (goes to Yelp)",
+        "Fix BART walk text (9 min, not 7)",
+        "Clear Yelp reply backlog"
+      ]
+    },
+    "tangjip-concord": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://tang-jip.com/concord", "status": "SpotHopper vendor site; suspected fake reviews on page; menu page empty; SEO pack not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Tang+Jip+Concord+1679+Willow+Pass+Rd%2C+Concord%2C+CA+94520", "rating": 4.3, "reviews": 214, "asOf": "2026-10-06", "note": "GBP website is tangjip.com (domain does not exist)" },
+        "yelp": { "url": "https://www.yelp.com/biz/tang-jip-concord-2", "rating": 4.3, "reviews": 343, "asOf": "2026-10-06", "unanswered": null, "note": null }
+      },
+      "competitors": [
+        { "name": "BanJu", "change": "DoorDash 30% off badge", "date": "2026-10-06" },
+        { "name": "Daeho Kalbijjim & Beef Soup", "change": "Launched new rewards app (monthly free item)", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Fix GBP website tangjip.com to tang-jip.com",
+        "Decide on suspected fake reviews on tang-jip.com (owner)",
+        "Fill empty /food-menu page (vendor)"
+      ]
+    },
+    "tangjip-alameda": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://tang-jip.com/alameda", "status": "SpotHopper vendor site; 'Reserve' button goes to Concord DoorDash; suspected fake reviews; SEO pack not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Tang+Jip+Alameda+2201+S+Shore+Center%2C+Alameda%2C+CA+94501", "rating": 3.9, "reviews": 45, "asOf": "2026-10-06", "note": "Owner replies 8/10; recent 1-star about dinner ramen removed" },
+        "yelp": { "url": "https://www.yelp.com/biz/tang-jip-alameda", "rating": 4.2, "reviews": 197, "asOf": "2026-10-06", "unanswered": 6, "note": "Unanswered count is the 09-30 backlog" }
+      },
+      "competitors": [
+        { "name": "BB Bowl", "change": "Google 4.6 (183) vs our 3.9 (45)", "date": "2026-10-06" },
+        { "name": "Seoul Gom Tang", "change": "Google 4.4 (546); wang galbitang $31.99 on DoorDash", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Fix order/reserve buttons pointing to Concord",
+        "Clear Yelp reply backlog (6 as of 09-30)",
+        "Decide on suspected fake reviews on tang-jip.com (owner)"
+      ]
+    },
+    "oh-g-burger-berkeley": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": null, "status": "Closed 2026-10-01" },
+        "google": { "url": null, "rating": null, "reviews": null, "asOf": null, "note": null },
+        "yelp": { "url": null, "rating": null, "reviews": null, "asOf": null, "unanswered": null, "note": null }
+      },
+      "competitors": [],
+      "open": []
+    },
+    "obento-hayward": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://obentohayward.com", "status": "Squarespace vendor site; LocalBusiness JSON-LD empty; no order link; SEO pack not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Obento+Hayward+22521+Main+St%2C+Hayward%2C+CA+94541", "rating": 4.3, "reviews": 41, "asOf": "2026-10-06", "note": "GBP shows Dine-in; site says takeout only" },
+        "yelp": { "url": "https://www.yelp.com/biz/obento-hayward", "rating": 4.3, "reviews": 82, "asOf": "2026-10-06", "unanswered": null, "note": "Reply backlog about 14 as of 09-30" }
+      },
+      "competitors": [
+        { "name": "Rolla Cabin", "change": "Google post promoting $9.99 Duo Crisp Bar bite", "date": "2026-10-06" },
+        { "name": "Mujiri", "change": "Across the street; Google 4.7 (146) vs our 4.3 (41)", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Turn off GBP Dine-in if no seating (owner confirm)",
+        "Fill Squarespace business info (empty JSON-LD)",
+        "Clear Yelp reply backlog"
+      ]
+    },
+    "spoon-berkeley": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://spoonashby.com", "status": null },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Spoon+Korean+Bistro+933+Ashby+Ave%2C+Berkeley%2C+CA+94710", "rating": 4.4, "reviews": 751, "asOf": "2026-10-06", "note": "Owner replies 0/10 visible" },
+        "yelp": { "url": "https://www.yelp.com/biz/spoon-berkeley", "rating": 4.0, "reviews": 1200, "asOf": "2026-10-06", "unanswered": null, "note": "Review count rounded by Yelp (1.2k)" }
+      },
+      "competitors": [
+        { "name": "Moo Bong Ri", "change": "Google 4.5 (1,060); open to ~12 AM Fri-Sat", "date": "2026-10-06" },
+        { "name": "Pyeong Chang Tofu", "change": "Promotes 'Check, Please! Bay Area' feature in Google posts", "date": "2026-10-06" },
+        { "name": "Berkeley K-Food", "change": "Preparing to open at 2511 Channing Way (watch list)", "date": "2026-10-06" }
+      ],
+      "open": []
+    },
+    "bowld-albany": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://bowldbbq.com/albany", "status": "Wix brand site; no hours, no meta description; menu PDF lists closed stores; SEO pack not applied" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Bowl%27d+Korean+Rice+Bar+Albany+1479+Solano+Ave%2C+Albany%2C+CA+94706", "rating": 4.5, "reviews": 805, "asOf": "2026-10-06", "note": "GBP website points to bowldbbq.com home" },
+        "yelp": { "url": null, "rating": 4.1, "reviews": 1400, "asOf": "2026-10-06", "unanswered": null, "note": "Yelp URL unconfirmed; count rounded (1.4k)" }
+      },
+      "competitors": [
+        { "name": "Korean Superette", "change": "KS Club rewards + Bap-Sang Club 2-week subscription, monthly special", "date": "2026-10-06" },
+        { "name": "Korean Superette", "change": "Google 4.7 (282) one block away; IG 3,475 vs our 337+42", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Update menu PDF (still lists 4869 Telegraph and 1823 Solano)",
+        "Merge two Instagram accounts",
+        "Point GBP website to bowldbbq.com/albany",
+        "Add hours to the Albany page"
+      ]
+    },
+    "golden-wang-donkatsu-dublin": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": null, "status": "No website; GBP website empty" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Golden+Wang+Donkatsu+Dublin+7222+Regional+St%2C+Dublin%2C+CA+94568", "rating": 4.5, "reviews": 17, "asOf": "2026-10-06", "note": "Category 'Asian restaurant'; GBP name in all caps" },
+        "yelp": { "url": "https://www.yelp.com/biz/Oag98DznINkkUM7-suvMRQ", "rating": 4.1, "reviews": 45, "asOf": "2026-10-06", "unanswered": null, "note": "Phone, website, menu empty; reply backlog about 13 as of 09-30" }
+      },
+      "competitors": [
+        { "name": "Golden Donkatsu Santa Clara", "change": "DoorDash groups it with our Dublin store as one brand", "date": "2026-10-06" },
+        { "name": "Yumee Katsu Dublin", "change": "Google 4.7 (238); King Donkatsu $24.99 vs our $26.39", "date": "2026-10-06" },
+        { "name": "Daeho Dublin", "change": "Planned opening inside H Mart Dublin, date unknown (watch list)", "date": null }
+      ],
+      "open": [
+        "Add phone, website, menu to Yelp listing",
+        "Review GBP category (Asian restaurant misses donkatsu searches)",
+        "Close old Mad For Sushi Yelp listing",
+        "Owner: clarify relation to Santa Clara Golden Donkatsu"
+      ]
+    },
+    "jjamppong-zizon-oakland": {
+      "ads": [
+        { "name": "META_Traffic_JJZ-Oak-2mi-Lunch_Jjajang999_2026-10", "platform": "Meta", "status": "Active", "start": "2026-10-03", "end": "2026-10-16", "spend": 18.66, "spendPeriod": "2026-10-08 (day)", "results": 265, "resultType": "Link clicks", "costPerResult": 0.07, "note": "Lifetime budget $280, about $121 spent by 10-08; IG reel creative, 2 mi radius; Meta conversions 0 (Traffic), orders counted in Toast" }
+      ],
+      "promos": [
+        { "title": "Jjajangmyeon $9.99 (regular $13), Oakland only", "start": "2026-10-01", "end": null, "where": "In store and Toast pickup (discount at checkout), site banner and popup, Meta ad; not on DoorDash", "status": "Running" }
+      ],
+      "listings": {
+        "website": { "url": "https://jjamppongzizon.us", "status": "Live since 10-01 (our build); on-page SEO 10-07; Meta pixel installed 10-03" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Jjamppong+Zizon+Oakland+3905+Broadway%2C+Oakland%2C+CA+94611", "rating": 4.3, "reviews": 18, "asOf": "2026-10-06", "note": "4 owner replies to 1-3 star reviews posted 10-06" },
+        "yelp": { "url": "https://www.yelp.com/biz/jjamppong-zizon-oakland-4", "rating": 4.2, "reviews": 37, "asOf": "2026-10-06", "unanswered": null, "note": "Approved reply to a 2-star (09-30) not yet posted" }
+      },
+      "competitors": [
+        { "name": "Monster Pho", "change": "Announced free pho event 'Pho for the People' on 11-23", "date": "2026-10-04" },
+        { "name": "Gangnam Jajang", "change": "Google 374 (+1); Yelp review flow stalled first week of Oct", "date": "2026-10-05" },
+        { "name": "Yuyu Za Zang", "change": "No rating change; entered #6 for 'korean chinese oakland'", "date": "2026-10-05" }
+      ],
+      "open": [
+        "Post approved Yelp reply (blocked; owner to post)",
+        "Claim Bing Places and Apple Business Connect",
+        "Owner: request shutdown of old site jjamppongzizonca.com",
+        "Fix reel caption typo 'Th 12PM'",
+        "QR review tents"
+      ]
+    },
+    "tuum-oakland": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": null, "status": "No website; renamed Oh Crab, closed for construction since 10-05" },
+        "google": { "url": null, "rating": 4.0, "reviews": 5, "asOf": "2026-10-06", "note": "Live listing still 'Tuum' (other account, shows open); no Oh Crab listing; Hanshin Pocha listing permanently closed" },
+        "yelp": { "url": "https://www.yelp.com/biz/tuum-oakland-10", "rating": 2.0, "reviews": 1, "asOf": "2026-10-06", "unanswered": null, "note": "Tuum listing unclaimed; Hanshin Pocha (4.1/196) flagged closed" }
+      },
+      "competitors": [
+        { "name": "Cajun Claws Seafood Boil House", "change": "Google 4.8 (765), owner replies 7/10, rewards program", "date": "2026-10-06" },
+        { "name": "To The Moon", "change": "Korean pub open daily to 2 AM, Yelp 4.7", "date": "2026-10-06" },
+        { "name": "K Banchan x VONS Chicken", "change": "Temescal, Yelp 4.7/162 (watch list)", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Create new 'Oh Crab' Google listing once reopen date is set",
+        "Request access to Tuum Google profile, then mark closed",
+        "Owner: confirm phone, category, reopen date for new listings"
+      ]
+    },
+    "jjamppong-zizon-hayward": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://jjamppongzizon.us", "status": "Hayward card 'Now open' since 10-08 (shared site); no order button yet" },
+        "google": { "url": "https://www.google.com/maps?cid=10411341504854240742", "rating": null, "reviews": 0, "asOf": "2026-10-08", "note": "GBP verified 10-08; name, categories, description current 10-09; menu link pending" },
+        "yelp": { "url": "https://www.yelp.com/biz/jjamppong-zizon-hayward", "rating": null, "reviews": 0, "asOf": "2026-10-07", "unanswered": null, "note": "Claimed; phone and hours correct; website field empty" }
+      },
+      "competitors": [],
+      "open": [
+        "Confirm GBP menu link is current (pending 10-09)",
+        "Add website to Yelp (needs owner approval)",
+        "Swap site map embed to name search (approved 10-09)",
+        "Add order buttons and GBP order link once Toast/DoorDash ready"
+      ]
+    },
+    "chez-maeju-oakland": {
+      "ads": [],
+      "promos": [],
+      "listings": {
+        "website": { "url": "https://chezmaeju.com", "status": "Live (our build); on-page SEO 10-07; FAQ moved to /reservations 10-08" },
+        "google": { "url": "https://www.google.com/maps/search/?api=1&query=Chez+Maeju+6200+Claremont+Ave%2C+Oakland%2C+CA+94618", "rating": 4.0, "reviews": 9, "asOf": "2026-10-06", "note": "Two new 1-star reviews within 24h; no owner replies; category 'Restaurant'; no website link" },
+        "yelp": { "url": "https://www.yelp.com/biz/chez-maeju-oakland", "rating": 4.3, "reviews": 4, "asOf": "2026-10-06", "unanswered": null, "note": null }
+      },
+      "competitors": [
+        { "name": "Wood Tavern", "change": "Same block; site says closing end of 2026", "date": "2026-10-06" },
+        { "name": "Joodooboo", "change": "Banchan club subscription, press coverage, IG 17K; Google 4.7 (276)", "date": "2026-10-06" },
+        { "name": "KAOKAO Grill", "change": "Google 4.7 (181) vs our 4.0 (9)", "date": "2026-10-06" }
+      ],
+      "open": [
+        "Add chezmaeju.com to GBP (missing)",
+        "Reply to two recent 1-star Google reviews (owner first)",
+        "Confirm takeout and accessibility wording for site/GBP"
+      ]
+    }
+  }
+}

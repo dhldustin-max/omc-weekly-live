@@ -13,6 +13,7 @@ assert.equal(route(M, H + "/store?id=ohgane-oakland"), "/store?id=ohgane-alameda
 assert.equal(route(M, H + "/store"), "/store?id=ohgane-alameda");
 for (const p of ["/dashboard", "/labor", "/meeting", "/index.html", "/daily.json"]) assert.equal(route(M, H + p), "/store?id=ohgane-alameda", p);
 assert.equal(route(M, H + "/payroll"), null);
+assert.equal(route(M, H + "/marketing"), null);
 assert.equal(route(M, H + "/api/data/daily.json"), null);   // the API itself filters to M
 // a redirect target is always allowed for that user (no loops)
 for (const s of ["*", M]) { const t = route(s, H + "/"); assert.equal(route(s, H + t), null); }

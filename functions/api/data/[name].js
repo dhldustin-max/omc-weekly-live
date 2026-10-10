@@ -1,7 +1,7 @@
 // GET /api/data/<file>.json — the dashboard's data files, managers get only their stores' rows.
 import { repoFile, onlyStores, json } from "../../../hub/lib.js";
 
-const FILES = ["daily.json", "weekly-snapshots.json", "payroll.json", "notes.json", "scraper-status.json"];
+const FILES = ["daily.json", "weekly-snapshots.json", "payroll.json", "marketing.json", "notes.json", "scraper-status.json"];
 
 export async function onRequestGet(ctx) {
   const { params, env, data } = ctx;

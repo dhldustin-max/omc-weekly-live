@@ -21,6 +21,7 @@ export function onlyStores(name, j, stores) {
   const pick = o => Object.fromEntries(Object.entries(o || {}).filter(([id]) => stores.includes(id)));
   if (name === "daily.json") return { ...j, days: Object.fromEntries(Object.entries(j.days || {}).map(([d, v]) => [d, pick(v)])) };
   if (name === "weekly-snapshots.json") return { ...j, weeks: (j.weeks || []).map(w => ({ ...w, stores: pick(w.stores) })) };
+  if (name === "marketing.json") return { ...j, stores: pick(j.stores) };
   if (name === "payroll.json") return { ...j, periods: Object.fromEntries(Object.entries(j.periods || {}).map(([p, v]) => [p, { ...v, stores: pick(v.stores) }])) };
   return null;   // anything else is corporate-only
 }

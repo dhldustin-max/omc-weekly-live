@@ -1,7 +1,7 @@
 // Left menu shared by dashboard.html and labor.html: always visible on wide screens,
 // a ☰ button that slides it in on phones. Uses each page's own color tokens.
 (() => {
-  let PAGES = [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["index.html", "Meeting tool"]];
+  let PAGES = [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["marketing.html", "Marketing"], ["index.html", "Meeting tool"]];
   const bare = h => h.split("?")[0].replace(/\.html$/, "");
   const here = bare(location.pathname.split("/").pop() || "index.html");
   const css = document.createElement("style");
@@ -39,8 +39,8 @@
   // On the hub: add Payroll, and show managers only their store + payroll (the server enforces it too).
   if (window.OMC_HUB) fetch("/api/me").then(r => r.json()).then(me => {
     PAGES = me.stores === "*"
-      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["payroll.html", "Payroll"], ["meeting.html", "Meeting tool"]]
-      : [[`store.html?id=${me.stores[0]}`, "My store"], ["payroll.html", "Payroll"]];
+      ? [["dashboard.html", "Dashboard"], ["store.html", "Stores"], ["labor.html", "Labor"], ["marketing.html", "Marketing"], ["payroll.html", "Payroll"], ["meeting.html", "Meeting tool"]]
+      : [[`store.html?id=${me.stores[0]}`, "My store"], ["marketing.html", "Marketing"], ["payroll.html", "Payroll"]];
     nav.querySelectorAll("a:not([aria-label])").forEach(a => a.remove());
     nav.insertAdjacentHTML("beforeend", PAGES.map(([href, label]) =>
       `<a href="${href}"${bare(href) === here ? ' class="on" aria-current="page"' : ""}>${label}</a>`).join("") +

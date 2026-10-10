@@ -9,7 +9,7 @@ import fs from "fs";
 import assert from "assert";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const FILES = ["dashboard.html", "store.html", "labor.html", "index.html", "nav.js", "chart.js", "data.js", "omc-logo.png"];
+const FILES = ["dashboard.html", "store.html", "labor.html", "marketing.html", "index.html", "nav.js", "chart.js", "data.js", "omc-logo.png"];
 fs.rmSync(ROOT + "dist", { recursive: true, force: true });
 fs.mkdirSync(ROOT + "dist");
 // The meeting tool is index.html on GitHub Pages; on the hub "/" goes to the dashboard, so it ships as meeting.html.
