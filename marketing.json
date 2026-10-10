@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09",
+  "updated": "2026-10-10",
   "source": "seed from client card + agent memory + research files",
   "stores": {
     "ohgane-oakland": {
@@ -200,7 +200,7 @@
     },
     "jjamppong-zizon-oakland": {
       "ads": [
-        { "name": "META_Traffic_JJZ-Oak-2mi-Lunch_Jjajang999_2026-10", "platform": "Meta", "status": "Active", "start": "2026-10-03", "end": "2026-10-16", "spend": 18.66, "spendPeriod": "2026-10-08 (day)", "results": 265, "resultType": "Link clicks", "costPerResult": 0.07, "note": "Lifetime budget $280, about $121 spent by 10-08; IG reel creative, 2 mi radius; Meta conversions 0 (Traffic), orders counted in Toast" }
+        { "name": "META_Traffic_JJZ-Oak-2mi-Lunch_Jjajang999_2026-10", "platform": "Meta", "status": "Active", "start": "2026-10-03", "end": "2026-10-16", "spend": 139.20, "spendPeriod": "last 7 days to 2026-10-09", "results": 1857, "resultType": "Clicks", "costPerResult": 0.07, "note": "Lifetime budget $280, $139.20 spent 10-03 to 10-09 (about $140.80 left); IG reel creative, 2 mi radius; Meta conversions 0 (Traffic objective), orders counted in Toast; results = Adspirer clicks" }
       ],
       "promos": [
         { "title": "Jjajangmyeon $9.99 (regular $13), Oakland only", "start": "2026-10-01", "end": null, "where": "In store and Toast pickup (discount at checkout), site banner and popup, Meta ad; not on DoorDash", "status": "Running" }
